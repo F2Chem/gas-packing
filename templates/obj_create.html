@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% load helpers %}
+
+{% block content %}
+
+  <form action="{% url destination %}" method="post">
+    {% csrf_token %}
+    
+    {% if add_before %}
+    {% include add_before %}
+    {% endif %}
+
+    {% to_edit obj meta_data options %}
+
+    {% if add_after %}
+    {% include add_after %}
+    {% endif %}
+  </form>
+{% endblock %}

@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% load helpers %}
+
+{% block content %}
+
+
+<p>
+<i>Search failed:</i>
+Sorry, failed to find anything with the search term "{{term}}".
+</p>  
+ 
+<button onclick="history.back()">Go Back</button>
+  
+{% endblock %}

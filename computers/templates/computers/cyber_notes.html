@@ -1,0 +1,83 @@
+
+
+
+{% extends "base.html" %}
+{% load computer_helpers %}
+
+{% block content %}
+
+<p>
+<i>This page explains how we approached the cyber security risk assessments, using this database. It was done following an assessment of the control network using an external consultant, and follows the same principles to some degree.</i>
+</p>
+
+
+<h5>Cyber Targets</h5>
+<p>
+The IT systems were divided into a number of nodes, each node being a type of device or system. Many nodes are unique, such as the server and the firewall, but some have multiple instances, such as desktop PCs. Nodes were determined based on their risk status, so a laptop that never goes off site is equavalent to a desktop PC, but different to a laptop that is used off-site. Cyber targets are a table in the data base, and can be found  <a href="{% url 'target' %}">here</a>, and were modified sligtly during the process
+</p>
+
+<h5>Threat Scenarios</h5>
+<p>
+A number of threat scenarios were considered. This is a subset of those considered in the control network rick assessment, as several were not considered applicable. One was split into two distinct scenarios. These are hard-coded in software and are:
+</p>
+
+<ul> 
+{% for s in attack_vectors %} 
+    <li>{{ s }}</li> 
+{% endfor %} 
+</ul> 
+
+<h5>Likelihood</h5>
+<p>
+Likelihood were initially adopted from the SLR audit system.
+</p>
+<p>
+The lowest likelihood was set at less than every 5 years, but as the systems have been in place over five years without incident, no scenario with a higher likelihood was envisaged, and it as decided this should be split into three categories to give some differentiation.
+</p>
+
+<h5>Consequences</h5>
+<p>
+Consequences were adopted from the SLR audit system.
+</p>
+
+<h5>Risk Matrix</h5>
+<p>
+{% risk_matrix %}
+</p>
+
+<h5>Assessments Generated</h5>
+<p>
+A number of entries were generated in the database, one for each combination of target and scenario. This gave a total of 108 assessments.
+</p>
+
+<h5>First Pass</h5>
+<p>
+Each target is assigned a type. In the first pass the first target of each type was addressed. Each scenario was considered. Some were flagged as not relevant, but the vast majority were completed. In some cases additional scenarios were added using the clone functionality.
+</p>
+
+<h5>Interpolation</h5>
+<p>
+For all outstanding targets, the software filled in the text fields based on the prototype for that type of target. Likelihood, consequences and the not relevant flag were not set, so these assessments still appeared as not completed. This gave a total of 114 assessments.
+</p>
+
+<h5>Second Pass</h5>
+<p>
+Each interpolated assessment was reviewed, and likelihood, consequences and the not relevant flag were set as deemed appropriate. A couple of targets were removed, as they seemed to overlap with other targets, and new one was added. This gave a total of 106 assessments.
+</p>
+
+<h5>Third Pass</h5>
+<p>
+A second person was invited to review each assessment in turn.
+</p>
+
+
+
+
+
+
+
+{% endblock %}
+
+
+
+

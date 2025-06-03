@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% load helpers %}
+
+{% block content %}
+
+<h4>F2DB Home Page</h4>
+
+<p>{% permissions user %}</p>
+
+<p>{% site_data %}</p>
+
+{% endblock %}

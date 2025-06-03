@@ -1,0 +1,61 @@
+from django.urls import path
+
+from util.util import add_std_to_paths
+
+from . import views
+
+urlpatterns = [
+    path("pdf", views.pdf_test, name="pdf_test"),
+    path("", views.index, name="index"),
+    
+    path("static/", views.static_list, name="static"),
+    path("static/<int:obj_id>", views.static_detail, name="static_detail"),
+    path("static/create", views.static_create, name="static_create"),
+    path("static/created", views.static_created, name="static_created"),
+    path("static/<int:obj_id>/edit", views.static_edit, name="static_edit"),
+    path("static/<int:obj_id>/edited", views.static_edited, name="static_edited"),
+    
+    path("device/", views.device_list, name="device"),
+    path("device/<int:obj_id>", views.device_detail, name="device_detail"),
+    path("device/create", views.device_create, name="device_create"),
+    path("device/created", views.device_created, name="device_created"),
+    path("device/<int:obj_id>/edit", views.device_edit, name="device_edit"),
+    path("device/<int:obj_id>/edited", views.device_edited, name="device_edited"),
+    #path("device/kickstart", views.device_kickstart, name="device_kickstart"),
+    
+    path("computer/", views.computer_list, name="list"),
+    path("computer/all", views.computer_list_all, name="computer_list_all"),
+    path("computer/<int:obj_id>", views.computer_detail, name="computer_detail"),
+    path("computer/create", views.computer_create, name="computer_create"),
+    path("computer/created", views.computer_created, name="computer_created"),
+    path("computer/<int:obj_id>/edit", views.computer_edit, name="computer_edit"),
+    path("computer/<int:obj_id>/edited", views.computer_edited, name="computer_edited"),
+
+    path("cyber_notes/", views.cyber_notes, name="cyber_notes"),
+    
+
+    path("cra/", views.cra_list, name="cra"),
+    path("cra/pdf", views.cra_pdf, name="cra_pdf"),
+    path("cra/<int:obj_id>", views.cra_detail, name="cra_detail"),
+    path("cra/create", views.cra_create, name="cra_create"),
+    path("cra/created", views.cra_created, name="cra_created"),
+    path("cra/<int:obj_id>/edit", views.cra_edit, name="cra_edit"),
+    path("cra/<int:obj_id>/edited", views.cra_edited, name="cra_edited"),
+    path("cra/<int:obj_id>/clone", views.cra_clone, name="cra_clone"),
+    path("cra/<int:obj_id>/next", views.cra_next, name="cra_next"),
+    path("cra/<int:obj_id>/edit_next", views.cra_edit_next, name="cra_edit_next"),
+    #path("cra/int", views.cra_interpolate, name="cra_interpolate"),
+]
+
+
+add_std_to_paths(urlpatterns, views, 'target')
+
+
+"""
+    path("target/", views.target_list, name="target"),
+    path("target/<int:obj_id>", views.target_detail, name="target_detail"),
+    path("target/create", views.target_create, name="target_create"),
+    path("target/created", views.target_created, name="target_created"),
+    path("target/<int:obj_id>/edit", views.target_edit, name="target_edit"),
+    path("target/<int:obj_id>/edited", views.target_edited, name="target_edited"),
+"""
