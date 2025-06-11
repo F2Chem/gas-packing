@@ -1,0 +1,231 @@
+{% extends "base.html" %}
+{% block title %}Results{% endblock %}
+{% block content %}
+
+<p>Devices Selected:</p>
+<ul>
+    {% for device in selected_devices %}
+    <li>{{ device }}</li>
+    {% endfor %}
+</ul>
+<p>Time Span: {{ time_span }}</p>
+{% if difference %}
+<p><strong>Showing differences between consecutive readings</strong></p>
+{% else %}
+<p><strong>Showing cumulative readings</strong></p>
+{% endif %}
+
+{% if show_graph %}
+<h2>Graph</h2>
+<svg id="graph" width="1200" height="600" style="border:1px solid black;"></svg>
+<script>
+
+    const data = {{ results_js | safe }};
+    const devices = Object.keys(data);
+    const difference = {{ difference| yesno:"true,false" }};
+    const colours = ["blue", "red", "green", "orange", "purple", "yellow", "brown"]
+    const svg = document.getElementById("graph");
+    const width = parseInt(svg.getAttribute("width"));
+    const height = parseInt(svg.getAttribute("height"));
+    const margin = { top: 70, right: 80, bottom: 80, left: 100 };
+    const innerWidth = width - margin.left - margin.right;
+    const innerHeight = height - margin.top - margin.bottom;
+
+    let allPoints = [];
+    devices.forEach(device => {
+        allPoints = allPoints.concat(data[device]);
+    });
+
+    if (allPoints.length > 0) {
+        const times = allPoints.map(d => new Date(d.time));
+        const values = allPoints.map(d => d.value);
+        const minX = Math.min(...times.map(t => t.getTime()));
+        const maxX = Math.max(...times.map(t => t.getTime()));
+        let minY = Math.min(...values);
+        let maxY = Math.max(...values);
+
+        const padding = (maxY - minY) * 0.01 || 1;
+
+        minY -= padding;
+        maxY += padding;
+
+        if (minY < 0) minY = 0;
+
+        function scaleX(time) {
+            return margin.left + ((time - minX) / (maxX - minX)) * innerWidth;
+        }
+
+        function scaleY(val) {
+            return margin.top + innerHeight - ((val - minY) / (maxY - minY)) * innerHeight;
+        }
+
+        svg.innerHTML = '';
+        const ns = "http://www.w3.org/2000/svg";
+
+        const yAxis = document.createElementNS(ns, "line");
+        yAxis.setAttribute("x1", margin.left);
+        yAxis.setAttribute("y1", margin.top);
+        yAxis.setAttribute("x2", margin.left);
+        yAxis.setAttribute("y2", margin.top + innerHeight);
+        yAxis.setAttribute("stroke", "black");
+        svg.appendChild(yAxis);
+
+        const xAxis = document.createElementNS(ns, "line");
+        xAxis.setAttribute("x1", margin.left);
+        xAxis.setAttribute("y1", margin.top + innerHeight);
+        xAxis.setAttribute("x2", margin.left + innerWidth);
+        xAxis.setAttribute("y2", margin.top + innerHeight);
+        xAxis.setAttribute("stroke", "black");
+        svg.appendChild(xAxis);
+
+        const numYTicks = 10;
+        for (let i = 0; i <= numYTicks; i++) {
+            const value = minY + (i / numYTicks) * (maxY - minY);
+            const y = scaleY(value);
+
+            const tick = document.createElementNS(ns, "line");
+            tick.setAttribute("x1", margin.left - 5);
+            tick.setAttribute("y1", y);
+            tick.setAttribute("x2", margin.left);
+            tick.setAttribute("y2", y);
+            tick.setAttribute("stroke", "black");
+            svg.appendChild(tick);
+
+            const label = document.createElementNS(ns, "text");
+            label.setAttribute("x", margin.left - 10);
+            label.setAttribute("y", y + 4);
+            label.setAttribute("text-anchor", "end");
+            label.setAttribute("font-size", "10");
+            label.textContent = value.toFixed(2);
+            svg.appendChild(label);
+        }
+
+        const numXTicks = 10;
+        for (let i = 0; i <= numXTicks; i++) {
+            const time = new Date(minX + (i / numXTicks) * (maxX - minX));
+            const x = scaleX(time.getTime());
+
+            const tick = document.createElementNS(ns, "line");
+            tick.setAttribute("x1", x);
+            tick.setAttribute("y1", margin.top + innerHeight);
+            tick.setAttribute("x2", x);
+            tick.setAttribute("y2", margin.top + innerHeight + 5);
+            tick.setAttribute("stroke", "black");
+            svg.appendChild(tick);
+
+            const label = document.createElementNS(ns, "text");
+            label.setAttribute("x", x + 25);
+            label.setAttribute("y", margin.top + innerHeight + 25);
+            label.setAttribute("transform", `rotate(25, ${x}, ${margin.top + innerHeight + 20})`);
+            label.setAttribute("text-anchor", "middle");
+            label.setAttribute("font-size", "10");
+            label.textContent = time.toLocaleString();
+            svg.appendChild(label);
+        }
+
+        devices.forEach((device, index) => {
+            const points = data[device];
+            const colour = colours[index % colours.length];
+
+            if (points.length === 0) return;
+
+            let pathData = `M ${scaleX(new Date(points[0].time).getTime())} ${scaleY(points[0].value)}`;
+            for (let i = 1; i < points.length; i++) {
+                pathData += ` L ${scaleX(new Date(points[i].time).getTime())} ${scaleY(points[i].value)}`;
+            }
+
+            const line = document.createElementNS(ns, "path");
+            line.setAttribute("d", pathData);
+            line.setAttribute("stroke", colour);
+            line.setAttribute("fill", "none");
+            line.setAttribute("stroke-width", "2");
+            svg.appendChild(line);
+        });
+
+        devices.forEach((device, index) => {
+            const colour = colours[index % colours.length];
+            const legendText = document.createElementNS(ns, "text");
+            legendText.setAttribute("x", margin.left + 880);
+            legendText.setAttribute("y", margin.top - 40 + index * 20);
+            legendText.setAttribute("font-size", "12");
+            legendText.setAttribute("fill", colour);
+            legendText.textContent = device;
+            svg.appendChild(legendText);
+        });
+
+        // Title
+        const title = document.createElementNS(ns, "text");
+        title.setAttribute("x", width / 2);
+        title.setAttribute("y", 20);
+        title.setAttribute("text-anchor", "middle");
+        title.setAttribute("font-size", "16");
+        title.setAttribute("font-weight", "bold");
+
+        title.textContent = `Power Usage Over Time (${difference ? "Difference" : "Cumulative"})`;
+        svg.appendChild(title);
+
+        // X-axis label
+        const xlabel = document.createElementNS(ns, "text");
+        xlabel.setAttribute("x", margin.left + innerWidth / 2);
+        xlabel.setAttribute("y", height - 5);
+        xlabel.setAttribute("text-anchor", "middle");
+        xlabel.setAttribute("font-size", "12");
+        xlabel.textContent = "TimeStamp";
+        svg.appendChild(xlabel);
+
+        // Y-axis label
+        const ylabel = document.createElementNS(ns, "text");
+        ylabel.setAttribute("x", 15);
+        ylabel.setAttribute("y", margin.top + innerHeight / 2);
+        ylabel.setAttribute("text-anchor", "middle");
+        ylabel.setAttribute("transform", `rotate(-90, 15, ${margin.top + innerHeight / 2})`);
+        ylabel.setAttribute("font-size", "12");
+        ylabel.textContent = "Power Meter Readings (kWh)";
+        svg.appendChild(ylabel);
+
+    } else {
+        svg.textContent = "No data to display in graph.";
+}
+</script>
+{% endif %}
+
+
+
+{% if all_results %}
+<div style="margin-top: 40px;">
+    <h2>Data Table</h2>
+    {% for device, entries in all_results.items %}
+    <h3>Device: {{ device }}</h3>
+    {% if entries %}
+    <table border="1" cellpadding="5" cellspacing="0">
+        <thead>
+            <tr>
+                <th>Time</th>
+                <th>
+                    {% if difference %}
+                    Difference
+                    {% else %}
+                    Value (Cumulative)
+                    {% endif %}
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for entry in entries %}
+            <tr>
+                <td>{{ entry.time }}</td>
+                <td>{{ entry.value }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p>No data found for device {{ device }}</p>
+    {% endif %}
+    {% endfor %}
+</div>
+{% else %}
+<p>No data found for this selection.</p>
+{% endif %}
+
+{% endblock %}
