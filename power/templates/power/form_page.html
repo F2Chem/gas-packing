@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %}Select Time and Device{% endblock %}
+{% block content %}
+
+<h1>Select Time Span and Device</h1>
+<form method="post">
+    {% csrf_token %}
+    {{ form.time_span.label_tag }} {{ form.time_span }}
+    <br><br>
+    {{ form.devices.label_tag }}<br>
+    {{ form.devices }}
+    <br><br>
+    {{ form.difference.label_tag }} {{ form.difference }}
+    <br><br>
+    {{ form.interval.label_tag }} {{ form.interval }}
+    <br><br>
+    {{ form.show_graph.label_tag }} {{ form.show_graph }}
+    <br><br>
+    <button type="submit">Submit</button>
+</form>
+
+{% endblock %}
