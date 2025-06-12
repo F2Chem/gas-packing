@@ -5,7 +5,7 @@ from django.contrib.auth.decorators import permission_required
 
 from .models import *
 from util.pdf_util import *
-from .secret import *
+#from .secret import *
 
 
 

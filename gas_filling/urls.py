@@ -1,11 +1,23 @@
-from django.urls import path
+from django.contrib import admin
+from django.urls import include, path
 
 from . import views
 
 urlpatterns = [
-    path("", views.index, name="index"),
-    path("cylinder", views.cylinder_index, name="cylinder_index"),
-    path("cylinder/<int:obj_id>", views.cylinder_view, name="cylinder_view"),
-    path("cylinder/<int:obj_id>/edit", views.cylinder_edit, name="cylinder_edit"),
-
+    path("index.html", views.home, name="home"),
+    path("", views.home, name="home"),
 ]
+
+
+
+"""
+Note: accounts is built in and givs these URLs
+accounts/ login/ [name='login']
+accounts/ logout/ [name='logout']
+accounts/ password_change/ [name='password_change']
+accounts/ password_change/done/ [name='password_change_done']
+accounts/ password_reset/ [name='password_reset']
+accounts/ password_reset/done/ [name='password_reset_done']
+accounts/ reset/<uidb64>/<token>/ [name='password_reset_confirm']
+accounts/ reset/done/ [name='password_reset_complete']
+"""

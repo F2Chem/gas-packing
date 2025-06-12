@@ -39,6 +39,7 @@ ALLOWED_HOSTS = ['*']
 INSTALLED_APPS = [
     'computers.apps.ComputersConfig',
     'gas_filling.apps.GasFillingConfig',
+    'power.apps.PowerConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',

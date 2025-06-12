@@ -1,6 +1,7 @@
 # Added by AKJ
 **/secret.py
 static/admin/**/*.*
+manage.py
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

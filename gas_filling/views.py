@@ -6,7 +6,7 @@ from .forms import FillingForm
 from .models import Filling
 
 
-def index(request):
+def home(request):
     return render(request, 'gas_filling/index.html')
 
 

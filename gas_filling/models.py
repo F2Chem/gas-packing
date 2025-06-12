@@ -30,6 +30,9 @@ class Cylinder(models.Model):
         return datetime.today().date() < tolerance.date()
 
 
+    class Meta:
+        db_table = 'gas_filling_cylinders'
+
 
 class Order(models.Model):
     id = models.AutoField(primary_key=True)
@@ -37,6 +40,9 @@ class Order(models.Model):
     comments = models.TextField(blank=True, null=True)
     fill_in = models.CharField(max_length=50, blank=True, null=True)
     timestampin = TimeStampMixin
+
+    class Meta:
+        db_table = 'gas_filling_orders'
 
 
 
@@ -46,3 +52,13 @@ class Filling(models.Model):
     order = models.ForeignKey(Order, on_delete=models.CASCADE)
     weight = models.FloatField(default=0)
     timestampin = TimeStampMixin
+    
+    
+    cylinder = models.CharField(max_length=100)
+    order = models.CharField(max_length=100)
+
+    weight = models.FloatField(default=0)
+    time_entered = models.TimeField(auto_now=True)
+
+    class Meta:
+        db_table = 'gas_filling_fillings'
