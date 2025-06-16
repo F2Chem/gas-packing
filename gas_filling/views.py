@@ -3,7 +3,7 @@ from django.shortcuts import get_object_or_404, render, redirect
 from django.db.models import Max
 from django.contrib.auth.decorators import permission_required
 from .forms import FillingForm
-from .models import Filling
+from .models import Filling, Cylinder, Order
 
 
 def home(request):
@@ -33,3 +33,7 @@ def gas_filling(request):
     else:
         form = FillingForm()
     return render(request, 'gas_filling/filling.html', {'form': form})
+
+def filling_table(request):
+    all_fillings = Filling.objects.all().order_by('-time_entered')
+    return render(request, 'gas_filling/filling_table.html', {'all_fillings': all_fillings})

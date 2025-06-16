@@ -48,17 +48,18 @@ class Order(models.Model):
 
 class Filling(models.Model):
     id = models.AutoField(primary_key=True)
-    cylinder = models.ForeignKey(Cylinder, on_delete=models.CASCADE)
-    order = models.ForeignKey(Order, on_delete=models.CASCADE)
-    weight = models.FloatField(default=0)
-    timestampin = TimeStampMixin
-    
-    
+    #cylinder = models.ForeignKey(Cylinder, on_delete=models.CASCADE)
+    #order = models.ForeignKey(Order, on_delete=models.CASCADE)
     cylinder = models.CharField(max_length=100)
     order = models.CharField(max_length=100)
-
     weight = models.FloatField(default=0)
+    #timestampin = TimeStampMixin
+    
+    
+    
+
+
     time_entered = models.TimeField(auto_now=True)
 
     class Meta:
-        db_table = 'gas_filling_fillings'
+        db_table = 'cylinders'

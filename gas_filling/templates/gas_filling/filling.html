@@ -1,6 +1,18 @@
 {% extends "base.html" %}
 {% block title %}Results{% endblock %}
+
+{% block subheading %}
+<div class="subnav">
+    <a href="{% url 'gas_filling:gas_filling' %}">Enter Gas Data</a> |
+    <a href="{% url 'gas_filling:gas_filling_all' %}">All Gas Fillings</a>
+</div>
+{% endblock %}
+
 {% block content %}
+
+{% if subsections %}
+  {% include subsections %}
+{% endif %}
 
 <h2>Gas Filling Form</h2>
 
@@ -10,5 +22,10 @@
     <button type="submit" name="submit">Submit</button>
     <button type="reset" name="clear">Clear</button>
 </form>
+
+<form action="{% url 'gas_filling:gas_filling_all' %}" method="get" style="margin-top:20px;">
+    <button type="submit" class="btn-primary">View All Fillings</button>
+</form>
+
 
 {% endblock %}

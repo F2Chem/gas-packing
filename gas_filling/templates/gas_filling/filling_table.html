@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>Gas Filling Records</h2>
+
+{% if all_fillings %}
+<table border="1" cellpadding="5" cellspacing="0">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Cylinder Number</th>
+            <th>Order Number</th>
+            <th>Weight</th>
+            <th>Time Entered</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for filling in all_fillings %}
+        <tr>
+            <td>{{ filling.id }}</td>
+            <td>{{ filling.cylinder }}</td>
+            <td>{{ filling.order }}</td>
+            <td>{{ filling.weight }}</td>
+            <td>{{ filling.time_entered }}</td>
+
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% else %}
+<p>No gas filling records found.</p>
+{% endif %}
+
+<a href="{% url 'gas_filling:gas_filling' %}">Back to Form</a>
+{% endblock %}
