@@ -7,7 +7,11 @@
     <link rel="stylesheet" href="/static/style.css" type="text/css">
     <title>F2DB: {{ title }}</title>
   </head>
-  <body>
+  {% if focus %}
+  <body onload="setF2Focus()">
+  {% else %}
+  <body >
+  {% endif %}
     <div class="top-right">
       <img src="/static/images/f2logo-s.png" width="26" height="33" alt="F2 Logo" />
     </div>
@@ -67,6 +71,24 @@ function copyText(toName, fromName) {
 
 function addText(toName, s) {
   document.getElementsByName(toName)[0].value += s
+}
+
+// Sets the form focus to the first element found in forms[0] that
+// is a textfield or text area
+// Seems to be another setFocus, so this is called setF2Focus
+function setF2Focus() {
+  form = document.forms[1] // first form, 0, is log in/out, skip that
+  
+  // Bail if no form on page
+  if (form == null) return
+
+  // Iterate through elements
+  for (const e of form.elements) {
+    if ((e.type == "text") || (e.type == "textarea")) {
+      e.focus()
+      break
+    }
+  }
 }
 
 </script>
