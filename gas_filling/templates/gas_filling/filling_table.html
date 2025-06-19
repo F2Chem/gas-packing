@@ -31,5 +31,10 @@
 <p>No gas filling records found.</p>
 {% endif %}
 
-<a href="{% url 'gas_filling:gas_filling' %}">Back to Form</a>
+<form action="{% url 'gas_filling:gas_filling_filling' %}" method="get" style="margin-top: 20px;">
+    <button type="submit" class="btn-primary">Back</button>
+</form>
+
 {% endblock %}
+
+

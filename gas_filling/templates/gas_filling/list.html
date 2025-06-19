@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>List All Cylinders</h1>
+<p>Listing all cylinders.</p>
+
+<form action="{% url 'gas_filling:gas_filling_home' %}" method="get" style="margin-top: 20px;">
+    <button type="submit" class="btn-primary">Back</button>
+</form>
+
+{% endblock %}

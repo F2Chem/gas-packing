@@ -11,13 +11,13 @@ def home(request):
 
 
 def cylinder_index(request):
-    return redirect('/gas_filling/gas_filling/')
+    return redirect('gas_filling:gas_filling_filling')
 
 def cylinder_view(request):
-    return redirect('/gas_filling/gas_filling/')
+    return redirect('gas_filling:gas_filling_filling')
 
 def cylinder_edit(request):
-    return redirect('/gas_filling/gas_filling/')
+    return redirect('gas_filling:gas_filling_filling')
 
 def gas_filling(request):
     if request.method == 'POST':
@@ -25,7 +25,7 @@ def gas_filling(request):
             form = FillingForm(request.POST)
             if form.is_valid():
                 form.save()
-                return redirect('gas_filling:gas_filling')
+                return redirect('gas_filling:gas_filling_home')
             else:
                 print(form.errors)
         elif 'clear' in request.POST:
@@ -34,6 +34,15 @@ def gas_filling(request):
         form = FillingForm()
     return render(request, 'gas_filling/filling.html', {'form': form})
 
-def filling_table(request):
+def gas_filling_table(request):
     all_fillings = Filling.objects.all().order_by('-time_entered')
     return render(request, 'gas_filling/filling_table.html', {'all_fillings': all_fillings})
+
+def gas_filling_home(request):
+    return render(request, 'gas_filling/home.html')
+
+def gas_filling_list(request):
+    return render(request, 'gas_filling/list.html')
+
+def gas_filling_show(request):
+    return render(request, 'gas_filling/show.html')

@@ -13,23 +13,23 @@
     </div>
     
     <div class="authen">
-      
-    
-      {% if user.is_authenticated %}
+
+
+        {% if user.is_authenticated %}
         Logged in as: <i>{{ user }}</i> (
         <form method="post" action="{% url 'logout' %}" id="logout-form" style="display:inline">
-          {% csrf_token %}
-          <span style="cursor: pointer;text-decoration: underline" onclick="document.getElementById('logout-form').submit()">logout</span>
+            {% csrf_token %}
+            <span style="cursor: pointer;text-decoration: underline" onclick="document.getElementById('logout-form').submit()">logout</span>
         </form>)
-      {% else %}
+        {% else %}
         <a href="/accounts/login/">Log-in</a>
-      {% endif %}
-      <br/>
-      <i>SECTIONS:</i>
-      <a href="/computers">Computers</a> |
-      <a href="/gas_filling">Gas Fillings</a> |
-      <a href="/power">Power</a>
-      {% extra_links links %}
+        {% endif %}
+        <br />
+        <i>SECTIONS:</i>
+        <a href="/computers">Computers</a> |
+        <a href="{% url 'gas_filling:gas_filling_home' %}">Gas Fillings</a>
+        <a href="/power">Power</a>
+        {% extra_links links %}
     </div>
     
     <div class="top-left">

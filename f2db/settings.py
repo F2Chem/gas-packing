@@ -12,7 +12,7 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 
 from pathlib import Path
 
-import secret
+from f2db import secret
 import os
 
 VERSION = '0.1'

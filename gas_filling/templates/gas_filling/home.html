@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>Gas Filling Menu</h2>
+
+<form action="{% url 'gas_filling:gas_filling_list' %}" method="get" style="margin-top:20px;">
+    <button type="submit" class="btn-primary">List all Cylinders</button>
+</form>
+
+<form action="{% url 'gas_filling:gas_filling_show' %}" method="get" style="margin-top:20px;">
+    <button type="submit" class="btn-primary">Show a Cylinder</button>
+</form>
+
+<form action="{% url 'gas_filling:gas_filling_filling' %}" method="get" style="margin-top:20px;">
+    <button type="submit" class="btn-primary">Gas Filling</button>
+</form>
+
+
+
+{% endblock %}
