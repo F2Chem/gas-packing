@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block title %}Step 3: Enter Order Number{% endblock %}
+{% block content %}
+
+<h2>Step 2: Enter Order Number</h2>
+
+<form method="post">
+    {% csrf_token %}
+    <label for="order_number">Order Number:</label>
+    <input type="text" name="order_number" required>
+    <button type="submit" class="btn-primary">Next</button>
+</form>
+
+<form action="{% url 'gas_filling:gas_filling_home' %}" method="get">
+    <button type="submit" class="btn-primary" style="margin-top:20px;">Cancel</button>
+</form>
+
+{% endblock %}

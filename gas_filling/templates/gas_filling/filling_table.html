@@ -10,8 +10,10 @@
             <th>ID</th>
             <th>Cylinder Number</th>
             <th>Order Number</th>
-            <th>Weight</th>
-            <th>Time Entered</th>
+            <th>Tare Weight</th>
+            <th>Tare Time</th>
+            <th>End Weight</th>
+            <th>End Time</th>
         </tr>
     </thead>
     <tbody>
@@ -20,9 +22,10 @@
             <td>{{ filling.id }}</td>
             <td>{{ filling.cylinder }}</td>
             <td>{{ filling.order }}</td>
-            <td>{{ filling.weight }}</td>
-            <td>{{ filling.time_entered }}</td>
-
+            <td>{{ filling.tare_weight }}</td>
+            <td>{{ filling.tare_time }}</td>
+            <td>{{ filling.end_weight }}</td>
+            <td>{{ filling.end_time }}</td>
         </tr>
         {% endfor %}
     </tbody>
@@ -31,7 +34,7 @@
 <p>No gas filling records found.</p>
 {% endif %}
 
-<form action="{% url 'gas_filling:gas_filling_filling' %}" method="get" style="margin-top: 20px;">
+<form action="{% url 'gas_filling:gas_filling_home' %}" method="get" style="margin-top: 20px;">
     <button type="submit" class="btn-primary">Back</button>
 </form>
 

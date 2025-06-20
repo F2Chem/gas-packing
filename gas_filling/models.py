@@ -3,16 +3,18 @@ from django.conf import settings
 from django.utils.html import strip_tags
 from util.util import *
 from datetime import datetime
+from django.utils import timezone
 from dateutil.relativedelta import relativedelta
 
 
 
-class Cylinder(TimeStampMixin):
+class Cylinder(models.Model):
     id = models.AutoField(primary_key=True)
     barcodeid = models.CharField(max_length=50, default=0)
     tare = models.FloatField(default=0)
     test_date = models.DateTimeField()
     comments = models.TextField(blank=True, null=True)
+    timestampin = TimeStampMixin
 
     @staticmethod 
     def barcode_search(barcode):
@@ -33,32 +35,32 @@ class Cylinder(TimeStampMixin):
         db_table = 'gas_filling_cylinders'
 
 
-class Order(TimeStampMixin):
+class Order(models.Model):
     id = models.AutoField(primary_key=True)
     customer = models.CharField(max_length=50, blank=True, null=True)
     comments = models.TextField(blank=True, null=True)
     fill_in = models.CharField(max_length=50, blank=True, null=True)
+    timestampin = TimeStampMixin
 
     class Meta:
         db_table = 'gas_filling_orders'
 
 
 
-class Filling(TimeStampMixin):
-    id = models.AutoField(primary_key=True)
+class Filling(models.Model):
+    #cylinder = models.ForeignKey(Cylinder, on_delete=models.CASCADE)
+    #order = models.ForeignKey(Order, on_delete=models.CASCADE)
     cylinder = models.CharField(max_length=100)
-    order = models.CharField(max_length=100)
-    weight = models.FloatField(default=0)
-    time_entered = models.TimeField(auto_now=True)
-    status = models.IntegerField(default=0)
+    order = models.CharField(max_length=100, blank=True)
 
+    tare_weight = models.FloatField(default=0)
+    tare_time = models.DateTimeField(null=True, blank=True)
 
-    def filling_status(self):
-        return self.status
-    
-    def update_status(self):
-        self.status += 1
-    
+    end_weight = models.FloatField(default=0)
+    end_time = models.DateTimeField(null=True, blank=True)
+
+    #timestampin = TimeStampMixin
+ 
 
     class Meta:
         db_table = 'cylinders'

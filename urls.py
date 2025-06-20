@@ -13,7 +13,7 @@ urlpatterns = [
     path("", views.home, name="home"),
 ]
 
-
+#check
 
 """
 Note: accounts is built in and givs these URLs

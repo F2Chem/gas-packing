@@ -4,18 +4,14 @@
 {% block content %}
 
 
-<h2>Gas Filling Form</h2>
+<h2>Step 1: Enter Cylinder ID or Scan Barcode</h2>
 
-<form method="post" action="{% url 'gas_filling:gas_filling_filling' %}">
+<form method="post">
     {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit" name="submit">Submit</button>
-    <button type="reset" name="clear">Clear</button>
+    <input type="text" name="cylinder_id" required autofocus>
+    <button type="submit">Next</button>
 </form>
 
-<form action="{% url 'gas_filling:gas_filling_table' %}" method="get" style="margin-top:20px;">
-    <button type="submit" class="btn-primary">View All Fillings</button>
-</form>
 
 <form action="{% url 'gas_filling:gas_filling_home' %}" method="get" style="margin-top: 20px;">
     <button type="submit" class="btn-primary">Back</button>
