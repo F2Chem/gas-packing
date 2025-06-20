@@ -20,12 +20,12 @@ VERSION = '0.1'
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+SECRET_KEY = secret.SECRET_KEY
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-v7v_cee5bs-gnc!2*2xtc8b(x(phyde4%c0m5c!$_4+i1n(4q$'
+
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
