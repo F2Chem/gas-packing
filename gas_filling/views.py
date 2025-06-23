@@ -3,7 +3,7 @@ from django.shortcuts import get_object_or_404, render, redirect
 from django.db.models import Max
 from django.contrib.auth.decorators import permission_required
 from django.utils.timezone import now
-from .forms import FillingForm
+from .forms import FillingForm, CylinderForm
 from .models import Filling, Cylinder, Order
 
 
@@ -72,10 +72,24 @@ def gas_filling_home(request):
     return render(request, 'gas_filling/home.html')
 
 def gas_filling_list(request):
-    return render(request, 'gas_filling/list.html')
+    cylinders = Cylinder.objects.all()
+    return render(request, 'gas_filling/list.html', {'cylinders': cylinders})
 
 def gas_filling_show(request):
     return render(request, 'gas_filling/show.html')
 
+def gas_filling_create(request):
+    if request.method == 'POST':
+        form = CylinderForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('gas_filling:gas_filling_home')
+    else:
+        form = CylinderForm()
 
+    return render(request, 'gas_filling/create.html', {'form': form})
+
+
+
+    
 

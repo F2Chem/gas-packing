@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container mt-4">
+    <h1>Create New Cylinder</h1>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-primary">Add Cylinder</button>
+    </form>
+</div>
+
+<form action="{% url 'gas_filling:gas_filling_home' %}" method="get" style="margin-top: 20px;">
+    <button type="submit" class="btn-primary">Back</button>
+</form>
+
+{% endblock %}
