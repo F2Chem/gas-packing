@@ -75,8 +75,20 @@ def gas_filling_list(request):
     cylinders = Cylinder.objects.all()
     return render(request, 'gas_filling/list.html', {'cylinders': cylinders})
 
-def gas_filling_show(request):
-    return render(request, 'gas_filling/show.html')
+def gas_filling_show(request, pk):
+    cylinder = Cylinder.objects.get(pk=pk)
+    return render(request, 'gas_filling/show.html', {'cylinder': cylinder})
+
+def gas_filling_edit(request, pk):
+    cylinder = Cylinder.objects.get(pk=pk)
+    if request.method == 'POST':
+        form = CylinderForm(request.POST, instance=cylinder)
+        if form.is_valid():
+            form.save()
+            return redirect('gas_filling:gas_filling_list')
+    else:
+        form = CylinderForm(instance=cylinder)
+    return render(request, 'gas_filling/edit.html', {'form': form})
 
 def gas_filling_create(request):
     if request.method == 'POST':

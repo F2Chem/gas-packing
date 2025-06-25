@@ -12,7 +12,7 @@ class Cylinder(models.Model):
     id = models.AutoField(primary_key=True)
     barcodeid = models.CharField(max_length=50, default=0)
     tare = models.FloatField(default=0)
-    test_date = models.DateTimeField()
+    test_date = models.DateField()
     comments = models.TextField(blank=True, null=True)
     timestampin = TimeStampMixin
 

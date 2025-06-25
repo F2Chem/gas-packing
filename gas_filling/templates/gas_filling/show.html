@@ -2,9 +2,15 @@
 
 {% block content %}
 <h1>Show Cylinder Details</h1>
-<p>Showing details of a cylinder.</p>
+<ul>
+    <li>ID: {{ cylinder.id }}</li>
+    <li>Barcode: {{ cylinder.barcodeid }}</li>
+    <li>Tare: {{ cylinder.tare }}</li>
+    <li>Test Date: {{ cylinder.test_date }}</li>
+    <li>Comments: {{ cylinder.comments }}</li>
+</ul>
 
-<form action="{% url 'gas_filling:gas_filling_home' %}" method="get" style="margin-top: 20px;">
+<form action="{% url 'gas_filling:gas_filling_list' %}" method="get" style="margin-top: 20px;">
     <button type="submit" class="btn-primary">Back</button>
 </form>
 

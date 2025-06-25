@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h2>All Cylinders</h2>
+<h1>All Cylinders</h1>
 
 {% if cylinders %}
 <table border="1" cellpadding="5" cellspacing="0">
@@ -12,6 +12,7 @@
             <th>Tare</th>
             <th>Test Date</th>
             <th>Comments</th>
+            <th>Actions</th>
         </tr>
     </thead>
     <tbody>
@@ -22,6 +23,10 @@
             <td>{{ cylinder.tare }}</td>
             <td>{{ cylinder.test_date }}</td>
             <td>{{ cylinder.comments }}</td>
+            <td>
+                <a href="{% url 'gas_filling:gas_filling_show' cylinder.id %}">Show</a> |
+                <a href="{% url 'gas_filling:gas_filling_edit' cylinder.id %}">Edit</a>
+            </td>
         </tr>
         {% endfor %}
     </tbody>

@@ -14,6 +14,6 @@ class CylinderForm(forms.ModelForm):
         model = Cylinder
         fields = ['barcodeid', 'tare', 'test_date', 'comments']
         widgets = {
-            'test_date': forms.DateTimeInput(attrs={'type': 'datetime-local'}),
+            'test_date': forms.DateInput(attrs={'type': 'date'}),
             'comments': forms.Textarea(attrs={'rows': 3}),
         }

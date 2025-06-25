@@ -12,8 +12,9 @@ urlpatterns = [
     path('filling/endweight/', views.gas_filling_endweight, name='gas_filling_endweight'),
 
     path('list/', views.gas_filling_list, name='gas_filling_list'),
-    path('show/', views.gas_filling_show, name='gas_filling_show'),
+    path('show/<int:pk>/', views.gas_filling_show, name='gas_filling_show'),
     path('create/', views.gas_filling_create, name='gas_filling_create'),
+    path('edit/<int:pk>/', views.gas_filling_edit, name='gas_filling_edit'),
 
     path("cylinder", views.cylinder_index, name="cylinder_index"),
     path("cylinder/<int:obj_id>", views.cylinder_view, name="cylinder_view"),
