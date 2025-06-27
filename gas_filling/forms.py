@@ -1,6 +1,5 @@
 from django import forms
-from .models import Filling
-from .models import Cylinder
+from .models import Filling, Cylinder, Order
 
 
 class FillingForm(forms.ModelForm):
@@ -17,3 +16,10 @@ class CylinderForm(forms.ModelForm):
             'test_date': forms.DateInput(attrs={'type': 'date'}),
             'comments': forms.Textarea(attrs={'rows': 3}),
         }
+
+
+class OrderForm(forms.ModelForm):
+    class Meta:
+        model = Order
+        fields = ['customer', 'comments', 'fill_in']
+        widgets = {'comments': forms.Textarea(attrs={'rows': 3}),}

@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container mt-4">
+    <h1>Create Order</h1>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-primary">Create</button>
+    </form>
+</div>
+
+<form action="{% url 'gas_filling:order_list' %}" method="get" style="margin-top: 20px;">
+    <button type="submit" class="btn-primary">Back</button>
+</form>
+
+{% endblock %}

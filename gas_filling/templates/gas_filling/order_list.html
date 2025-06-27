@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>All Orders</h1>
+
+<form action="{% url 'gas_filling:order_create' %}" method="get" style="margin-top: 20px;">
+    <button type="submit" class="btn-primary">Create New</button>
+</form>
+
+{% if orders %}
+<table border="1" cellpadding="5" cellspacing="0">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Customer</th>
+            <th>Comments</th>
+            <th>Fill In</th>
+            <th>Added</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for order in orders %}
+        <tr>
+            <td>{{ order.id }}</td>
+            <td>{{ order.customer }}</td>
+            <td>{{ order.comments }}</td>
+            <td>{{ order.fill_in }}</td>
+            <td>{{ order.created_time }}</td>
+            <td>
+                <a href="{% url 'gas_filling:order_show' order.id %}">Show</a> |
+                <a href="{% url 'gas_filling:order_edit' order.id %}">Edit</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% else %}
+<p>No orders found.</p>
+{% endif %}
+
+
+
+<form action="{% url 'gas_filling:gas_filling_home' %}" method="get" style="margin-top: 20px;">
+    <button type="submit" class="btn-primary">Back</button>
+</form>
+
+{% endblock %}

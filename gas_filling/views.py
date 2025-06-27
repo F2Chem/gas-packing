@@ -3,7 +3,7 @@ from django.shortcuts import get_object_or_404, render, redirect
 from django.db.models import Max
 from django.contrib.auth.decorators import permission_required
 from django.utils.timezone import now
-from .forms import FillingForm, CylinderForm
+from .forms import FillingForm, CylinderForm, OrderForm
 from .models import Filling, Cylinder, Order
 
 
@@ -102,6 +102,35 @@ def gas_filling_create(request):
     return render(request, 'gas_filling/create.html', {'form': form})
 
 
+def order_list(request):
+    orders = Order.objects.all()
+    return render(request, 'gas_filling/order_list.html', {'orders': orders})
 
-    
+
+def order_create(request):
+    if request.method == 'POST':
+        order_form = OrderForm(request.POST)
+        if order_form.is_valid():
+            order_form.save()
+            return redirect('gas_filling:order_list')
+    else:
+        order_form = OrderForm()
+
+    return render(request, 'gas_filling/order_create.html', {'form': order_form})
+
+
+def order_show(request, pk):
+    order = Order.objects.get(pk=pk)
+    return render(request, 'gas_filling/order_show.html', {'order': order})
+
+def order_edit(request, pk):
+    order = Order.objects.get(pk=pk)
+    if request.method == 'POST':
+        order_form = OrderForm(request.POST, instance=order)
+        if order_form.is_valid():
+            order_form.save()
+            return redirect('gas_filling:order_list')
+    else:
+        order_form = OrderForm(instance=order)
+    return render(request, 'gas_filling/order_edit.html', {'form': order_form, 'order': order})
 

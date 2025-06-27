@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Show Order Details</h1>
+<ul>
+    <li>ID: {{ order.id }}</li>
+    <li>Customer: {{ order.customer }}</li>
+    <li>Comments: {{ order.comments }}</li>
+    <li>Fill in: {{ order.fill_in }}</li>
+    <li>Created: {{ order.created_time }}</li>
+</ul>
+
+<form action="{% url 'gas_filling:order_list' %}" method="get" style="margin-top: 20px;">
+    <button type="submit" class="btn-primary">Back</button>
+</form>
+
+{% endblock %}
+
+

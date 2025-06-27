@@ -40,6 +40,7 @@ class Order(models.Model):
     customer = models.CharField(max_length=50, blank=True, null=True)
     comments = models.TextField(blank=True, null=True)
     fill_in = models.CharField(max_length=50, blank=True, null=True)
+    created_time = models.DateTimeField(auto_now_add=True)
     timestampin = TimeStampMixin
 
     class Meta:
@@ -63,4 +64,4 @@ class Filling(models.Model):
  
 
     class Meta:
-        db_table = 'cylinders'
+        db_table = 'gas_filling_fillings'

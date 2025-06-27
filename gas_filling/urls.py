@@ -15,12 +15,17 @@ urlpatterns = [
     path('show/<int:pk>/', views.gas_filling_show, name='gas_filling_show'),
     path('create/', views.gas_filling_create, name='gas_filling_create'),
     path('edit/<int:pk>/', views.gas_filling_edit, name='gas_filling_edit'),
+    path('filling/table/', views.gas_filling_table, name='gas_filling_table'),
 
     path("cylinder", views.cylinder_index, name="cylinder_index"),
     path("cylinder/<int:obj_id>", views.cylinder_view, name="cylinder_view"),
     path("cylinder/<int:obj_id>/edit", views.cylinder_edit, name="cylinder_edit"),
 
-    path('filling/table/', views.gas_filling_table, name='gas_filling_table'),
+    path('orders/', views.order_list, name='order_list'),
+    path('orders/create/', views.order_create, name='order_create'),
+    path('orders/<int:pk>/', views.order_show, name='order_show'),
+    path('orders/<int:pk>/edit/', views.order_edit, name='order_edit'),
+
 
 
 ]
