@@ -28,7 +28,7 @@ class Cylinder(models.Model):
     # don't use cylinder if in 6 months of it's test date
     def check_in_date(self):
         tolerance = self.test_date + relativedelta(months=-6)
-        return datetime.today().date() < tolerance.date()
+        return datetime.today().date() < tolerance
 
 
     class Meta:
@@ -49,8 +49,6 @@ class Order(models.Model):
 
 
 class Filling(models.Model):
-    #cylinder = models.ForeignKey(Cylinder, on_delete=models.CASCADE)
-    #order = models.ForeignKey(Order, on_delete=models.CASCADE)
     cylinder = models.CharField(max_length=100)
     order = models.CharField(max_length=100, blank=True)
 
@@ -59,8 +57,6 @@ class Filling(models.Model):
 
     end_weight = models.FloatField(default=0)
     end_time = models.DateTimeField(null=True, blank=True)
-
-    #timestampin = TimeStampMixin
  
 
     class Meta:
