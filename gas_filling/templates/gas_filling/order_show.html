@@ -10,6 +10,54 @@
     <li>Created: {{ order.created_time }}</li>
 </ul>
 
+<!-- {% for filling in fillings %}
+<ul>
+    <li>Filling {{ filling.id }}</li>
+    <li>Cylinder Barcode: {{ filling.cylinder }}</li>
+    <li>Tare Weight: {{ filling.tare_weight }}</li>
+    <li>Tare Time: {{ filling.tare_time }}</li>
+    <li>End Weight: {{ filling.end_weight }}</li>
+    <li>End Time: {{ filling.end_time }}</li>
+</ul>
+{% endfor %} -->
+
+<h1>Fillings</h1>
+
+{% if fillings %}
+<table border="1" cellpadding="5" cellspacing="0">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Cylinder Barcode</th>
+            <th>Tare Weight</th>
+            <th>Tare Time</th>
+            <th>End Weight</th>
+            <th>End Time</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for filling in fillings %}
+        <tr>
+            <td>{{ filling.id }}</td>
+            <td>{{ filling.cylinder }}</td>
+            <td>{{ filling.tare_weight }}</td>
+            <td>{{ filling.tare_time }}</td>
+            <td>{{ filling.end_weight }}</td>
+            <td>{{ filling.end_time }}</td>
+            <td>
+                <a href="{% url 'gas_filling:order_show' order.id %}">Show</a> |
+                <a href="{% url 'gas_filling:order_edit' order.id %}">Edit</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endif %}
+
+
+<form action="{% url 'gas_filling:gas_filling_filling' order.id %}" method="get" style="margin-top: 20px;">
+    <button type="submit" class="btn-primary">Filling</button>
+</form>
 <form action="{% url 'gas_filling:order_list' %}" method="get" style="margin-top: 20px;">
     <button type="submit" class="btn-primary">Back</button>
 </form>

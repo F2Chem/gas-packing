@@ -37,9 +37,10 @@ class Cylinder(models.Model):
 
 class Order(models.Model):
     id = models.AutoField(primary_key=True)
+    ordernum = models.CharField(max_length=50, default=0)
     customer = models.CharField(max_length=50, blank=True, null=True)
     comments = models.TextField(blank=True, null=True)
-    fill_in = models.CharField(max_length=50, blank=True, null=True)
+    fill_type = models.CharField(max_length=50, blank=True, null=True)
     created_time = models.DateTimeField(auto_now_add=True)
     timestampin = TimeStampMixin
 
@@ -49,13 +50,17 @@ class Order(models.Model):
 
 
 class Filling(models.Model):
+    id = models.AutoField(primary_key=True)
     cylinder = models.CharField(max_length=100)
-    order = models.CharField(max_length=100, blank=True)
+    cylinder_time = models.DateTimeField(null=True, blank=True)
 
-    tare_weight = models.FloatField(default=0)
+    order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='fillings')
+    order_time = models.DateTimeField(null=True, blank=True)
+
+    tare_weight = models.FloatField(default=0, blank=True, null=True)
     tare_time = models.DateTimeField(null=True, blank=True)
 
-    end_weight = models.FloatField(default=0)
+    end_weight = models.FloatField(default=0, blank=True, null=True)
     end_time = models.DateTimeField(null=True, blank=True)
  
 

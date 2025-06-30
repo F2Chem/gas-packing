@@ -20,48 +20,92 @@ def cylinder_view(request):
 def cylinder_edit(request):
     return redirect('gas_filling:gas_filling_filling')
 
-def gas_filling(request):
+# def gas_filling(request):
+#     if request.method == 'POST':
+#         cylinder_id = request.POST.get('cylinder_id')
+#         if cylinder_id:
+#             request.session['cylinder'] = cylinder_id
+#             return redirect('gas_filling:gas_filling_order')
+#     return render(request, 'gas_filling/filling.html')
+
+def gas_filling(request, pk):
+    order = Order.objects.get(pk=pk)
     if request.method == 'POST':
-        cylinder_id = request.POST.get('cylinder_id')
-        if cylinder_id:
-            request.session['cylinder'] = cylinder_id
-            return redirect('gas_filling:gas_filling_order')
+        cylinder_barcode = request.POST.get('cylinder_id')
+        if cylinder_barcode:
+            filling = Filling.objects.create(
+                cylinder=cylinder_barcode,
+                order=order,
+                tare_weight=None,
+                tare_time=None,
+                end_weight=None,
+                end_time=None
+            )
+            filling.save()
+            return redirect('gas_filling:gas_filling_tareweight', pk=filling.id)
     return render(request, 'gas_filling/filling.html')
 
-def gas_filling_order(request):
-    if request.method == "POST":
-        order_num = request.POST.get("order_number")
-        if order_num:
-            request.session["order_number"] = order_num
-            return redirect('gas_filling:gas_filling_tareweight')
-    return render(request, 'gas_filling/filling_order.html')
+# def gas_filling_order(request):
+#     if request.method == "POST":
+#         order_num = request.POST.get("order_number")
+#         if order_num:
+#             request.session["order_number"] = order_num
+#             return redirect('gas_filling:gas_filling_tareweight')
+#     return render(request, 'gas_filling/filling_order.html')
 
 
-def gas_filling_tareweight(request):
+# def gas_filling_tareweight(request):
+#     if request.method == 'POST':
+#         tare_weight = request.POST.get('tare_weight')
+#         if tare_weight:
+#             request.session['tare_weight'] = float(tare_weight)
+#             request.session['tare_time'] = now().isoformat()
+#             return redirect('gas_filling:gas_filling_endweight')
+#     return render(request, 'gas_filling/filling_tare.html')
+
+
+def gas_filling_tareweight(request, pk):
     if request.method == 'POST':
         tare_weight = request.POST.get('tare_weight')
         if tare_weight:
-            request.session['tare_weight'] = float(tare_weight)
-            request.session['tare_time'] = now().isoformat()
-            return redirect('gas_filling:gas_filling_endweight')
+            filling = Filling.objects.get(id=pk)
+            tare_weight = float(tare_weight)
+            tare_time = now().isoformat()
+            filling.tare_weight = tare_weight
+            filling.tare_time = tare_time
+            filling.save()
+            return redirect('gas_filling:gas_filling_endweight', pk=filling.id)
     return render(request, 'gas_filling/filling_tare.html')
 
-def gas_filling_endweight(request):
+# def gas_filling_endweight(request):
+#     if request.method == 'POST':
+#         end_weight = request.POST.get('end_weight')
+#         if end_weight:
+#             Filling.objects.create(
+#                 cylinder=request.session.get('cylinder'),
+#                 order=request.session.get('order_number'),
+#                 tare_weight=request.session.get('tare_weight'),
+#                 tare_time=request.session.get('tare_time'),
+#                 end_weight=float(end_weight),
+#                 end_time=now()
+#             )
+#             request.session.pop('cylinder', None)
+#             request.session.pop('tare_weight', None)
+#             request.session.pop('tare_time', None)
+#             return redirect('gas_filling:gas_filling_home')
+#     return render(request, 'gas_filling/filling_end.html')
+
+def gas_filling_endweight(request, pk):
     if request.method == 'POST':
         end_weight = request.POST.get('end_weight')
         if end_weight:
-            Filling.objects.create(
-                cylinder=request.session.get('cylinder'),
-                order=request.session.get('order_number'),
-                tare_weight=request.session.get('tare_weight'),
-                tare_time=request.session.get('tare_time'),
-                end_weight=float(end_weight),
-                end_time=now()
-            )
-            request.session.pop('cylinder', None)
-            request.session.pop('tare_weight', None)
-            request.session.pop('tare_time', None)
-            return redirect('gas_filling:gas_filling_home')
+            filling = Filling.objects.get(id=pk)
+            end_weight = float(end_weight)
+            end_time = now().isoformat()
+            filling.end_weight = end_weight
+            filling.end_time = end_time
+            filling.save()
+            return redirect('gas_filling:order_list')
     return render(request, 'gas_filling/filling_end.html')
 
 def gas_filling_table(request):
@@ -121,7 +165,8 @@ def order_create(request):
 
 def order_show(request, pk):
     order = Order.objects.get(pk=pk)
-    return render(request, 'gas_filling/order_show.html', {'order': order})
+    fillings = order.fillings.all()
+    return render(request, 'gas_filling/order_show.html', {'order': order, 'fillings': fillings})
 
 def order_edit(request, pk):
     order = Order.objects.get(pk=pk)

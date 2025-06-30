@@ -6,10 +6,10 @@ app_name = "gas_filling"
 
 urlpatterns = [
     path('', views.gas_filling_home, name='gas_filling_home'),
-    path('filling/', views.gas_filling, name='gas_filling_filling'),
-     path('filling/order/', views.gas_filling_order, name='gas_filling_order'),
-    path('filling/tareweight/', views.gas_filling_tareweight, name='gas_filling_tareweight'),
-    path('filling/endweight/', views.gas_filling_endweight, name='gas_filling_endweight'),
+    path('filling/<int:pk>', views.gas_filling, name='gas_filling_filling'),
+    #path('filling/order/', views.gas_filling_order, name='gas_filling_order'),
+    path('filling/tareweight/<int:pk>/', views.gas_filling_tareweight, name='gas_filling_tareweight'),
+    path('filling/endweight/<int:pk>/', views.gas_filling_endweight, name='gas_filling_endweight'),
 
     path('list/', views.gas_filling_list, name='gas_filling_list'),
     path('show/<int:pk>/', views.gas_filling_show, name='gas_filling_show'),
