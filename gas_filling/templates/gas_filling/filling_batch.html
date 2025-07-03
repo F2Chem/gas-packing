@@ -3,12 +3,13 @@
 
 <h1>Gas Filling</h1>
 
-<h2>Step 3: Enter Tare Weight</h2>
+<h2>Step 2: Enter Batch Number</h2>
 
 <form method="post">
     {% csrf_token %}
-    <label for="tare_weight">Tare Weight (kg):</label>
-    <input type="number" step="0.01" name="tare_weight" required autofocus>
+    <label for="batch_number">Batch Number:</label>
+    <input type="text" name="batch_num" required autofocus
+           value="{{ filling.batch_num|default:last_batch_num }}">
     <button type="submit" class="btn-primary">Next</button>
 </form>
 

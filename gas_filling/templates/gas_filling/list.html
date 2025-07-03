@@ -7,7 +7,6 @@
 <table border="1" cellpadding="5" cellspacing="0">
     <thead>
         <tr>
-            <th>ID</th>
             <th>Barcode</th>
             <th>Tare</th>
             <th>Test Date</th>
@@ -18,14 +17,13 @@
     <tbody>
         {% for cylinder in cylinders %}
         <tr>
-            <td>{{ cylinder.id }}</td>
             <td>{{ cylinder.barcodeid }}</td>
             <td>{{ cylinder.tare }}</td>
             <td>{{ cylinder.test_date }}</td>
             <td>{{ cylinder.comments }}</td>
             <td>
-                <a href="{% url 'gas_filling:gas_filling_show' cylinder.id %}">Show</a> |
-                <a href="{% url 'gas_filling:gas_filling_edit' cylinder.id %}">Edit</a>
+                <a href="{% url 'gas_filling:cylinder_show' cylinder.id %}">Show</a> |
+                <a href="{% url 'gas_filling:cylinder_edit' pk=cylinder.id %}">Edit</a>
             </td>
         </tr>
         {% endfor %}

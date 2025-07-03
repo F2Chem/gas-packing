@@ -14,8 +14,9 @@
             <th>ID</th>
             <th>Customer</th>
             <th>Comments</th>
-            <th>Fill In</th>
+            <th>Fill Type</th>
             <th>Added</th>
+            <th>Total Fill Weight</th>
             <th>Actions</th>
         </tr>
     </thead>
@@ -25,11 +26,13 @@
             <td>{{ order.id }}</td>
             <td>{{ order.customer }}</td>
             <td>{{ order.comments }}</td>
-            <td>{{ order.fill_in }}</td>
+            <td>{{ order.fill_type }}</td>
             <td>{{ order.created_time }}</td>
+            <td>{{ order.total_fill_weight }}</td>
             <td>
                 <a href="{% url 'gas_filling:order_show' order.id %}">Show</a> |
-                <a href="{% url 'gas_filling:order_edit' order.id %}">Edit</a>
+                <a href="{% url 'gas_filling:order_edit' order.id %}">Edit</a> |
+                <a href="{% url 'gas_filling:gas_filling_filling' order.id %}">Fill</a>
             </td>
         </tr>
         {% endfor %}

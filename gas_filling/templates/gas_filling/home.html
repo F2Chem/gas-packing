@@ -3,11 +3,11 @@
 {% block content %}
 <h1>Gas Filling Menu</h1>
 
-<form action="{% url 'gas_filling:gas_filling_list' %}" method="get" style="margin-top:20px;">
+<form action="{% url 'gas_filling:cylinder_list' %}" method="get" style="margin-top:20px;">
     <button type="submit" class="btn-primary">List all Cylinders</button>
 </form>
 
-<form action="{% url 'gas_filling:gas_filling_create' %}" method="get" style="margin-top:20px;">
+<form action="{% url 'gas_filling:cylinder_create' %}" method="get" style="margin-top:20px;">
     <button type="submit" class="btn-primary">Create a New Cylinder</button>
 </form>
 

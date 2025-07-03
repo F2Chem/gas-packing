@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h2>Showing Filling</h2>
+
+
+<p>Cylinder: {{ filling.cylinder }}</p>
+<p>Cylinder Time: {{ filling.cylinder_time }}</p>
+<p>Order: {{ filling.order }}</p>
+<p>Tare Weight: {{ filling.tare_weight }}</p>
+<p>Tare Time: {{ filling.tare_time }}</p>
+<p>End Weight: {{ filling.end_weight }}</p>
+<p>End Time: {{ filling.end_time }}</p>
+<p>Fill Weight: <strong>{{ filling.fill_weight }}</strong></p>
+
+<form action="{% url 'gas_filling:filling_edit' filling.id %}" method="post">
+    {% csrf_token %}
+    <button type="submit">Edit</button>
+</form>
+
+<form action="{% url 'gas_filling:order_show' filling.order.id %}" method="get" style="margin-top: 20px;">
+    <button type="submit" class="btn-primary">Back</button>
+</form>
+
+{% endblock %}
+

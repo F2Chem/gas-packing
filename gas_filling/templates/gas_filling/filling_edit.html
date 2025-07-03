@@ -1,14 +1,14 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h1>Edit Cylinder</h1>
+<h1>Edit Filling</h1>
 <form method="post">
     {% csrf_token %}
     {{ form.as_p }}
     <button type="submit" class="btn-primary">Save Changes</button>
 </form>
 
-<form action="{% url 'gas_filling:cylinder_list' %}" method="get" style="margin-top: 20px;">
+<form action="{% url 'gas_filling:filling_show' filling.id %}" method="get" style="margin-top: 20px;">
     <button type="submit" class="btn-primary">Back</button>
 </form>
 

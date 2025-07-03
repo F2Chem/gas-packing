@@ -3,6 +3,8 @@ from django.shortcuts import get_object_or_404, render, redirect
 from django.db.models import Max
 from django.contrib.auth.decorators import permission_required
 from django.utils.timezone import now
+from django.core.mail import send_mail
+import secret
 from .forms import FillingForm, CylinderForm, OrderForm
 from .models import Filling, Cylinder, Order
 
@@ -20,93 +22,62 @@ def cylinder_view(request):
 def cylinder_edit(request):
     return redirect('gas_filling:gas_filling_filling')
 
-# def gas_filling(request):
-#     if request.method == 'POST':
-#         cylinder_id = request.POST.get('cylinder_id')
-#         if cylinder_id:
-#             request.session['cylinder'] = cylinder_id
-#             return redirect('gas_filling:gas_filling_order')
-#     return render(request, 'gas_filling/filling.html')
 
 def gas_filling(request, pk):
     order = Order.objects.get(pk=pk)
+
     if request.method == 'POST':
         cylinder_barcode = request.POST.get('cylinder_id')
         if cylinder_barcode:
             filling = Filling.objects.create(
                 cylinder=cylinder_barcode,
                 order=order,
-                tare_weight=None,
-                tare_time=None,
-                end_weight=None,
-                end_time=None
             )
+            return redirect('gas_filling:gas_filling_batchnum', pk=filling.id)
+
+    return render(request, 'gas_filling/filling.html', {'order': order})
+
+
+def gas_filling_batchnum(request, pk):
+    filling = Filling.objects.get(pk=pk)
+
+    last_filling = Filling.objects.filter(order=filling.order).exclude(id=filling.id).order_by('-id').first()
+    last_batch_num = last_filling.batch_num if last_filling else ''
+
+    if request.method == 'POST':
+        batch_num = request.POST.get('batch_num')
+        if batch_num:
+            filling.batch_num = batch_num
             filling.save()
             return redirect('gas_filling:gas_filling_tareweight', pk=filling.id)
-    return render(request, 'gas_filling/filling.html')
 
-# def gas_filling_order(request):
-#     if request.method == "POST":
-#         order_num = request.POST.get("order_number")
-#         if order_num:
-#             request.session["order_number"] = order_num
-#             return redirect('gas_filling:gas_filling_tareweight')
-#     return render(request, 'gas_filling/filling_order.html')
-
-
-# def gas_filling_tareweight(request):
-#     if request.method == 'POST':
-#         tare_weight = request.POST.get('tare_weight')
-#         if tare_weight:
-#             request.session['tare_weight'] = float(tare_weight)
-#             request.session['tare_time'] = now().isoformat()
-#             return redirect('gas_filling:gas_filling_endweight')
-#     return render(request, 'gas_filling/filling_tare.html')
+    return render(request, 'gas_filling/filling_batch.html', {'filling': filling, 'last_batch_num' : last_batch_num})
 
 
 def gas_filling_tareweight(request, pk):
+    filling = Filling.objects.get(pk=pk)
+
     if request.method == 'POST':
         tare_weight = request.POST.get('tare_weight')
         if tare_weight:
-            filling = Filling.objects.get(id=pk)
-            tare_weight = float(tare_weight)
-            tare_time = now().isoformat()
             filling.tare_weight = tare_weight
-            filling.tare_time = tare_time
+            filling.tare_time = now()
             filling.save()
             return redirect('gas_filling:gas_filling_endweight', pk=filling.id)
-    return render(request, 'gas_filling/filling_tare.html')
+    return render(request, 'gas_filling/filling_tare.html', {'filling': filling})
 
-# def gas_filling_endweight(request):
-#     if request.method == 'POST':
-#         end_weight = request.POST.get('end_weight')
-#         if end_weight:
-#             Filling.objects.create(
-#                 cylinder=request.session.get('cylinder'),
-#                 order=request.session.get('order_number'),
-#                 tare_weight=request.session.get('tare_weight'),
-#                 tare_time=request.session.get('tare_time'),
-#                 end_weight=float(end_weight),
-#                 end_time=now()
-#             )
-#             request.session.pop('cylinder', None)
-#             request.session.pop('tare_weight', None)
-#             request.session.pop('tare_time', None)
-#             return redirect('gas_filling:gas_filling_home')
-#     return render(request, 'gas_filling/filling_end.html')
 
 def gas_filling_endweight(request, pk):
+    filling = Filling.objects.get(pk=pk)
+
     if request.method == 'POST':
         end_weight = request.POST.get('end_weight')
         if end_weight:
-            filling = Filling.objects.get(id=pk)
-            end_weight = float(end_weight)
-            end_time = now().isoformat()
             filling.end_weight = end_weight
-            filling.end_time = end_time
+            filling.end_time = now()
             filling.save()
-            return redirect('gas_filling:order_list')
-    return render(request, 'gas_filling/filling_end.html')
+            return redirect('gas_filling:gas_filling_filling', pk=filling.order.id)
+    return render(request, 'gas_filling/filling_end.html', {'filling': filling})
 
 def gas_filling_table(request):
     all_fillings = Filling.objects.all().order_by('-end_time')
@@ -115,26 +86,26 @@ def gas_filling_table(request):
 def gas_filling_home(request):
     return render(request, 'gas_filling/home.html')
 
-def gas_filling_list(request):
-    cylinders = Cylinder.objects.all()
+def cylinder_list(request):
+    cylinders = Cylinder.objects.all().order_by('id')
     return render(request, 'gas_filling/list.html', {'cylinders': cylinders})
 
-def gas_filling_show(request, pk):
+def cylinder_show(request, pk):
     cylinder = Cylinder.objects.get(pk=pk)
     return render(request, 'gas_filling/show.html', {'cylinder': cylinder})
 
-def gas_filling_edit(request, pk):
+def cylinder_edit(request, pk):
     cylinder = Cylinder.objects.get(pk=pk)
     if request.method == 'POST':
         form = CylinderForm(request.POST, instance=cylinder)
         if form.is_valid():
             form.save()
-            return redirect('gas_filling:gas_filling_list')
+            return redirect('gas_filling:cylinder_list')
     else:
         form = CylinderForm(instance=cylinder)
     return render(request, 'gas_filling/edit.html', {'form': form})
 
-def gas_filling_create(request):
+def cylinder_create(request):
     if request.method == 'POST':
         form = CylinderForm(request.POST)
         if form.is_valid():
@@ -147,7 +118,7 @@ def gas_filling_create(request):
 
 
 def order_list(request):
-    orders = Order.objects.all()
+    orders = Order.objects.all().order_by('id')
     return render(request, 'gas_filling/order_list.html', {'orders': orders})
 
 
@@ -155,7 +126,15 @@ def order_create(request):
     if request.method == 'POST':
         order_form = OrderForm(request.POST)
         if order_form.is_valid():
-            order_form.save()
+            order = order_form.save()
+
+            send_mail(
+                'New Order',
+                f'Order #{order.id} has been created.',
+                secret.FROM_EMAIL,
+                [secret.TO_EMAIL],
+            )
+
             return redirect('gas_filling:order_list')
     else:
         order_form = OrderForm()
@@ -179,3 +158,18 @@ def order_edit(request, pk):
         order_form = OrderForm(instance=order)
     return render(request, 'gas_filling/order_edit.html', {'form': order_form, 'order': order})
 
+
+def filling_show(request, pk):
+    filling = get_object_or_404(Filling, pk=pk)
+    return render(request, 'gas_filling/filling_show.html', {'filling': filling})
+
+def filling_edit(request, pk):
+    filling = Filling.objects.get(pk=pk)
+    if request.method == 'POST':
+        form = FillingForm(request.POST, instance=filling)
+        if form.is_valid():
+            form.save()
+            return redirect('gas_filling:filling_show', pk=filling.id)
+    else:
+        form = FillingForm(instance=filling)
+    return render(request, 'gas_filling/filling_edit.html', {'form': form, 'filling': filling})

@@ -47,6 +47,9 @@ class Order(models.Model):
     class Meta:
         db_table = 'gas_filling_orders'
 
+    @property
+    def total_fill_weight(self):
+        return sum(filling.fill_weight for filling in self.fillings.all())
 
 
 class Filling(models.Model):
@@ -57,12 +60,19 @@ class Filling(models.Model):
     order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='fillings')
     order_time = models.DateTimeField(null=True, blank=True)
 
+    batch_num = models.FloatField(default=0, blank=True, null=True)
+
     tare_weight = models.FloatField(default=0, blank=True, null=True)
     tare_time = models.DateTimeField(null=True, blank=True)
 
     end_weight = models.FloatField(default=0, blank=True, null=True)
-    end_time = models.DateTimeField(null=True, blank=True)
- 
+    end_time = models.DateTimeField(null=True, blank=True) 
 
     class Meta:
         db_table = 'gas_filling_fillings'
+
+    @property
+    def fill_weight(self):
+        if self.end_weight is not None and self.tare_weight is not None:
+            return self.end_weight - self.tare_weight
+        return 0.0

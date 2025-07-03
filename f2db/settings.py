@@ -25,6 +25,13 @@ SECRET_KEY = secret.SECRET_KEY
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
+# Method for sending auto email when an order is created
+
+EMAIL_BACKEND = "anymail.backends.sendinblue.EmailBackend"
+
+ANYMAIL = {
+    "SENDINBLUE_API_KEY": secret.API_KEY, 
+}
 
 
 # SECURITY WARNING: don't run with debug turned on in production!
@@ -46,6 +53,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    "anymail",#for auto-email
 ]
 
 MIDDLEWARE = [
