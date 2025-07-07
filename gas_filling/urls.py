@@ -10,6 +10,8 @@ urlpatterns = [
     path('filling/batch/<int:pk>/', views.gas_filling_batchnum, name='gas_filling_batchnum'),
     path('filling/tareweight/<int:pk>/', views.gas_filling_tareweight, name='gas_filling_tareweight'),
     path('filling/endweight/<int:pk>/', views.gas_filling_endweight, name='gas_filling_endweight'),
+    path('fillings/<int:pk>/continue/', views.continue_filling, name='continue_filling'),
+
 
     path('list/', views.cylinder_list, name='cylinder_list'),
     path('show/<int:pk>/', views.cylinder_show, name='cylinder_show'),

@@ -12,7 +12,7 @@
     <button type="submit" class="btn-primary">Submit</button>
 </form>
 
-<form action="{% url 'gas_filling:order_list' %}" method="get">
+<form action="{% url 'gas_filling:order_show' filling.order.id %}" method="get" style="margin-top: 20px;">
     <button type="submit" class="btn-primary" style="margin-top:20px;">Cancel</button>
 </form>
 

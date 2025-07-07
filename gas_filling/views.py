@@ -144,7 +144,7 @@ def order_create(request):
 
 def order_show(request, pk):
     order = Order.objects.get(pk=pk)
-    fillings = order.fillings.all()
+    fillings = order.fillings.all().order_by('id')
     return render(request, 'gas_filling/order_show.html', {'order': order, 'fillings': fillings})
 
 def order_edit(request, pk):
@@ -173,3 +173,15 @@ def filling_edit(request, pk):
     else:
         form = FillingForm(instance=filling)
     return render(request, 'gas_filling/filling_edit.html', {'form': form, 'filling': filling})
+
+def continue_filling(request, pk):
+    filling = Filling.objects.get(pk=pk)
+
+    if not filling.batch_num:
+        return redirect('gas_filling:gas_filling_batchnum', pk=filling.id)
+    elif not filling.tare_weight:
+        return redirect('gas_filling:gas_filling_tareweight', pk=filling.id)
+    elif not filling.end_weight:
+        return redirect('gas_filling:gas_filling_endweight', pk=filling.id)
+    else:
+        return redirect('gas_filling:gas_filling', pk=filling.order.id)

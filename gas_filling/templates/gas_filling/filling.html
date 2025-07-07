@@ -1,5 +1,4 @@
 {% extends "base.html" %}
-{% block title %}Results{% endblock %}
 
 {% block content %}
 
@@ -14,7 +13,7 @@
 </form>
 
 
-<form action="{% url 'gas_filling:order_list' %}" method="get" style="margin-top: 20px;">
+<form action="{% url 'gas_filling:order_show' order.id %}" method="get" style="margin-top: 20px;">
     <button type="submit" class="btn-primary">Back</button>
 </form>
 

@@ -12,23 +12,27 @@
 
 <h1>Fillings</h1>
 
+
 {% if fillings %}
 <table border="1" cellpadding="5" cellspacing="0">
     <thead>
         <tr>
             <th>Cylinder Barcode</th>
+            <th>Batch Number</th>
             <th>Tare Weight</th>
             <th>Tare Time</th>
             <th>End Weight</th>
             <th>End Time</th>
             <th>Fill Weight</th>
             <th>Actions</th>
+            <th>Complete?</th>
         </tr>
     </thead>
     <tbody>
         {% for filling in fillings %}
         <tr>
             <td>{{ filling.cylinder }}</td>
+            <td>{{ filling.batch_num }}</td>
             <td>{{ filling.tare_weight }}</td>
             <td>{{ filling.tare_time }}</td>
             <td>{{ filling.end_weight }}</td>
@@ -36,6 +40,13 @@
             <td style="font-weight: bold;">{{ filling.fill_weight }}</td>
             <td>
                 <a href="{% url 'gas_filling:filling_show' filling.id %}">Show</a>
+            </td>
+            <td>
+                {% if not filling.end_weight %}
+                <a href="{% url 'gas_filling:continue_filling' pk=filling.id %}">Continue Filling</a>
+                {% else %}
+                -
+                {% endif %}
             </td>
         </tr>
         {% endfor %}
