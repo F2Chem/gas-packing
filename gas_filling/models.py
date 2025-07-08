@@ -50,6 +50,10 @@ class Order(models.Model):
     @property
     def total_fill_weight(self):
         return sum(filling.fill_weight for filling in self.fillings.all())
+        
+    def reset():
+        Filling.objects.all().delete()
+        Order.objects.all().delete()
 
 
 class Filling(models.Model):
