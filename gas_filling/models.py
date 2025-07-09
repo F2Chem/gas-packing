@@ -40,6 +40,7 @@ class Order(models.Model):
     ordernum = models.CharField(max_length=50, default=0)
     customer = models.CharField(max_length=50, blank=True, null=True)
     comments = models.TextField(blank=True, null=True)
+    email_comments = models.TextField(blank=True, null=True)
     fill_type = models.CharField(max_length=50, blank=True, null=True)
     created_time = models.DateTimeField(auto_now_add=True)
     timestampin = TimeStampMixin
@@ -50,6 +51,11 @@ class Order(models.Model):
     @property
     def total_fill_weight(self):
         return sum(filling.fill_weight for filling in self.fillings.all())
+
+    @property
+    def total_fills(self):
+        return self.fillings.count()
+
         
     def reset():
         Filling.objects.all().delete()
@@ -64,7 +70,7 @@ class Filling(models.Model):
     order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='fillings')
     order_time = models.DateTimeField(null=True, blank=True)
 
-    batch_num = models.FloatField(default=0, blank=True, null=True)
+    batch_num = models.IntegerField(blank=True, null=True)
 
     tare_weight = models.FloatField(default=0, blank=True, null=True)
     tare_time = models.DateTimeField(null=True, blank=True)
@@ -78,5 +84,5 @@ class Filling(models.Model):
     @property
     def fill_weight(self):
         if self.end_weight is not None and self.tare_weight is not None:
-            return self.end_weight - self.tare_weight
+            return round(self.end_weight - self.tare_weight, 1)
         return 0.0

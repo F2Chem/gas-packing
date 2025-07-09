@@ -8,8 +8,8 @@
 <form method="post">
     {% csrf_token %}
     <label for="batch_number">Batch Number:</label>
-    <input type="text" name="batch_num" required autofocus
-           value="{{ filling.batch_num|default:last_batch_num }}">
+    <input type="number" name="batch_num" required autofocus
+           value="{% if filling.batch_num %}{{ filling.batch_num }}{% else %}{{ last_batch_num|default:'' }}{% endif %}">
     <button type="submit" class="btn-primary">Next</button>
 </form>
 

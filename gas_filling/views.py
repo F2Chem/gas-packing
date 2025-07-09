@@ -35,21 +35,23 @@ def gas_filling(request, pk):
             )
             return redirect('gas_filling:gas_filling_batchnum', pk=filling.id)
 
-    return render(request, 'gas_filling/filling.html', {'order': order})
+    filling_number = order.fillings.count() + 1
+
+    return render(request, 'gas_filling/filling.html', {'order': order, 'filling_number': filling_number})
 
 
 def gas_filling_batchnum(request, pk):
     filling = Filling.objects.get(pk=pk)
 
-    last_filling = Filling.objects.filter(order=filling.order).exclude(id=filling.id).order_by('-id').first()
-    last_batch_num = last_filling.batch_num if last_filling else ''
+    last_filling = Filling.objects.exclude(batch_num__isnull=True).order_by('-id').first()
+    last_batch_num = last_filling.batch_num if last_filling else None
 
     if request.method == 'POST':
-        batch_num = request.POST.get('batch_num')
-        if batch_num:
-            filling.batch_num = batch_num
-            filling.save()
-            return redirect('gas_filling:gas_filling_tareweight', pk=filling.id)
+        batch_num = request.POST.get('batch_num', '').strip()
+        filling.batch_num = int(batch_num)
+        filling.save()
+        return redirect('gas_filling:gas_filling_tareweight', pk=filling.id)
+        
 
     return render(request, 'gas_filling/filling_batch.html', {'filling': filling, 'last_batch_num' : last_batch_num})
 
@@ -129,8 +131,8 @@ def order_create(request):
             order = order_form.save()
 
             send_mail(
-                'New Order',
                 f'Order #{order.id} has been created.',
+                f'Customer: {order.customer}. Comments: {order.email_comments}.',
                 secret.FROM_EMAIL,
                 [secret.TO_EMAIL],
             )

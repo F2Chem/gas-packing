@@ -16,6 +16,7 @@
             <th>Comments</th>
             <th>Fill Type</th>
             <th>Added</th>
+            <th>Total Fills</th>
             <th>Total Fill Weight</th>
             <th>Actions</th>
         </tr>
@@ -28,6 +29,7 @@
             <td>{{ order.comments }}</td>
             <td>{{ order.fill_type }}</td>
             <td>{{ order.created_time }}</td>
+            <td>{{ order.total_fills }}</td>
             <td>{{ order.total_fill_weight }}</td>
             <td>
                 <a href="{% url 'gas_filling:order_show' order.id %}">Show</a> |

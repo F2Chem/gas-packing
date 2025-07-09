@@ -3,10 +3,12 @@
 {% block content %}
 <h1>Show Order Details</h1>
 <ul>
+    <li>Order Number: {{ order.id }}</li>
     <li>Customer: {{ order.customer }}</li>
     <li>Comments: {{ order.comments }}</li>
-    <li>Fill in: {{ order.fill_in }}</li>
+    <li>Fill Type: {{ order.fill_type }}</li>
     <li>Created: {{ order.created_time }}</li>
+    <li>Total Fill Weight: {{ order.total_fill_weight }}</li>
 </ul>
 
 
