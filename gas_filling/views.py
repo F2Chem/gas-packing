@@ -1,3 +1,4 @@
+
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, render, redirect
 from django.db.models import Max
@@ -7,7 +8,6 @@ from django.core.mail import send_mail
 import secret
 from .forms import FillingForm, CylinderForm, OrderForm
 from .models import Filling, Cylinder, Order
-
 
 def home(request):
     return render(request, 'gas_filling/index.html')
@@ -149,6 +149,8 @@ def order_show(request, pk):
     fillings = order.fillings.all().order_by('id')
     return render(request, 'gas_filling/order_show.html', {'order': order, 'fillings': fillings})
 
+
+
 def order_edit(request, pk):
     order = Order.objects.get(pk=pk)
     if request.method == 'POST':
@@ -187,3 +189,10 @@ def continue_filling(request, pk):
         return redirect('gas_filling:gas_filling_endweight', pk=filling.id)
     else:
         return redirect('gas_filling:gas_filling', pk=filling.order.id)
+
+
+
+
+def order_test(request):
+    print('In order_test')
+    raise Exception("Error!")

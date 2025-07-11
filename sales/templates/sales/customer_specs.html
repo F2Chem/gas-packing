@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% load helpers %}
+{% load sales_helpers %}
+
+{% block content %}
+
+  <form action="{% url destination %}" method="post">
+  {% csrf_token %}
+  
+  <input type="hidden" name="id", value="{{ obj.id }}">
+  
+  <table>
+  <tr>
+  
+  <td>
+  <ul>  
+  {% for spec in tg_specs %}
+    <li>{{ spec|checkbox:obj }} {{ spec.full_name }}</li>
+  {% endfor %}
+  </ul>
+  </td>
+  
+  <td>
+  <ul>  
+  {% for spec in pp_specs %}
+    <li>{{ spec|checkbox:obj }} {{ spec.full_name }}</li>
+  {% endfor %}
+  </ul>
+  </td>
+  
+  <td>
+  <ul>  
+  {% for spec in cn_specs %}
+    <li>{{ spec|checkbox:obj }} {{ spec.full_name }}</li>
+  {% endfor %}
+  </ul>
+  </td>
+  
+  <td>
+  <ul>  
+  {% for spec in other_specs %}
+    <li>{{ spec|checkbox:obj }} {{ spec.full_name }}</li>
+  {% endfor %}
+  </ul>
+  </td>
+  
+  </tr>
+
+  <tr><td colspan="4"><input type="submit" value="Submit"></td></tr>
+  </table>
+  
+  </form>
+  {% endblock %}

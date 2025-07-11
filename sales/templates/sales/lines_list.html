@@ -1,0 +1,49 @@
+
+
+<hr>
+
+<h5>Item List</h5>
+
+<table>
+<th>Product</th>
+<th>Batch</th>
+<th>Quantity, kg</th>
+<th>Cost per kg</th>
+<th>Cost</th>
+
+{% for line in lines %}
+<tr>
+<td>{{ line.product_name }}</td>
+<td>{{ line.batch }}</td>
+<td style='text-align: right'>{{ line.quantity_as_s }}</td>
+<td style='text-align: right'>{{ line.cost_as_s }}</td>
+<td style='text-align: right'>{{ line.cost_total }}</td>
+</tr>
+{% endfor %}
+
+<tr>
+<td><i>Sub-Total</i></td>
+<td colspan="3"></td>
+<td style='text-align: right'><i>{{ obj.cost_sub }}</i></td>
+</tr>
+<tr>
+<td><i>Delivery</i></td>
+<td colspan="3"></td>
+<td style='text-align: right'><i>{{ obj.cost_delivery }}</i></td>
+</tr>
+<tr>
+<td><b><i>Total</i></b></td>
+<td colspan="3"></td>
+<td style='text-align: right'><b><i>{{ obj.cost_total }}</i></b></td>
+</tr>
+</table>
+
+
+
+<hr>
+
+<p>
+NOTE: {{ obj.status_msg }} (if you have permission ti do so!)
+</p>
+
+

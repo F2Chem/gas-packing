@@ -1,8 +1,9 @@
 from django.urls import path
-from util.util import add_std_to_paths
+#from util.util import add_std_to_paths
 from . import views
 
-app_name = "gas_filling"
+#app_name = "gas_filling"
+
 
 urlpatterns = [
     path('', views.gas_filling_home, name='gas_filling_home'),
@@ -31,11 +32,11 @@ urlpatterns = [
 
     path('filling/show/<int:pk>/', views.filling_show, name='filling_show'),
     path('filling/edit/<int:pk>/', views.filling_edit, name='filling_edit'),
-
-
-
-
-
-
 ]
 
+
+"""
+urlpatterns = [
+    path('orders/', views.order_test, name='order_test'),
+]
+"""

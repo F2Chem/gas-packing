@@ -7,6 +7,7 @@ urlpatterns = [
     path('computers/', include("computers.urls")),
     path('gas_filling/', include(('gas_filling.urls', 'gas_filling'), namespace='gas_filling')),
     path('power/', include("power.urls")),
+    path('sales/', include("sales.urls")),
     path('admin/', admin.site.urls),
     path('accounts/', include('django.contrib.auth.urls')),
     path("index.html", views.home, name="home"),
