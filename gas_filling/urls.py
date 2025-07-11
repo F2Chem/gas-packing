@@ -7,7 +7,7 @@ from . import views
 
 urlpatterns = [
     path('', views.gas_filling_home, name='gas_filling_home'),
-    path('filling/<int:pk>', views.gas_filling, name='gas_filling_filling'),
+    path('filling/<int:pk>/', views.gas_filling, name='gas_filling_filling'),
     path('filling/batch/<int:pk>/', views.gas_filling_batchnum, name='gas_filling_batchnum'),
     path('filling/tareweight/<int:pk>/', views.gas_filling_tareweight, name='gas_filling_tareweight'),
     path('filling/endweight/<int:pk>/', views.gas_filling_endweight, name='gas_filling_endweight'),
@@ -21,8 +21,8 @@ urlpatterns = [
 
     path('filling/table/', views.gas_filling_table, name='gas_filling_table'),
 
-    path("cylinder", views.cylinder_index, name="cylinder_index"),
-    path("cylinder/<int:obj_id>", views.cylinder_view, name="cylinder_view"),
+    path("cylinder/", views.cylinder_index, name="cylinder_index"),
+    path("cylinder/<int:obj_id>/", views.cylinder_view, name="cylinder_view"),
     path("cylinder/<int:obj_id>/edit", views.cylinder_edit, name="cylinder_edit"),
 
     path('orders/', views.order_list, name='order_list'),

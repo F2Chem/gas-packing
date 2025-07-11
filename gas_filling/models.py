@@ -10,9 +10,9 @@ from dateutil.relativedelta import relativedelta
 
 class Cylinder(models.Model):
     id = models.AutoField(primary_key=True)
-    barcodeid = models.CharField(max_length=50, default=0)
-    tare = models.FloatField(default=0)
-    test_date = models.DateField()
+    barcodeid = models.CharField(max_length=50, default=0, blank=True, null=True)
+    tare = models.FloatField(default=0, blank=True, null=True)
+    test_date = models.DateField(blank=True, null=True)
     comments = models.TextField(blank=True, null=True)
     timestampin = TimeStampMixin
 
