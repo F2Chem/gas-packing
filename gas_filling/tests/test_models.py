@@ -16,15 +16,28 @@ from datetime import datetime
 
 class CylinderTests(TestCase):
     def setUp(self):
-        Cylinder(id='1234567', barcodeid = '71l4r487', tare = 82, test_date = date(2183, 1, 24)).save()
-        Cylinder(id='7654321', barcodeid = 'ky17B031', tare = 57, test_date = date(2025, 3, 24)).save()
+        self.cylinder1 = Cylinder.objects.create(id='1234567', barcodeid = '71l4r487', tare = 82, test_date = date(2183, 1, 24))
+        self.cylinder2 = Cylinder.objects.create(id='7654321', barcodeid = 'ky17B031', tare = 57, test_date = date(2025, 3, 24))
 
-    def test_outcome_all(self):
-        Cylinder1 = Cylinder.objects.get(id=1234567)
-        Cylinder2 = Cylinder.objects.get(id=7654321)
-        self.assertEqual(Cylinder1.check_in_date(), True)
-        self.assertEqual(Cylinder2.check_in_date(), False)
-        self.assertEqual(Cylinder.barcode_search('71l4r487'), Cylinder1)
-        self.assertEqual(Cylinder.barcode_search('ky17B031'), Cylinder2)
+    def testCheckinDate(self):
+        self.assertEqual(self.cylinder1.check_in_date(), True)
+        self.assertEqual(self.cylinder2.check_in_date(), False)
+
+    def testBarcodeSearch(self):
+        self.assertAlmostEqual(Cylinder.barcode_search('71l4r487'), self.cylinder1)
+        self.assertAlmostEqual(Cylinder.barcode_search('ky17B031'), self.cylinder2)
         self.assertEqual(Cylinder.barcode_search('FakeBarcode'), "barcode error")
+
+
+class FillingTests(TestCase):
+    def setUp(self):
+        self.order = Order.objects.create(customer='Test')
+        self.cylinder = Cylinder.objects.create(id='1234567', barcodeid = '71l4r487', tare = 82, test_date = date(2183, 1, 24))
+        self.filling = Filling.objects.create(cylinder='71l4r487', order=self.order, tare_weight=100, end_weight=284)
+
+    def testHeelWeight(self):
+        self.assertEqual(self.filling.heel_weight, 18)
+
+    def testFillWeight(self):
+        self.assertEqual(self.filling.fill_weight, 184)
 

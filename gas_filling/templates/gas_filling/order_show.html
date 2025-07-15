@@ -12,17 +12,19 @@
 </ul>
 
 
-<h1>Fillings</h1>
-
 
 {% if fillings %}
+
+<h1>Fillings</h1>
+
 <table border="1" cellpadding="5" cellspacing="0">
     <thead>
         <tr>
             <th>Cylinder Barcode</th>
             <th>Batch Number</th>
             <th>Tare Weight</th>
-            <th>Tare Time</th>
+            <th>Heel Weight</th>
+            <th>Tare Time</th>            
             <th>End Weight</th>
             <th>End Time</th>
             <th>Fill Weight</th>
@@ -36,7 +38,8 @@
             <td>{{ filling.cylinder }}</td>
             <td>{{ filling.batch_num }}</td>
             <td>{{ filling.tare_weight }}</td>
-            <td>{{ filling.tare_time }}</td>
+            <td>{{ filling.heel_weight }}</td>
+            <td>{{ filling.tare_time }}</td>            
             <td>{{ filling.end_weight }}</td>
             <td>{{ filling.end_time }}</td>
             <td style="font-weight: bold;">{{ filling.fill_weight }}</td>

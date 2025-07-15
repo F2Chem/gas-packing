@@ -3,13 +3,13 @@
 
 <h1>Gas Filling</h1>
 
-<h2>Step 5: Enter Weight After Filling</h2>
+<h2>Step 6: Enter Weight After Pulling Out</h2>
 
 <form method="post">
     {% csrf_token %}
-    <label for="end_weight">Weight After Filling (kg):</label>
-    <input type="number" step="0.01" name="end_weight" required autofocus>
-    <button type="submit" class="btn-primary">Next</button>
+    <label for="end_weight">Weight After Pulling Out (kg):</label>
+    <input type="number" step="0.01" name="pulled_weight" required autofocus>
+    <button type="submit" class="btn-primary">Submit</button>
 </form>
 
 <form action="{% url 'gas_filling:order_show' filling.order.id %}" method="get" style="margin-top: 20px;">

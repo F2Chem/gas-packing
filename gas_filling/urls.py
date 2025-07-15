@@ -10,7 +10,9 @@ urlpatterns = [
     path('filling/<int:pk>/', views.gas_filling, name='gas_filling_filling'),
     path('filling/batch/<int:pk>/', views.gas_filling_batchnum, name='gas_filling_batchnum'),
     path('filling/tareweight/<int:pk>/', views.gas_filling_tareweight, name='gas_filling_tareweight'),
+    path('filling/connectionweight/<int:pk>/', views.gas_filling_connectionweight, name='gas_filling_connectionweight'),
     path('filling/endweight/<int:pk>/', views.gas_filling_endweight, name='gas_filling_endweight'),
+    path('filling/pulledweight/<int:pk>/', views.gas_filling_pulledweight, name='gas_filling_pulledweight'),
     path('fillings/<int:pk>/continue/', views.continue_filling, name='continue_filling'),
 
 

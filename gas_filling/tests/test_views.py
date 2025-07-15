@@ -98,7 +98,7 @@ class OrderViewsTests(TestCase):
         self.assertEqual(response.status_code, 200)
 
 
-    def testFillingOne(self):
+    def testFillingBarcode(self):
         url = f'/gas_filling/filling/{self.order.id}/'
 
         response = self.client.get(url)
@@ -106,23 +106,34 @@ class OrderViewsTests(TestCase):
         self.assertEqual(response.status_code, 200)
 
 
-    def testFillingTwo(self):
+    def testFillingBatch(self):
         url = f'/gas_filling/filling/batch/{self.order.id}/'
 
         response = self.client.get(url)
 
         self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context['filling'].cylinder, 'BO')
 
 
-    def testFillingThree(self):
+    def testFillingTareWeight(self):
         url = f'/gas_filling/filling/tareweight/{self.order.id}/'
 
         response = self.client.get(url)
 
         self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context['filling'].cylinder, 'BO')
+
+    
+    def testFillingConnectionWeight(self):
+        url = f'/gas_filling/filling/connectionweight/{self.order.id}/'
+
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context['filling'].cylinder, 'BO')
 
 
-    def testFillingFour(self):
+    def testFillingEndWeight(self):
         url = f'/gas_filling/filling/endweight/{self.order.id}/'
 
         response = self.client.get(url)
@@ -130,6 +141,14 @@ class OrderViewsTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.context['filling'].cylinder, 'BO')
 
+
+    def testFillingPulledWeight(self):
+        url = f'/gas_filling/filling/pulledweight/{self.order.id}/'
+
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context['filling'].cylinder, 'BO')
 
 
     def testFillingShow(self):

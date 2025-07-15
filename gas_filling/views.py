@@ -65,9 +65,20 @@ def gas_filling_tareweight(request, pk):
             filling.tare_weight = tare_weight
             filling.tare_time = now()
             filling.save()
-            return redirect('gas_filling:gas_filling_endweight', pk=filling.id)
+            return redirect('gas_filling:gas_filling_connectionweight', pk=filling.id)
     return render(request, 'gas_filling/filling_tare.html', {'filling': filling})
 
+def gas_filling_connectionweight(request, pk):
+    filling = Filling.objects.get(pk=pk)
+
+    if request.method == 'POST':
+        connection_weight = request.POST.get('connection_weight')
+        if connection_weight:
+            filling.connection_weight = connection_weight
+            filling.connection_time = now()
+            filling.save()
+            return redirect('gas_filling:gas_filling_endweight', pk=filling.id)
+    return render(request, 'gas_filling/filling_connections.html', {'filling': filling})
 
 def gas_filling_endweight(request, pk):
     filling = Filling.objects.get(pk=pk)
@@ -78,8 +89,20 @@ def gas_filling_endweight(request, pk):
             filling.end_weight = end_weight
             filling.end_time = now()
             filling.save()
-            return redirect('gas_filling:gas_filling_filling', pk=filling.order.id)
+            return redirect('gas_filling:gas_filling_pulledweight', pk=filling.id)
     return render(request, 'gas_filling/filling_end.html', {'filling': filling})
+
+def gas_filling_pulledweight(request, pk):
+    filling = Filling.objects.get(pk=pk)
+
+    if request.method == 'POST':
+        pulled_weight = request.POST.get('pulled_weight')
+        if pulled_weight:
+            filling.pulled_weight = pulled_weight
+            filling.pulled_time = now()
+            filling.save()
+            return redirect('gas_filling:gas_filling_filling', pk=filling.order.id)
+    return render(request, 'gas_filling/filling_pulled.html', {'filling': filling})
 
 def gas_filling_table(request):
     all_fillings = Filling.objects.all().order_by('-end_time')

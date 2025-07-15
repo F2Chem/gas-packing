@@ -75,8 +75,14 @@ class Filling(models.Model):
     tare_weight = models.FloatField(default=0, blank=True, null=True)
     tare_time = models.DateTimeField(null=True, blank=True)
 
+    connection_weight = models.FloatField(default=0, blank=True, null=True)
+    connection_time = models.DateTimeField(null=True, blank=True)
+
     end_weight = models.FloatField(default=0, blank=True, null=True)
-    end_time = models.DateTimeField(null=True, blank=True) 
+    end_time = models.DateTimeField(null=True, blank=True)
+
+    pulled_weight = models.FloatField(default=0, blank=True, null=True)
+    pulled_time = models.DateTimeField(null=True, blank=True)
 
     class Meta:
         db_table = 'gas_filling_fillings'
@@ -86,3 +92,11 @@ class Filling(models.Model):
         if self.end_weight is not None and self.tare_weight is not None:
             return round(self.end_weight - self.tare_weight, 1)
         return 0.0
+    
+    @property
+    def heel_weight(self):
+        if self.cylinder is not None and self.tare_weight is not None:
+            cylinder = Cylinder.barcode_search(self.cylinder)
+            if cylinder is not "barcode error":
+                return round(self.tare_weight - cylinder.tare)
+            return 0.0

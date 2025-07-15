@@ -3,12 +3,12 @@
 
 <h1>Gas Filling</h1>
 
-<h2>Step 5: Enter Weight After Filling</h2>
+<h2>Step 4: Enter Weight With Connections</h2>
 
 <form method="post">
     {% csrf_token %}
-    <label for="end_weight">Weight After Filling (kg):</label>
-    <input type="number" step="0.01" name="end_weight" required autofocus>
+    <label for="end_weight">Weight With Connections (kg):</label>
+    <input type="number" step="0.01" name="connection_weight" required autofocus>
     <button type="submit" class="btn-primary">Next</button>
 </form>
 
