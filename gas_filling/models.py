@@ -11,7 +11,7 @@ from dateutil.relativedelta import relativedelta
 class Cylinder(models.Model):
     id = models.AutoField(primary_key=True)
     barcodeid = models.CharField(max_length=50, default=0, blank=True, null=True)
-    tare = models.FloatField(default=0, blank=True, null=True)
+    heel = models.FloatField(default=0, blank=True, null=True)
     test_date = models.DateField(blank=True, null=True)
     comments = models.TextField(blank=True, null=True)
     timestampin = TimeStampMixin
@@ -37,13 +37,19 @@ class Cylinder(models.Model):
 
 class Order(models.Model):
     id = models.AutoField(primary_key=True)
-    ordernum = models.CharField(max_length=50, default=0)
+    ordernum = models.CharField(max_length=50, blank=True, null=True)
     customer = models.CharField(max_length=50, blank=True, null=True)
     comments = models.TextField(blank=True, null=True)
     email_comments = models.TextField(blank=True, null=True)
     fill_type = models.CharField(max_length=50, blank=True, null=True)
     created_time = models.DateTimeField(auto_now_add=True)
     timestampin = TimeStampMixin
+    cylinder_size = models.CharField(max_length=50, blank=True, null=True)
+    fill_size = models.CharField(max_length=50, blank=True, null=True)
+    products = models.CharField(max_length=50, blank=True, null=True)
+    num_of_cylinders = models.CharField(max_length=50, blank=True, null=True)
+    completed = models.BooleanField(default=False)
+
 
     class Meta:
         db_table = 'gas_filling_orders'
@@ -68,9 +74,9 @@ class Filling(models.Model):
     cylinder_time = models.DateTimeField(null=True, blank=True)
 
     order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='fillings')
-    order_time = models.DateTimeField(null=True, blank=True)
 
     batch_num = models.IntegerField(blank=True, null=True)
+    batch_time = models.DateTimeField(null=True, blank=True)
 
     tare_weight = models.FloatField(default=0, blank=True, null=True)
     tare_time = models.DateTimeField(null=True, blank=True)
@@ -95,8 +101,8 @@ class Filling(models.Model):
     
     @property
     def heel_weight(self):
-        if self.cylinder is not None and self.tare_weight is not None:
+        if self.cylinder and self.tare_weight is not None:
             cylinder = Cylinder.barcode_search(self.cylinder)
-            if cylinder is not "barcode error":
-                return round(self.tare_weight - cylinder.tare)
-            return 0.0
+            if isinstance (cylinder, Cylinder):
+                return round(self.tare_weight - cylinder.heel, 1)
+        return 0.0

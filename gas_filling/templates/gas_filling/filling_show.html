@@ -8,10 +8,17 @@
 <p>Cylinder: {{ filling.cylinder }}</p>
 <p>Cylinder Time: {{ filling.cylinder_time }}</p>
 <p>Order: {{ filling.order }}</p>
+<p>Batch Number: {{ filling.batch_num }}</p>
+<p>Batch Time: {{ filling.batch_time }}</p>
+<p>Heel Weight: {{ filling.heel_weight }}</p>
 <p>Tare Weight: {{ filling.tare_weight }}</p>
 <p>Tare Time: {{ filling.tare_time }}</p>
+<p>Connection Weight: {{ filling.connection_weight }}</p>
+<p>Connection Time: {{ filling.connection_time }}</p>
 <p>End Weight: {{ filling.end_weight }}</p>
 <p>End Time: {{ filling.end_time }}</p>
+<p>Pulled Weight: {{ filling.pulled_weight }}</p>
+<p>Pulled Time: {{ filling.pulled_time }}</p>
 <p>Fill Weight: <strong>{{ filling.fill_weight }}</strong></p>
 
 <form action="{% url 'gas_filling:filling_edit' filling.id %}" method="post">

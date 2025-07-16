@@ -8,7 +8,14 @@
     <li>Comments: {{ order.comments }}</li>
     <li>Fill Type: {{ order.fill_type }}</li>
     <li>Created: {{ order.created_time }}</li>
-    <li>Total Fill Weight: {{ order.total_fill_weight }}</li>
+    <li>Cylinder Size: {{ order.cylinder_size }}</li>
+    <li>Fill Size: {{ order.fill_size }}</li>
+    <li>Product: {{ order.products }}</li>
+    <li>Number of Cylinders: {{ order.num_of_cylinders }}</li>
+    <li>Total Filled Weight: {{ order.total_fill_weight }}</li>
+    <li>Total Fills Done: {{ order.total_fills }}</li>
+    <li>Completed: {% if order.completed %}Completed{% else %}Active{% endif %}</li>
+
 </ul>
 
 
@@ -22,11 +29,11 @@
         <tr>
             <th>Cylinder Barcode</th>
             <th>Batch Number</th>
-            <th>Tare Weight</th>
             <th>Heel Weight</th>
-            <th>Tare Time</th>            
+            <th>Tare Weight</th>
+            <th>Connection Weight</th>
             <th>End Weight</th>
-            <th>End Time</th>
+            <th>Pulled Weight</th>
             <th>Fill Weight</th>
             <th>Actions</th>
             <th>Complete?</th>
@@ -37,11 +44,11 @@
         <tr>
             <td>{{ filling.cylinder }}</td>
             <td>{{ filling.batch_num }}</td>
-            <td>{{ filling.tare_weight }}</td>
             <td>{{ filling.heel_weight }}</td>
-            <td>{{ filling.tare_time }}</td>            
+            <td>{{ filling.tare_weight }}</td>
+            <td>{{ filling.connection_weight }}</td>
             <td>{{ filling.end_weight }}</td>
-            <td>{{ filling.end_time }}</td>
+            <td>{{ filling.pulled_weight }}</td>
             <td style="font-weight: bold;">{{ filling.fill_weight }}</td>
             <td>
                 <a href="{% url 'gas_filling:filling_show' filling.id %}">Show</a>
@@ -50,7 +57,7 @@
                 {% if not filling.end_weight %}
                 <a href="{% url 'gas_filling:continue_filling' pk=filling.id %}">Continue Filling</a>
                 {% else %}
-                -
+                Finished
                 {% endif %}
             </td>
         </tr>

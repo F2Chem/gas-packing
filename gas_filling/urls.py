@@ -2,7 +2,7 @@ from django.urls import path
 #from util.util import add_std_to_paths
 from . import views
 
-#app_name = "gas_filling"
+app_name = "gas_filling"
 
 
 urlpatterns = [
@@ -31,6 +31,7 @@ urlpatterns = [
     path('orders/create/', views.order_create, name='order_create'),
     path('orders/<int:pk>/', views.order_show, name='order_show'),
     path('orders/<int:pk>/edit/', views.order_edit, name='order_edit'),
+    path('orders/<int:pk>/complete/', views.order_complete, name='order_complete'),
 
     path('filling/show/<int:pk>/', views.filling_show, name='filling_show'),
     path('filling/edit/<int:pk>/', views.filling_edit, name='filling_edit'),

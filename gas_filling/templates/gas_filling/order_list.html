@@ -14,11 +14,13 @@
             <th>ID</th>
             <th>Customer</th>
             <th>Comments</th>
-            <th>Fill Type</th>
+            <th>Fill Size</th>
+            <th>Product</th>
             <th>Added</th>
-            <th>Total Fills</th>
-            <th>Total Fill Weight</th>
+            <th>Total Fills Done</th>
+            <th>Total Filled Weight</th>
             <th>Actions</th>
+            <th>Completed</th>
         </tr>
     </thead>
     <tbody>
@@ -27,7 +29,8 @@
             <td>{{ order.id }}</td>
             <td>{{ order.customer }}</td>
             <td>{{ order.comments }}</td>
-            <td>{{ order.fill_type }}</td>
+            <td>{{ order.fill_size }}</td>
+            <td>{{ order.products }}</td>
             <td>{{ order.created_time }}</td>
             <td>{{ order.total_fills }}</td>
             <td>{{ order.total_fill_weight }}</td>
@@ -35,6 +38,13 @@
                 <a href="{% url 'gas_filling:order_show' order.id %}">Show</a> |
                 <a href="{% url 'gas_filling:order_edit' order.id %}">Edit</a> |
                 <a href="{% url 'gas_filling:gas_filling_filling' order.id %}">New Fill</a>
+            </td>
+            <td>
+                {% if not order.completed %}
+                <a href="{% url 'gas_filling:order_complete' order.id %}" class="text-success fw-bold">Active</a>
+                {% else %}
+                <span class="text-danger">Completed</span>
+                {% endif %}
             </td>
         </tr>
         {% endfor %}

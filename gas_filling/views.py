@@ -143,7 +143,7 @@ def cylinder_create(request):
 
 
 def order_list(request):
-    orders = Order.objects.all().order_by('id')
+    orders = Order.objects.all().order_by('completed', 'id')
     return render(request, 'gas_filling/order_list.html', {'orders': orders})
 
 
@@ -213,9 +213,23 @@ def continue_filling(request, pk):
     else:
         return redirect('gas_filling:gas_filling', pk=filling.order.id)
 
-
+def order_complete(request, pk):
+    order = Order.objects.get(pk=pk)
+    if request.method == 'POST':
+        order.completed = True
+        order.save()
+        send_mail(
+                f'Order Finished.',
+                f'Order #{order.id} has been marked as completed.',
+                secret.FROM_EMAIL,
+                [secret.TO_EMAIL],
+            )
+        return redirect('gas_filling:order_list')
+    return render(request, 'gas_filling/order_complete.html', {'order': order})
 
 
 def order_test(request):
     print('In order_test')
     raise Exception("Error!")
+
+
