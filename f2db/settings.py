@@ -47,7 +47,6 @@ INSTALLED_APPS = [
     'computers.apps.ComputersConfig',
     'gas_filling.apps.GasFillingConfig',
     'power.apps.PowerConfig',
-    'sales.apps.SalesConfig',
     'samples.apps.SamplesConfig',
     'perfluorocarbons.apps.PerfluorocarbonsConfig',
     'django.contrib.contenttypes',
