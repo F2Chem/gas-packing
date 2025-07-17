@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Batches</h1>
+
+{% if batches %}
+<table border="1" cellpadding="5" cellspacing="0">
+    <thead>
+        <tr>
+            <th>Batch Number</th>
+            <th>Order ID</th>
+            <th>Start Weight</th>
+            <th>End Weight</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for batch in batches %}
+        <tr>
+            <td>{{ batch.batch_num }}</td>
+            <td>{{ batch.parent_order.id }}</td>
+            <td>{{ batch.start_weight }}</td>
+            <td>{{ batch.end_weight }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% else %}
+<p>No batches found.</p>
+{% endif %}
+
+<form action="{% url 'gas_filling:order_list' %}" method="get" style="margin-top: 20px;">
+    <button type="submit" class="btn-primary">Back</button>
+</form>
+
+{% endblock %}

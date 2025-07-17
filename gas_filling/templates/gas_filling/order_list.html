@@ -54,7 +54,9 @@
 <p>No orders found.</p>
 {% endif %}
 
-
+<form action="{% url 'gas_filling:batch_list' %}" method="get" style="margin-top: 20px;">
+    <button type="submit" class="btn-primary">View Batches</button>
+</form>
 
 <form action="{% url 'gas_filling:gas_filling_home' %}" method="get" style="margin-top: 20px;">
     <button type="submit" class="btn-primary">Back</button>

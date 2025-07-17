@@ -52,3 +52,4 @@ class OrderForm(forms.ModelForm):
             'comments': forms.Textarea(attrs={'rows': 3}),
             'email_comments': forms.Textarea(attrs={'rows': 3}),
             }
+

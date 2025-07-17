@@ -37,7 +37,6 @@ class Cylinder(models.Model):
 
 class Order(models.Model):
     id = models.AutoField(primary_key=True)
-    ordernum = models.CharField(max_length=50, blank=True, null=True)
     customer = models.CharField(max_length=50, blank=True, null=True)
     comments = models.TextField(blank=True, null=True)
     email_comments = models.TextField(blank=True, null=True)
@@ -106,3 +105,15 @@ class Filling(models.Model):
             if isinstance (cylinder, Cylinder):
                 return round(self.tare_weight - cylinder.heel, 1)
         return 0.0
+
+
+class Batch(models.Model):
+    id = models.AutoField(primary_key=True)
+    batch_num = models.IntegerField(blank=True, null=True)
+    parent_order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='batches')
+    start_weight = models.FloatField(default=0, null=True, blank=True)
+    end_weight = models.FloatField(default=0, null=True, blank=True)
+
+    class Meta:
+        db_table = 'gas_filling_batches'
+

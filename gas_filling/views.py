@@ -7,7 +7,7 @@ from django.utils.timezone import now
 from django.core.mail import send_mail
 import secret
 from .forms import FillingForm, CylinderForm, OrderForm
-from .models import Filling, Cylinder, Order
+from .models import Filling, Cylinder, Order, Batch
 
 def home(request):
     return render(request, 'gas_filling/index.html')
@@ -47,11 +47,16 @@ def gas_filling_batchnum(request, pk):
     last_batch_num = last_filling.batch_num if last_filling else None
 
     if request.method == 'POST':
-        batch_num = request.POST.get('batch_num', '').strip()
-        filling.batch_num = int(batch_num)
+        batch_num = int(request.POST.get('batch_num'))
+        filling.batch_num = batch_num
         filling.save()
+
+        is_new_batch = (last_batch_num is None) or (batch_num != last_batch_num)
+
+        if is_new_batch:
+            return redirect('gas_filling:gas_filling_newbatch', pk=filling.id, prev_batch=last_batch_num)
+
         return redirect('gas_filling:gas_filling_tareweight', pk=filling.id)
-        
 
     return render(request, 'gas_filling/filling_batch.html', {'filling': filling, 'last_batch_num' : last_batch_num})
 
@@ -233,3 +238,33 @@ def order_test(request):
     raise Exception("Error!")
 
 
+def new_batch(request, pk, prev_batch):
+    filling = get_object_or_404(Filling, pk=pk)
+    order = filling.order
+    current_batch_num = filling.batch_num
+    prev_batch = prev_batch
+
+    if request.method == 'POST':
+        end_weight = request.POST.get('end_weight')
+        start_weight = request.POST.get('start_weight')
+
+        if prev_batch:
+            Batch.objects.update_or_create(
+                batch_num=prev_batch,
+                parent_order=order,
+                defaults={'end_weight': end_weight}
+            )
+
+        Batch.objects.update_or_create(
+            batch_num=current_batch_num,
+            parent_order=order,
+            defaults={'start_weight': start_weight}
+        )
+
+        return redirect('gas_filling:gas_filling_tareweight', pk=filling.id)
+
+    return render(request, 'gas_filling/new_batch.html', {'filling': filling, 'batch_num': current_batch_num, 'order': order,'prev_batch': prev_batch})
+
+def batch_list(request):
+    batches = Batch.objects.all().order_by('-id')
+    return render(request, 'gas_filling/batch_list.html', {'batches': batches})
