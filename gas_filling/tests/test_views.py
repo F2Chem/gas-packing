@@ -107,7 +107,7 @@ class OrderViewsTests(TestCase):
 
 
     def testFillingBatch(self):
-        url = f'/gas_filling/filling/batch/{self.order.id}/'
+        url = f'/gas_filling/filling/batch/{self.filling.id}/'
 
         response = self.client.get(url)
 
@@ -116,7 +116,7 @@ class OrderViewsTests(TestCase):
 
 
     def testFillingTareWeight(self):
-        url = f'/gas_filling/filling/tareweight/{self.order.id}/'
+        url = f'/gas_filling/filling/tareweight/{self.filling.id}/'
 
         response = self.client.get(url)
 
@@ -125,7 +125,7 @@ class OrderViewsTests(TestCase):
 
     
     def testFillingConnectionWeight(self):
-        url = f'/gas_filling/filling/connectionweight/{self.order.id}/'
+        url = f'/gas_filling/filling/connectionweight/{self.filling.id}/'
 
         response = self.client.get(url)
 
@@ -134,7 +134,7 @@ class OrderViewsTests(TestCase):
 
 
     def testFillingEndWeight(self):
-        url = f'/gas_filling/filling/endweight/{self.order.id}/'
+        url = f'/gas_filling/filling/endweight/{self.filling.id}/'
 
         response = self.client.get(url)
 
@@ -143,7 +143,7 @@ class OrderViewsTests(TestCase):
 
 
     def testFillingPulledWeight(self):
-        url = f'/gas_filling/filling/pulledweight/{self.order.id}/'
+        url = f'/gas_filling/filling/pulledweight/{self.filling.id}/'
 
         response = self.client.get(url)
 
