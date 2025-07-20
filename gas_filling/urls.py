@@ -32,7 +32,8 @@ urlpatterns = [
     path('orders/create/', views.order_create, name='order_create'),
     path('orders/<int:pk>/', views.order_show, name='order_show'),
     path('orders/<int:pk>/edit/', views.order_edit, name='order_edit'),
-    path('orders/<int:pk>/complete/', views.order_complete, name='order_complete'),
+    path('orders/<int:pk>/status/', views.order_status, name='order_status'),
+
 
     path('filling/show/<int:pk>/', views.filling_show, name='filling_show'),
     path('filling/edit/<int:pk>/', views.filling_edit, name='filling_edit'),

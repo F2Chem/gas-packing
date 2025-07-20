@@ -1,7 +1,7 @@
 
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, render, redirect
-from django.db.models import Max
+from django.db.models import Max, Case, When, Value, IntegerField
 from django.contrib.auth.decorators import permission_required
 from django.utils.timezone import now
 from django.core.mail import send_mail
@@ -146,9 +146,17 @@ def cylinder_create(request):
 
     return render(request, 'gas_filling/create.html', {'form': form})
 
-
 def order_list(request):
-    orders = Order.objects.all().order_by('completed', 'id')
+    orders = Order.objects.annotate(
+        status_order=Case(
+            When(status='OUTSTANDING', then=Value(0)),
+            When(status='IN_PROCESS', then=Value(1)),
+            When(status='COMPLETED', then=Value(2)),
+            When(status='RELEASED', then=Value(3)),
+            output_field=IntegerField()
+        )
+    ).order_by('status_order', 'id')
+    
     return render(request, 'gas_filling/order_list.html', {'orders': orders})
 
 
@@ -218,19 +226,44 @@ def continue_filling(request, pk):
     else:
         return redirect('gas_filling:gas_filling', pk=filling.order.id)
 
-def order_complete(request, pk):
+def order_status(request, pk):
     order = Order.objects.get(pk=pk)
-    if request.method == 'POST':
-        order.completed = True
+
+    if order.status == 'OUTSTANDING' and Filling.objects.filter(order=order).exists():
+        order.status = 'IN_PROCESS'
         order.save()
-        send_mail(
-                f'Order Finished.',
-                f'Order #{order.id} has been marked as completed.',
+        return redirect('gas_filling:order_list')
+
+    next_status = None
+    if order.status == 'IN_PROCESS':
+        next_status = 'COMPLETED'
+    elif order.status == 'COMPLETED':
+        next_status = 'RELEASED'
+    else:
+        return redirect('gas_filling:order_list')
+
+    if request.method == 'POST':
+        order.status = next_status
+        order.save()
+
+        if next_status == 'COMPLETED':
+            send_mail(
+                f'Order Finished',
+                f'Order #{order.id} has been completed.',
                 secret.FROM_EMAIL,
                 [secret.TO_EMAIL],
             )
+        elif next_status == 'RELEASED':
+            send_mail(
+                f'Order Released',
+                f'Order #{order.id} has been released.',
+                secret.FROM_EMAIL,
+                [secret.TO_EMAIL],
+            )
+
         return redirect('gas_filling:order_list')
-    return render(request, 'gas_filling/order_complete.html', {'order': order})
+
+    return render(request, 'gas_filling/order_status.html', {'order': order, 'next_status': next_status})
 
 
 def order_test(request):

@@ -47,8 +47,15 @@ class Order(models.Model):
     fill_size = models.CharField(max_length=50, blank=True, null=True)
     products = models.CharField(max_length=50, blank=True, null=True)
     num_of_cylinders = models.CharField(max_length=50, blank=True, null=True)
-    completed = models.BooleanField(default=False)
 
+    STATUSES = [
+        ('OUTSTANDING', 'Outstanding'),
+        ('IN_PROCESS', 'In Process'),
+        ('COMPLETED', 'Completed'),
+        ('RELEASED', 'Released'),
+    ]
+    
+    status = models.CharField(max_length=11, choices=STATUSES, default='OUTSTANDING')
 
     class Meta:
         db_table = 'gas_filling_orders'

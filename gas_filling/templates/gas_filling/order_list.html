@@ -25,7 +25,16 @@
     </thead>
     <tbody>
         {% for order in orders %}
-        <tr>
+        <tr {% if order.status == "COMPLETED" %}
+            style="background-color: #cce5ff; "
+            {% elif order.status == "RELEASED" %}
+            style="background-color: #BCA4E3;"
+            {% elif order.status == "OUTSTANDING" %}
+            style="background-color: #fff3cd;"
+            {% elif order.status == "IN_PROCESS" %}
+            style="background-color: #d4edda;"
+            {% endif %}>
+
             <td>{{ order.id }}</td>
             <td>{{ order.customer }}</td>
             <td>{{ order.comments }}</td>
@@ -40,12 +49,17 @@
                 <a href="{% url 'gas_filling:gas_filling_filling' order.id %}">New Fill</a>
             </td>
             <td>
-                {% if not order.completed %}
-                <a href="{% url 'gas_filling:order_complete' order.id %}" class="text-success fw-bold">Active</a>
-                {% else %}
-                <span class="text-danger">Completed</span>
+                {% if order.status == "OUTSTANDING" %}
+                Outstanding
+                {% elif order.status == "IN_PROCESS" %}
+                <a href="{% url 'gas_filling:order_status' order.id %}" class="text-success fw-bold">In Process</a>
+                {% elif order.status == "COMPLETED" %}
+                <a href="{% url 'gas_filling:order_status' order.id %}" class="text-success fw-bold">Completed</a>
+                {% elif order.status == "RELEASED" %}
+                Released
                 {% endif %}
             </td>
+
         </tr>
         {% endfor %}
     </tbody>

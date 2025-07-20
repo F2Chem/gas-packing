@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<h2>
+    {% if next_status == "COMPLETED" %}
+    Mark Order #{{ order.id }} as Completed?
+    {% elif next_status == "RELEASED" %}
+    Mark Order #{{ order.id }} as Released?
+    {% endif %}
+</h2>
+
+<form method="post">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-success">
+        {% if next_status == "COMPLETED" %}
+        Mark as Completed
+        {% elif next_status == "RELEASED" %}
+        Mark as Released
+        {% endif %}
+    </button>
+    <a href="{% url 'gas_filling:order_list' %}" class="btn btn-secondary">Cancel</a>
+</form>
+
+{% endblock %}
