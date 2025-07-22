@@ -21,9 +21,9 @@ urlpatterns = [
     path('filling/edit/<int:pk>/', views.filling_edit, name='filling_edit'),
 
     path('batch/new_batch/<int:pk>/<int:prev_batch>/', views.new_batch, name='gas_filling_newbatch'),
-    path('batch/list', views.batch_list, name='batch_list'),
+    path('batch/', views.batch_list, name='batch_list'),
 
-    path('cylinder/list/', views.cylinder_list, name='cylinder_list'),
+    path('cylinder/', views.cylinder_list, name='cylinder_list'),
     path('cylinder/show/<int:pk>/', views.cylinder_show, name='cylinder_show'),
     path('cylinder/create/', views.cylinder_create, name='cylinder_create'),
     path('cylinder/edit/<int:pk>/', views.cylinder_edit, name='cylinder_edit'),
