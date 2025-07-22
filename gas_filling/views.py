@@ -37,7 +37,12 @@ def gas_filling(request, pk):
 
     filling_number = order.fillings.count() + 1
 
-    return render(request, 'gas_filling/filling.html', {'order': order, 'filling_number': filling_number})
+    context = {
+        'order': order,
+        'filling_number': filling_number,
+        'subsections':'gas_filling/subsections.html',
+    }
+    return render(request, 'gas_filling/filling.html', context)
 
 
 def gas_filling_batchnum(request, pk):
@@ -58,7 +63,12 @@ def gas_filling_batchnum(request, pk):
 
         return redirect('gas_filling:gas_filling_tareweight', pk=filling.id)
 
-    return render(request, 'gas_filling/filling_batch.html', {'filling': filling, 'last_batch_num' : last_batch_num})
+    context = {
+        'filling': filling,
+        'last_batch_num' : last_batch_num,   
+        'subsections':'gas_filling/subsections.html',
+    }
+    return render(request, 'gas_filling/filling_batch.html', context)
 
 
 def gas_filling_tareweight(request, pk):
@@ -71,7 +81,12 @@ def gas_filling_tareweight(request, pk):
             filling.tare_time = now()
             filling.save()
             return redirect('gas_filling:gas_filling_connectionweight', pk=filling.id)
-    return render(request, 'gas_filling/filling_tare.html', {'filling': filling})
+            
+    context = {
+        'filling': filling, 
+        'subsections':'gas_filling/subsections.html',
+    }
+    return render(request, 'gas_filling/filling_tare.html', context)
 
 def gas_filling_connectionweight(request, pk):
     filling = Filling.objects.get(pk=pk)
@@ -83,7 +98,11 @@ def gas_filling_connectionweight(request, pk):
             filling.connection_time = now()
             filling.save()
             return redirect('gas_filling:gas_filling_endweight', pk=filling.id)
-    return render(request, 'gas_filling/filling_connections.html', {'filling': filling})
+    context = {
+        'filling': filling, 
+        'subsections':'gas_filling/subsections.html',
+    }
+    return render(request, 'gas_filling/filling_connections.html', context)
 
 def gas_filling_endweight(request, pk):
     filling = Filling.objects.get(pk=pk)
@@ -95,7 +114,11 @@ def gas_filling_endweight(request, pk):
             filling.end_time = now()
             filling.save()
             return redirect('gas_filling:gas_filling_pulledweight', pk=filling.id)
-    return render(request, 'gas_filling/filling_end.html', {'filling': filling})
+    context = {
+        'filling': filling, 
+        'subsections':'gas_filling/subsections.html',
+    }
+    return render(request, 'gas_filling/filling_end.html', context)
 
 def gas_filling_pulledweight(request, pk):
     filling = Filling.objects.get(pk=pk)
@@ -107,22 +130,41 @@ def gas_filling_pulledweight(request, pk):
             filling.pulled_time = now()
             filling.save()
             return redirect('gas_filling:gas_filling_filling', pk=filling.order.id)
-    return render(request, 'gas_filling/filling_pulled.html', {'filling': filling})
+    context = {
+        'filling': filling, 
+        'subsections':'gas_filling/subsections.html',
+    }
+    return render(request, 'gas_filling/filling_pulled.html', context)
 
 def gas_filling_table(request):
     all_fillings = Filling.objects.all().order_by('-end_time')
-    return render(request, 'gas_filling/filling_table.html', {'all_fillings': all_fillings})
+    context = {
+        'all_filling': all_filling, 
+        'subsections':'gas_filling/subsections.html',
+    }
+    return render(request, 'gas_filling/filling_table.html', context)
 
 def gas_filling_home(request):
-    return render(request, 'gas_filling/home.html')
+    context = {
+        'subsections':'gas_filling/subsections.html',
+    }
+    return render(request, 'gas_filling/home.html', context)
 
 def cylinder_list(request):
     cylinders = Cylinder.objects.all().order_by('id')
-    return render(request, 'gas_filling/list.html', {'cylinders': cylinders})
+    context = {
+        'cylinders': cylinders, 
+        'subsections':'gas_filling/subsections.html',
+    }
+    return render(request, 'gas_filling/list.html', context)
 
 def cylinder_show(request, pk):
     cylinder = Cylinder.objects.get(pk=pk)
-    return render(request, 'gas_filling/show.html', {'cylinder': cylinder})
+    context = {
+        'cylinder': cylinder, 
+        'subsections':'gas_filling/subsections.html',
+    }
+    return render(request, 'gas_filling/show.html', context)
 
 def cylinder_edit(request, pk):
     cylinder = Cylinder.objects.get(pk=pk)
@@ -133,7 +175,12 @@ def cylinder_edit(request, pk):
             return redirect('gas_filling:cylinder_list')
     else:
         form = CylinderForm(instance=cylinder)
-    return render(request, 'gas_filling/edit.html', {'form': form})
+
+    context = {
+        'form': form, 
+        'subsections':'gas_filling/subsections.html',
+    }
+    return render(request, 'gas_filling/edit.html', context)
 
 def cylinder_create(request):
     if request.method == 'POST':
@@ -144,7 +191,11 @@ def cylinder_create(request):
     else:
         form = CylinderForm()
 
-    return render(request, 'gas_filling/create.html', {'form': form})
+    context = {
+        'form': form, 
+        'subsections':'gas_filling/subsections.html',
+    }
+    return render(request, 'gas_filling/create.html', context)
 
 def order_list(request):
     orders = Order.objects.annotate(
@@ -157,7 +208,11 @@ def order_list(request):
         )
     ).order_by('status_order', 'id')
     
-    return render(request, 'gas_filling/order_list.html', {'orders': orders})
+    context = {
+        'orders': orders, 
+        'subsections':'gas_filling/subsections.html',
+    }
+    return render(request, 'gas_filling/order_list.html', context)
 
 
 def order_create(request):
@@ -177,13 +232,22 @@ def order_create(request):
     else:
         order_form = OrderForm()
 
-    return render(request, 'gas_filling/order_create.html', {'form': order_form})
+    context = {
+        'form': order_form, 
+        'subsections':'gas_filling/subsections.html',
+    }
+    return render(request, 'gas_filling/order_create.html', context)
 
 
 def order_show(request, pk):
     order = Order.objects.get(pk=pk)
     fillings = order.fillings.all().order_by('id')
-    return render(request, 'gas_filling/order_show.html', {'order': order, 'fillings': fillings})
+    context = {
+        'order': order,
+        'fillings': fillings,
+        'subsections':'gas_filling/subsections.html',
+    }
+    return render(request, 'gas_filling/order_show.html', context)
 
 
 
@@ -196,12 +260,22 @@ def order_edit(request, pk):
             return redirect('gas_filling:order_list')
     else:
         order_form = OrderForm(instance=order)
-    return render(request, 'gas_filling/order_edit.html', {'form': order_form, 'order': order})
+
+    context = {
+        'order': order,
+        'form': order_form,
+        'subsections':'gas_filling/subsections.html',
+    }
+    return render(request, 'gas_filling/order_edit.html', context)
 
 
 def filling_show(request, pk):
     filling = get_object_or_404(Filling, pk=pk)
-    return render(request, 'gas_filling/filling_show.html', {'filling': filling})
+    context = {
+        'filling': filling,
+        'subsections':'gas_filling/subsections.html',
+    }
+    return render(request, 'gas_filling/filling_show.html', context)
 
 def filling_edit(request, pk):
     filling = Filling.objects.get(pk=pk)
@@ -212,7 +286,13 @@ def filling_edit(request, pk):
             return redirect('gas_filling:filling_show', pk=filling.id)
     else:
         form = FillingForm(instance=filling)
-    return render(request, 'gas_filling/filling_edit.html', {'form': form, 'filling': filling})
+
+    context = {
+        'filling': filling,
+        'form': form,
+        'subsections':'gas_filling/subsections.html',
+    }
+    return render(request, 'gas_filling/filling_edit.html', context)
 
 def continue_filling(request, pk):
     filling = Filling.objects.get(pk=pk)
@@ -263,7 +343,12 @@ def order_status(request, pk):
 
         return redirect('gas_filling:order_list')
 
-    return render(request, 'gas_filling/order_status.html', {'order': order, 'next_status': next_status})
+    context = {
+        'order': order,
+        'next_status': next_status,
+        'subsections':'gas_filling/subsections.html',
+    }
+    return render(request, 'gas_filling/order_status.html', context)
 
 
 def order_test(request):
@@ -296,8 +381,19 @@ def new_batch(request, pk, prev_batch):
 
         return redirect('gas_filling:gas_filling_tareweight', pk=filling.id)
 
-    return render(request, 'gas_filling/new_batch.html', {'filling': filling, 'batch_num': current_batch_num, 'order': order,'prev_batch': prev_batch})
+    context = {
+        'filling': filling,
+        'batch_num': current_batch_num,
+        'order': order,
+        'prev_batch': prev_batch,
+        'subsections':'gas_filling/subsections.html',
+    }
+    return render(request, 'gas_filling/new_batch.html', context)
 
 def batch_list(request):
     batches = Batch.objects.all().order_by('-id')
-    return render(request, 'gas_filling/batch_list.html', {'batches': batches})
+    context = {
+        'batches': batches,
+        'subsections':'gas_filling/subsections.html',
+    }
+    return render(request, 'gas_filling/batch_list.html', context)

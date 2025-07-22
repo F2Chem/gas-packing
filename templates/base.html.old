@@ -1,0 +1,73 @@
+{% load helpers %}
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <link rel="shortcut icon" type="image/x-icon" href="/static/icons/f2.ico" />
+    <link rel="stylesheet" href="/static/style.css" type="text/css">
+    <title>F2DB: {{ title }}</title>
+  </head>
+  <body>
+    <div class="top-right">
+      <img src="/static/images/f2logo-s.png" width="26" height="33" alt="F2 Logo" />
+    </div>
+    
+    <div class="authen">
+
+
+        {% if user.is_authenticated %}
+        Logged in as: <i>{{ user }}</i> (
+        <form method="post" action="{% url 'logout' %}" id="logout-form" style="display:inline">
+            {% csrf_token %}
+            <span style="cursor: pointer;text-decoration: underline" onclick="document.getElementById('logout-form').submit()">logout</span>
+        </form>)
+        {% else %}
+        <a href="/accounts/login/">Log-in</a>
+        {% endif %}
+        <br />
+        <i>SECTIONS:</i>
+        <a href="/computers">Computers</a> |
+        <a href="{% url 'gas_filling:gas_filling_home' %}">Gas Fillings</a> |
+        <a href="/power">Power</a> |
+        <a href="/sales">Sales</a>
+        {% extra_links links %}
+    </div>
+    
+    <div class="top-left">
+    {% today %}
+    </div>    
+
+    {% if messages %}
+    <ul class="messages">
+        {% for message in messages %}
+        <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+
+    <div class="main">
+      <h4>{{ title }}</h4>
+      {% if comment %}
+      <p>{{ comment }}</p>
+      {% endif %}
+      {% block content %}
+        <!-- default content text (typically empty) -->
+      {% endblock %}
+    </div>
+  </body>
+</html>
+
+
+
+<script>
+function copyText(toName, fromName) {
+  s = document.getElementsByName(fromName)[0].value
+  document.getElementsByName(toName)[0].value = s
+  document.getElementById(toName + '_copy_link').style.display = 'none'
+}
+
+function addText(toName, s) {
+  document.getElementsByName(toName)[0].value += s
+}
+
+</script>

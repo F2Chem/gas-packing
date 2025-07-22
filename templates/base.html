@@ -7,30 +7,52 @@
     <link rel="stylesheet" href="/static/style.css" type="text/css">
     <title>F2DB: {{ title }}</title>
   </head>
-  <body>
+  {% if focus %}
+  <body onload="setF2Focus()">
+  {% else %}
+  <body >
+  {% endif %}
+  
     <div class="top-right">
       <img src="/static/images/f2logo-s.png" width="26" height="33" alt="F2 Logo" />
     </div>
     
     <div class="authen">
-
-
-        {% if user.is_authenticated %}
+      
+    
+      <a href="https://f2chemicals.com/full_range.html" target="_blank">Perfluorocarbons</a> |
+      <a href="https://x277.idhammarsoftwareservices.com/MMSWeb-F2Chemicals-Live/WebAccount/LogOn" target="_blank">Idhammar</a> |
+      <a href="https://outlook.office.com/owa/" target="_blank">E-mails</a> |
+      <a href="https://www.myepaywindow.com/" target="_blank">Payroll</a> |  
+      {% if user.is_authenticated %}
         Logged in as: <i>{{ user }}</i> (
         <form method="post" action="{% url 'logout' %}" id="logout-form" style="display:inline">
-            {% csrf_token %}
-            <span style="cursor: pointer;text-decoration: underline" onclick="document.getElementById('logout-form').submit()">logout</span>
+          {% csrf_token %}
+          <span style="cursor: pointer;text-decoration: underline" onclick="document.getElementById('logout-form').submit()">logout</span>
         </form>)
-        {% else %}
+      {% else %}
         <a href="/accounts/login/">Log-in</a>
-        {% endif %}
-        <br />
-        <i>SECTIONS:</i>
-        <a href="/computers">Computers</a> |
-        <a href="{% url 'gas_filling:gas_filling_home' %}">Gas Fillings</a> |
-        <a href="/power">Power</a> |
-        <a href="/sales">Sales</a>
-        {% extra_links links %}
+      {% endif %}
+      <br/>
+      <i>SECTIONS:</i>
+      <a href="/samples">Sample Log</a> |
+      <a href="/drums">Drum Log</a> |
+      <a href="/drums/waste_consignment">Waste</a> |
+      <a href="/cylinders">Cylinder Log</a> |
+      <a href="/sales">Sales Orders</a> |
+      <a href="/computers">Computer Log</a> |
+      <a href="/perfluorocarbons">Perfluorocarbons</a> |
+      <a href="/power">Power</a>
+      {% if subsections %}
+        <br/>
+        <i>OPTIONS:</i>
+        {% include subsections %}   
+      {% else %}
+        <br/>
+        <i>NO OPTIONS!</i>
+      {% endif %}
+      
+      {% extra_links links %}
     </div>
     
     <div class="top-left">
@@ -69,5 +91,24 @@ function copyText(toName, fromName) {
 function addText(toName, s) {
   document.getElementsByName(toName)[0].value += s
 }
+
+// Sets the form focus to the first element found in forms[0] that
+// is a textfield or text area
+// Seems to be another setFocus, so this is called setF2Focus
+function setF2Focus() {
+  form = document.forms[1] // first form, 0, is log in/out, skip that
+  
+  // Bail if no form on page
+  if (form == null) return
+
+  // Iterate through elements
+  for (const e of form.elements) {
+    if ((e.type == "text") || (e.type == "textarea")) {
+      e.focus()
+      break
+    }
+  }
+}
+
 
 </script>
