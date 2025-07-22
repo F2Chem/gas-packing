@@ -14,8 +14,7 @@
     <li>Number of Cylinders: {{ order.num_of_cylinders }}</li>
     <li>Total Filled Weight: {{ order.total_fill_weight }}</li>
     <li>Total Fills Done: {{ order.total_fills }}</li>
-    <li>Completed: {% if order.completed %}Completed{% else %}Active{% endif %}</li>
-
+    <li>Status:{% if order.status == "COMPLETED" %}Completed{% elif order.status == "RELEASED" %}Released{% elif order.status == "IN_PROCESS" %}In Process{% else %}Outstanding{% endif %}</li>
 </ul>
 
 

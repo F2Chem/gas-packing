@@ -13,15 +13,6 @@ def home(request):
     return render(request, 'gas_filling/index.html')
 
 
-def cylinder_index(request):
-    return redirect('gas_filling:gas_filling_filling')
-
-def cylinder_view(request):
-    return redirect('gas_filling:gas_filling_filling')
-
-def cylinder_edit(request):
-    return redirect('gas_filling:gas_filling_filling')
-
 
 def gas_filling(request, pk):
     order = Order.objects.get(pk=pk)
@@ -208,6 +199,11 @@ def order_list(request):
         )
     ).order_by('status_order', 'id')
     
+    for order in orders:
+        if order.status == 'OUTSTANDING' and order.fillings.exists():
+            order.status = 'IN_PROCESS'
+            order.save()
+
     context = {
         'orders': orders, 
         'subsections':'gas_filling/subsections.html',
@@ -307,45 +303,31 @@ def continue_filling(request, pk):
         return redirect('gas_filling:gas_filling', pk=filling.order.id)
 
 def order_status(request, pk):
-    order = Order.objects.get(pk=pk)
-
-    if order.status == 'OUTSTANDING' and Filling.objects.filter(order=order).exists():
-        order.status = 'IN_PROCESS'
-        order.save()
-        return redirect('gas_filling:order_list')
-
-    next_status = None
-    if order.status == 'IN_PROCESS':
-        next_status = 'COMPLETED'
-    elif order.status == 'COMPLETED':
-        next_status = 'RELEASED'
-    else:
-        return redirect('gas_filling:order_list')
+    order = Order.objects.get(pk=pk)    
 
     if request.method == 'POST':
-        order.status = next_status
-        order.save()
-
-        if next_status == 'COMPLETED':
+        if order.status == 'IN_PROCESS':
+            order.status = 'COMPLETED'
             send_mail(
                 f'Order Finished',
                 f'Order #{order.id} has been completed.',
                 secret.FROM_EMAIL,
                 [secret.TO_EMAIL],
             )
-        elif next_status == 'RELEASED':
+        elif order.status == 'COMPLETED':
+            order.status = 'RELEASED'
             send_mail(
                 f'Order Released',
                 f'Order #{order.id} has been released.',
                 secret.FROM_EMAIL,
                 [secret.TO_EMAIL],
             )
+        order.save()        
 
         return redirect('gas_filling:order_list')
 
     context = {
         'order': order,
-        'next_status': next_status,
         'subsections':'gas_filling/subsections.html',
     }
     return render(request, 'gas_filling/order_status.html', context)
