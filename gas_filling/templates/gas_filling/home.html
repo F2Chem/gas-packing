@@ -15,4 +15,8 @@
     <button type="submit" class="btn-primary">Orders</button>
 </form>
 
+<form action="{% url 'gas_filling:pdf_create' %}" method="get" style="margin-top:20px;">
+    <button type="submit" class="btn-primary">Create PDF</button>
+</form>
+
 {% endblock %}

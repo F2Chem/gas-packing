@@ -34,6 +34,8 @@ urlpatterns = [
     path('order/<int:pk>/edit/', views.order_edit, name='order_edit'),
     path('order/<int:pk>/status/', views.order_status, name='order_status'),
 
+    path('pdfcreate/', views.pdf_create, name='pdf_create'),
+
 
     
 ]

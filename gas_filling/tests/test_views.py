@@ -25,7 +25,7 @@ class CylinderViewTests(TestCase):
         self.cylinder = Cylinder.objects.create(barcodeid='Kyle81')
 
 
-    def testCylinderList(self): ###
+    def testCylinderList(self):
         url = '/gas_filling/cylinder/'
 
         response = self.client.get(url)

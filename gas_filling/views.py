@@ -9,6 +9,13 @@ import secret
 from .forms import FillingForm, CylinderForm, OrderForm
 from .models import Filling, Cylinder, Order, Batch
 
+from reportlab.lib.enums import TA_JUSTIFY, TA_CENTER
+from reportlab.lib.pagesizes import A4
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Image
+from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+from reportlab.lib.units import inch
+
+
 def home(request):
     return render(request, 'gas_filling/index.html')
 
@@ -379,3 +386,60 @@ def batch_list(request):
         'subsections':'gas_filling/subsections.html',
     }
     return render(request, 'gas_filling/batch_list.html', context)
+
+def pdf_create(request):
+    document = []
+
+    document.append(Spacer(1, 20))
+    document.append(Paragraph('Summary of Orders and Batches', ParagraphStyle(name='Aloy', fontfamily="Helvetica", fontSize=16, alignment=TA_CENTER)))
+    document.append(Spacer(1, 30))
+
+    def organiseOrder(order):
+        text = ""
+        text += "Customer: " + order.customer
+        if order.comments:
+            text += ", Comments: " + order.comments
+        text += ", Created Time: " + str(order.created_time)
+        text += ", Total Fills: " + str(order.total_fills)
+        text += ", Total Weight of Fills: " + str(order.total_fill_weight)
+        text += ", Order Status: " + order.status
+        return text
+    
+    def organiseFilling(filling):
+        text = ""
+        text += "Cylinder: " + filling.cylinder
+        text += ", Cylinder Time: " + str(filling.cylinder_time)
+        text += ", Batch Number: " + str(filling.batch_num)
+        text += ", Tare Weight: " + str(filling.tare_weight)
+        text += ", " + str(filling.tare_time)
+        text += ", Heel Weight: " + str(filling.heel_weight)
+        text += ", Connection Weight: " + str(filling.connection_weight)
+        text += ", " + str(filling.connection_time)
+        text += ", End Weight: " + str(filling.end_weight)
+        text += ", " + str(filling.end_time)
+        text += ", Pulled Weight: " + str(filling.pulled_weight)
+        text += ", " + str(filling.pulled_time)
+        text += ", Filling Weight: " + str(filling.fill_weight)
+        return text
+
+
+    def organiseBatch(batch):
+        text = ""
+        text += "Batch Number: " + batch.batch_num
+        text += ", Start Weight: " + batch.start_weight
+        text += ", End Weight: " + batch.end_weight
+        return text
+
+    for order in Order.objects.all():
+        document.append(Paragraph(organiseOrder(order), ParagraphStyle(name='Lara', fontfamily="Helvetica", fontSize=8, alignment=TA_JUSTIFY)))
+        for filling in order.fillings.all():
+            document.append(Spacer(1,2))
+            document.append(Paragraph(organiseFilling(filling), ParagraphStyle(name='Kyle', fontfamily="Helvetica", fontSize=6, alignment=TA_JUSTIFY, leftIndent=20)))
+        document.append(Spacer(1,5))
+
+    SimpleDocTemplate('OrdersBatches.pdf', pagesize=A4, rightMargin=12, leftMargin=12, topMargin=12, bottomMargin=6).build(document)
+
+    context = {
+        'subsections':'gas_filling/subsections.html',
+    }
+    return render(request, 'gas_filling/pdf_create.html', context)
