@@ -25,8 +25,8 @@ class CylinderViewTests(TestCase):
         self.cylinder = Cylinder.objects.create(barcodeid='Kyle81')
 
 
-    def testCylinderList(self):
-        url = '/gas_filling/list/'
+    def testCylinderList(self): ###
+        url = '/gas_filling/cylinder/'
 
         response = self.client.get(url)
 
@@ -34,7 +34,7 @@ class CylinderViewTests(TestCase):
 
 
     def testCylinderShow(self):
-        url = f'/gas_filling/show/{self.cylinder.id}/'
+        url = f'/gas_filling/cylinder/show/{self.cylinder.id}/'
 
         response = self.client.get(url)
     
@@ -43,7 +43,7 @@ class CylinderViewTests(TestCase):
 
 
     def testCylinderEdit(self):
-        url = f'/gas_filling/edit/{self.cylinder.id}/'
+        url = f'/gas_filling/cylinder/edit/{self.cylinder.id}/'
 
         response = self.client.get(url)
 
@@ -65,7 +65,7 @@ class OrderViewsTests(TestCase):
 
     
     def testOrderList(self):
-        url = '/gas_filling/orders/'
+        url = '/gas_filling/order/'
 
         response = self.client.get(url)
         
@@ -73,7 +73,7 @@ class OrderViewsTests(TestCase):
         
 
     def testOrderShow(self):
-        url = f'/gas_filling/orders/{self.order.id}/' 
+        url = f'/gas_filling/order/{self.order.id}/' 
 
         response = self.client.get(url)
         
@@ -82,7 +82,7 @@ class OrderViewsTests(TestCase):
 
 
     def testOrderEdit(self):
-        url = f'/gas_filling/orders/{self.order.id}/edit/'
+        url = f'/gas_filling/order/{self.order.id}/edit/'
 
         response = self.client.get(url)
 
@@ -91,7 +91,7 @@ class OrderViewsTests(TestCase):
 
 
     def testOrderCreate(self):
-        url = '/gas_filling/orders/create/'
+        url = '/gas_filling/order/create/'
 
         response = self.client.get(url)
 
