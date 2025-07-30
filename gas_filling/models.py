@@ -74,6 +74,21 @@ class Order(models.Model):
         Order.objects.all().delete()
 
 
+class OrderLine(models.Model):
+    id = models.AutoField(primary_key=True)
+    order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='order_lines')
+    cylinder_size = models.CharField(max_length=50, blank=True, null=True)
+    fill_weight = models.FloatField(default=0, blank=True, null=True)
+    num_cylinders = models.IntegerField(blank=True, null=True)
+    stillage = models.BooleanField(default=False, blank=True, null=True)
+
+
+class CylinderSet(models.Model):
+    id = models.AutoField(primary_key=True)
+    order_line = models.ForeignKey(OrderLine, on_delete=models.CASCADE, related_name='cylinder_sets')
+
+
+
 class Filling(models.Model):
     id = models.AutoField(primary_key=True)
     cylinder = models.CharField(max_length=100)
