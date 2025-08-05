@@ -2,21 +2,49 @@
 
 {% block content %}
 <h1>Show Order Details</h1>
+
+<h3>General Order Info</h3>
 <ul>
     <li>Order Number: {{ order.id }}</li>
     <li>Customer: {{ order.customer }}</li>
     <li>Comments: {{ order.comments }}</li>
     <li>Fill Type: {{ order.fill_type }}</li>
     <li>Created: {{ order.created_time }}</li>
-    <li>Cylinder Size: {{ order.cylinder_size }}</li>
-    <li>Fill Size: {{ order.fill_size }}</li>
-    <li>Product: {{ order.products }}</li>
-    <li>Number of Cylinders: {{ order.num_of_cylinders }}</li>
-    <li>Total Filled Weight: {{ order.total_fill_weight }}</li>
     <li>Total Fills Done: {{ order.total_fills }}</li>
+    <li>Total Filled Weight: {{ order.total_fill_weight }}</li>
+    <li>Total Order Lines: {{ order.total_orderlines }}</li>
     <li>Status: {% if order.status == "PACKED" %}Packed{% elif order.status == "PASSED" %}Passed{% elif order.status == "IN_PROGRESS" %}In Progress{% elif order.status == "FINISHED" %}Finished{% elif order.status == "FAILED" %}Failed{% elif order.status == "REWORKED" %}Reworked{% else %}Open{% endif %}</li>
 </ul>
 
+<h3>Order Lines</h3>
+
+{% if order.order_lines.exists %}
+<ul>
+    {% for line in order.order_lines.all %}
+    <li>
+        Order Line {{ forloop.counter }}:
+        <ul>
+            <li>Product:</> {{ line.product }}</li>
+            <li>Cylinder Size:</> {{ line.cylinder_size }}</li>
+            <li>Fill Weight:</> {{ line.fill_weight }}</li>
+            <li>Number of Cylinders:</> {{ line.num_cylinders }}</li>
+            <li>Cylinder Type:</> {{ line.cylinder_type }}</li>
+            <li>Stillage:</> {{ line.stillage|yesno:"Yes,No" }}</li>
+            <li>Keep Heel:</> {{ line.keep_heel|yesno:"Yes,No" }}</li>
+        </ul>
+    </li>
+    {% endfor %}
+</ul>
+{% else %}
+No order lines exist for this order
+{% endif %}
+
+{% if order.status == "OUTSTANDING" %}
+    <form action="{% url 'gas_filling:orderline_create' order.id %}" method="get" style="margin-top: 20px;">
+        <button type="submit" class="btn-primary">New Order Line</button>
+    </form>
+{% endif %}
+<hr>
 
 
 {% if fillings %}
