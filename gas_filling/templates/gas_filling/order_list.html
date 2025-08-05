@@ -25,14 +25,20 @@
     </thead>
     <tbody>
         {% for order in orders %}
-        <tr {% if order.status == "COMPLETED" %}
+        <tr {% if order.status == "PACKED" %}
             style="background-color: #cce5ff; "
-            {% elif order.status == "RELEASED" %}
-            style="background-color: #BCA4E3;"
-            {% elif order.status == "OUTSTANDING" %}
+            {% elif order.status == "PASSED" %}
+            style="background-color: #a9fbd1;"
+            {% elif order.status == "OPEN" %}
             style="background-color: #fff3cd;"
-            {% elif order.status == "IN_PROCESS" %}
+            {% elif order.status == "IN_PROGRESS" %}
             style="background-color: #d4edda;"
+            {% elif order.status == "FAILED" %}
+            style="background-color: #ffa7a7;"
+            {% elif order.status == "REWORKED" %}
+            style="background-color: #ebcefa;"
+            {% elif order.status == "FINISHED" %}
+            style="background-color: #8fffa9;"
             {% endif %}>
 
             <td>{{ order.id }}</td>
@@ -49,14 +55,20 @@
                 <a href="{% url 'gas_filling:gas_filling_filling' order.id %}">New Fill</a>
             </td>
             <td>
-                {% if order.status == "OUTSTANDING" %}
-                Outstanding
-                {% elif order.status == "IN_PROCESS" %}
-                <a href="{% url 'gas_filling:order_status' order.id %}" class="text-success fw-bold">In Process</a>
-                {% elif order.status == "COMPLETED" %}
-                <a href="{% url 'gas_filling:order_status' order.id %}" class="text-success fw-bold">Completed</a>
-                {% elif order.status == "RELEASED" %}
-                Released
+                {% if order.status == "OPEN" %}
+                Open
+                {% elif order.status == "IN_PROGRESS" %}
+                <a href="{% url 'gas_filling:order_status' order.id %}" class="text-success fw-bold">In Progress</a>
+                {% elif order.status == "PACKED" %}
+                Packed
+                {% elif order.status == "PASSED" %}
+                Passed
+                {% elif order.status == "FAILED" %}
+                Failed
+                {% elif order.status == "REWORKED" %}
+                Reworked
+                {% elif order.status == "FINISHED" %}
+                Finished
                 {% endif %}
             </td>
 

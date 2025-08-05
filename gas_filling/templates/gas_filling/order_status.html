@@ -3,20 +3,20 @@
 {% block content %}
 
 <h2>
-    {% if order.status == "IN_PROCESS" %}
-    Mark Order #{{ order.id }} as Completed?
-    {% elif order.status == "COMPLETED" %}
-    Mark Order #{{ order.id }} as Released?
+    {% if order.status == "IN_PROGRESS" %}
+    Mark Order #{{ order.id }} as Packed?
+    {% elif order.status == "PACKED" %}
+    Mark Order #{{ order.id }} as Passed?
     {% endif %}
 </h2>
 
 <form method="post">
     {% csrf_token %}
     <button type="submit" class="btn btn-success">
-        {% if order.status == "IN_PROCESS" %}
-        Mark as Completed
-        {% elif order.status == "COMPLETED" %}
-        Mark as Released
+        {% if order.status == "IN_PROGRESS" %}
+        Mark as Packed
+        {% elif order.status == "PACKED" %}
+        Mark as Passed
         {% endif %}
     </button>
     <a href="{% url 'gas_filling:order_list' %}" class="btn btn-secondary">Cancel</a>

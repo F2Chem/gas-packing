@@ -198,17 +198,20 @@ def cylinder_create(request):
 def order_list(request):
     orders = Order.objects.annotate(
         status_order=Case(
-            When(status='OUTSTANDING', then=Value(0)),
-            When(status='IN_PROCESS', then=Value(1)),
-            When(status='COMPLETED', then=Value(2)),
-            When(status='RELEASED', then=Value(3)),
+            When(status='OPEN', then=Value(0)),
+            When(status='IN_PROGRESS', then=Value(1)),
+            When(status='PACKED', then=Value(2)),
+            When(status='PASSED', then=Value(3)),
+            When(status='FAILED', then=Value(4)),
+            When(status='REWORKED', then=Value(5)),
+            When(status='FINISHED', then=Value(6)),
             output_field=IntegerField()
         )
     ).order_by('status_order', 'id')
     
     for order in orders:
-        if order.status == 'OUTSTANDING' and order.fillings.exists():
-            order.status = 'IN_PROCESS'
+        if order.status == 'OPEN' and order.fillings.exists():
+            order.status = 'IN_PROGRESS'
             order.save()
 
     context = {
@@ -313,16 +316,16 @@ def order_status(request, pk):
     order = Order.objects.get(pk=pk)    
 
     if request.method == 'POST':
-        if order.status == 'IN_PROCESS':
-            order.status = 'COMPLETED'
+        if order.status == 'IN_PROGRESS':
+            order.status = 'PACKED'
             send_mail(
                 f'Order Finished',
                 f'Order #{order.id} has been completed.',
                 secret.FROM_EMAIL,
                 [secret.TO_EMAIL],
             )
-        elif order.status == 'COMPLETED':
-            order.status = 'RELEASED'
+        elif order.status == 'PACKED':
+            order.status = 'PASSED'
             send_mail(
                 f'Order Released',
                 f'Order #{order.id} has been released.',
