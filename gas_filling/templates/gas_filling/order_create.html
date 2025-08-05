@@ -6,13 +6,17 @@
     <h1>Create Order</h1>
     <form method="post">
         {% csrf_token %}
+        <h3>Order Details:</h3>
         {{ form.as_p }}
+        <hr>
+        <h3>First Order Line:</h3>
+        {{ orderline_form.as_p }}
         <button type="submit" class="btn btn-primary">Create</button>
     </form>
 </div>
 
 <form action="{% url 'gas_filling:order_list' %}" method="get" style="margin-top: 20px;">
-    <button type="submit" class="btn-primary">Back</button>
+    <button type="submit" class="btn btn-secondary">Back</button>
 </form>
 
 {% endblock %}

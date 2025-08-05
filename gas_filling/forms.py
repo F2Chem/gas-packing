@@ -1,5 +1,5 @@
 from django import forms
-from .models import Filling, Cylinder, Order
+from .models import Filling, Cylinder, Order, OrderLine
 
 
 class FillingForm(forms.ModelForm):
@@ -20,36 +20,24 @@ class CylinderForm(forms.ModelForm):
 
 class OrderForm(forms.ModelForm):
 
-    CYLINDER_SIZES = [
-        ("Big", "Big"),
-        ("Medium", "Medium"),
-        ("Small", "Small"),
-    ]
-    PRODUCTS = [
-        ("Pfluero", "Pfluero"),
-        ("Carbon", "Carbon"),
-        ("Chemicals", "Chemicals"),
-    ]
-    
-    cylinder_size = forms.ChoiceField(
-        choices=CYLINDER_SIZES,
-        required=False,
-        label="Cylinder Size",
-        widget=forms.Select(attrs={'class': 'form-control'})
-    )
-
-    products = forms.ChoiceField(
-        choices=PRODUCTS,
-        required=False,
-        label="Product",
-        widget=forms.Select(attrs={'class': 'form-control'})
-    )
 
     class Meta:
         model = Order
-        fields = ['customer', 'comments', 'fill_type', 'email_comments', 'fill_size', 'num_of_cylinders', 'cylinder_size', 'products']
+        fields = ['customer', 'comments', 'fill_type', 'packaging_instruction', 'field_instruction']
         widgets = {
-            'comments': forms.Textarea(attrs={'rows': 3}),
-            'email_comments': forms.Textarea(attrs={'rows': 3}),
+            'comments': forms.Textarea(attrs={'rows': 3}),  
+            'packaging_instruction': forms.Textarea(attrs={'rows': 3}),
+            'field_instruction': forms.Textarea(attrs={'rows': 3}),
             }
 
+
+class OrderLineForm(forms.ModelForm):
+    class Meta:
+        model = OrderLine
+        fields = ['product', 'cylinder_size', 'cylinder_type', 'fill_weight', 'num_cylinders', 'stillage', 'keep_heel']
+        widgets = {
+            'product': forms.Select(attrs={'class': 'form-control'}),
+            'cylinder_size': forms.Select(attrs={'class': 'form-control'}),
+            'cylinder_type': forms.Select(attrs={'class': 'form-control'}),
+            'keep_heel': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+        }

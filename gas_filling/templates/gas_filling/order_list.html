@@ -14,13 +14,12 @@
             <th>ID</th>
             <th>Customer</th>
             <th>Comments</th>
-            <th>Fill Size</th>
-            <th>Product</th>
+            <th>Number of Order Lines</th>
             <th>Added</th>
             <th>Total Fills Done</th>
             <th>Total Filled Weight</th>
             <th>Actions</th>
-            <th>Completed</th>
+            <th>Status</th>
         </tr>
     </thead>
     <tbody>
@@ -38,8 +37,7 @@
             <td>{{ order.id }}</td>
             <td>{{ order.customer }}</td>
             <td>{{ order.comments }}</td>
-            <td>{{ order.fill_size }}</td>
-            <td>{{ order.products }}</td>
+            <td>{{ order.total_orderlines }}</td>
             <td>{{ order.created_time }}</td>
             <td>{{ order.total_fills }}</td>
             <td>{{ order.total_fill_weight }}</td>

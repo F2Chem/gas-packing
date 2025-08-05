@@ -6,7 +6,7 @@ from django.contrib.auth.decorators import permission_required
 from django.utils.timezone import now
 from django.core.mail import send_mail
 import secret
-from .forms import FillingForm, CylinderForm, OrderForm
+from .forms import FillingForm, CylinderForm, OrderForm, OrderLineForm
 from .models import Filling, Cylinder, Order, Batch
 
 from reportlab.lib.enums import TA_JUSTIFY, TA_CENTER
@@ -221,12 +221,16 @@ def order_list(request):
 def order_create(request):
     if request.method == 'POST':
         order_form = OrderForm(request.POST)
-        if order_form.is_valid():
+        orderline_form = OrderLineForm(request.POST)
+        if order_form.is_valid() and orderline_form.is_valid():
             order = order_form.save()
+            orderline = orderline_form.save(commit=False)
+            orderline.order = order
+            orderline.save()
 
             send_mail(
                 f'Order #{order.id} has been created.',
-                f'Customer: {order.customer}. Comments: {order.email_comments}.',
+                f'Customer: {order.customer}. Comments: {order.packaging_instruction}.',
                 secret.FROM_EMAIL,
                 [secret.TO_EMAIL],
             )
@@ -234,9 +238,11 @@ def order_create(request):
             return redirect('gas_filling:order_list')
     else:
         order_form = OrderForm()
+        orderline_form = OrderLineForm()
 
     context = {
         'form': order_form, 
+        'orderline_form': orderline_form,
         'subsections':'gas_filling/subsections.html',
     }
     return render(request, 'gas_filling/order_create.html', context)
@@ -244,6 +250,11 @@ def order_create(request):
 
 def order_show(request, pk):
     order = Order.objects.get(pk=pk)
+
+    if order.status == 'OUTSTANDING' and order.fillings.exists():
+        order.status = 'IN_PROCESS'
+        order.save()
+
     fillings = order.fillings.all().order_by('id')
     context = {
         'order': order,
@@ -343,6 +354,22 @@ def order_status(request, pk):
 def order_test(request):
     print('In order_test')
     raise Exception("Error!")
+
+
+def orderline_create(request, order_id):
+    order = get_object_or_404(Order, id=order_id)
+    
+    if request.method == 'POST':
+        form = OrderLineForm(request.POST)
+        if form.is_valid():
+            orderline = form.save(commit=False)
+            orderline.order = order
+            orderline.save()
+            return redirect('gas_filling:order_show', order_id)
+    else:
+        form = OrderLineForm()
+
+    return render(request, 'gas_filling/orderline_create.html', {'form': form, 'order': order})
 
 
 def new_batch(request, pk, prev_batch):

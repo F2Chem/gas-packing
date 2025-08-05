@@ -39,14 +39,11 @@ class Order(models.Model):
     id = models.AutoField(primary_key=True)
     customer = models.CharField(max_length=50, blank=True, null=True)
     comments = models.TextField(blank=True, null=True)
-    email_comments = models.TextField(blank=True, null=True)
+    packaging_instruction = models.TextField(blank=True, null=True)
+    field_instruction = models.TextField(blank=True, null=True)
     fill_type = models.CharField(max_length=50, blank=True, null=True)
     created_time = models.DateTimeField(auto_now_add=True)
     timestampin = TimeStampMixin
-    cylinder_size = models.CharField(max_length=50, blank=True, null=True)
-    fill_size = models.CharField(max_length=50, blank=True, null=True)
-    products = models.CharField(max_length=50, blank=True, null=True)
-    num_of_cylinders = models.CharField(max_length=50, blank=True, null=True)
 
     STATUSES = [
         ('OUTSTANDING', 'Outstanding'),
@@ -68,6 +65,10 @@ class Order(models.Model):
     def total_fills(self):
         return self.fillings.count()
 
+    @property
+    def total_orderlines(self):
+        return self.order_lines.count()
+
         
     def reset():
         Filling.objects.all().delete()
@@ -75,12 +76,31 @@ class Order(models.Model):
 
 
 class OrderLine(models.Model):
+    CYLINDER_TYPES = [
+        ('STANDARD', 'Standard'),
+        ('STILLAGE', 'Stillage'),
+        ('TUBE_TRAILER', 'Tube Trailer'),
+        ('ISOTANK', 'Isotank'),
+    ]
+    CYLINDER_SIZES = [
+        ("BIG", "Big"),
+        ("MEDIUM", "Medium"),
+        ("SMALL", "Small"),
+    ]
+    PRODUCTS = [
+        ("PFLUERO", "Pfluero"),
+        ("CARBON", "Carbon"),
+        ("CHEMICALS", "Chemicals"),
+    ]
     id = models.AutoField(primary_key=True)
     order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='order_lines')
-    cylinder_size = models.CharField(max_length=50, blank=True, null=True)
+    product = models.CharField(choices=PRODUCTS, max_length=50)
+    cylinder_size = models.CharField(choices=CYLINDER_SIZES, max_length=50)   
     fill_weight = models.FloatField(default=0, blank=True, null=True)
     num_cylinders = models.IntegerField(blank=True, null=True)
     stillage = models.BooleanField(default=False, blank=True, null=True)
+    cylinder_type = models.CharField(max_length=20, choices=CYLINDER_TYPES)
+    keep_heel = models.BooleanField(default=False)
 
 
 class CylinderSet(models.Model):
