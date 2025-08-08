@@ -10,7 +10,7 @@ from dateutil.relativedelta import relativedelta
 
 class Cylinder(models.Model):
     id = models.AutoField(primary_key=True)
-    barcodeid = models.CharField(max_length=50, default=0, blank=True, null=True)
+    barcodeid = models.CharField(max_length=50, default=0, blank=True, null=True, unique=True)
     heel = models.FloatField(default=0, blank=True, null=True)
     test_date = models.DateField(blank=True, null=True)
     comments = models.TextField(blank=True, null=True)
@@ -111,7 +111,7 @@ class CylinderSet(models.Model):
 
 class Filling(models.Model):
     id = models.AutoField(primary_key=True)
-    cylinder = models.CharField(max_length=100)
+    cylinder = models.ForeignKey(Cylinder, on_delete=models.CASCADE, related_name='fillings', null=True, blank=True)
     cylinder_time = models.DateTimeField(null=True, blank=True)
 
     order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='fillings')

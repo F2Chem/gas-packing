@@ -7,7 +7,7 @@ from django.utils.timezone import now
 from django.core.mail import send_mail
 import secret
 from .forms import FillingForm, CylinderForm, OrderForm, OrderLineForm
-from .models import Filling, Cylinder, Order, Batch
+from .models import Filling, Cylinder, Order, Batch, Cylinder
 
 from reportlab.lib.enums import TA_JUSTIFY, TA_CENTER
 from reportlab.lib.pagesizes import A4
@@ -25,13 +25,18 @@ def gas_filling(request, pk):
     order = Order.objects.get(pk=pk)
 
     if request.method == 'POST':
-        cylinder_barcode = request.POST.get('cylinder_id')
-        if cylinder_barcode:
-            filling = Filling.objects.create(
-                cylinder=cylinder_barcode,
-                order=order,
-            )
-            return redirect('gas_filling:gas_filling_batchnum', pk=filling.id)
+        barcode = request.POST.get('cylinder_id', '').strip()
+
+        if barcode:
+            try:
+                cylinder = Cylinder.objects.get(barcodeid=barcode)
+                filling = Filling.objects.create(
+                    cylinder=cylinder,
+                    order=order,
+                )
+                return redirect('gas_filling:gas_filling_batchnum', pk=filling.id)
+            except Cylinder.DoesNotExist:
+                return redirect('gas_filling:cylinder_create', barcode=barcode, order_id=order.pk)            
 
     filling_number = order.fillings.count() + 1
 
@@ -47,7 +52,7 @@ def gas_filling_batchnum(request, pk):
     filling = Filling.objects.get(pk=pk)
 
     last_filling = Filling.objects.exclude(batch_num__isnull=True).order_by('-id').first()
-    last_batch_num = last_filling.batch_num if last_filling else None
+    last_batch_num = last_filling.batch_num if last_filling else 0
 
     if request.method == 'POST':
         batch_num = int(request.POST.get('batch_num'))
@@ -180,18 +185,27 @@ def cylinder_edit(request, pk):
     }
     return render(request, 'gas_filling/edit.html', context)
 
-def cylinder_create(request):
+def cylinder_create(request, barcode, order_id):
+    order = get_object_or_404(Order, pk=order_id)
+
     if request.method == 'POST':
         form = CylinderForm(request.POST)
         if form.is_valid():
-            form.save()
-            return redirect('gas_filling:gas_filling_home')
+            cylinder = form.save()
+            filling = Filling.objects.create(
+                cylinder=cylinder,
+                order=order,
+            )
+            return redirect('gas_filling:gas_filling_batchnum', pk=filling.id)
+      
     else:
-        form = CylinderForm()
+        form = CylinderForm(initial={'barcodeid': barcode})
 
     context = {
-        'form': form, 
-        'subsections':'gas_filling/subsections.html',
+        'form': form,
+        'barcode': barcode,
+        'order_id': order_id,
+        'subsections': 'gas_filling/subsections.html',
     }
     return render(request, 'gas_filling/create.html', context)
 

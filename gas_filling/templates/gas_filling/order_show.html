@@ -40,9 +40,9 @@ No order lines exist for this order
 {% endif %}
 
 {% if order.status == "OUTSTANDING" %}
-    <form action="{% url 'gas_filling:orderline_create' order.id %}" method="get" style="margin-top: 20px;">
-        <button type="submit" class="btn-primary">New Order Line</button>
-    </form>
+<form action="{% url 'gas_filling:orderline_create' order.id %}" method="get" style="margin-top: 20px;">
+    <button type="submit" class="btn-primary">New Order Line</button>
+</form>
 {% endif %}
 <hr>
 
@@ -69,7 +69,7 @@ No order lines exist for this order
     <tbody>
         {% for filling in fillings %}
         <tr>
-            <td>{{ filling.cylinder }}</td>
+            <td>{{ filling.cylinder.barcodeid }}</td>
             <td>{{ filling.batch_num }}</td>
             <td>{{ filling.heel_weight }}</td>
             <td>{{ filling.tare_weight }}</td>
@@ -93,10 +93,12 @@ No order lines exist for this order
 </table>
 {% endif %}
 
-
+{% if order.status != "OUTSTANDING" %}
 <form action="{% url 'gas_filling:gas_filling_filling' order.id %}" method="get" style="margin-top: 20px;">
     <button type="submit" class="btn-primary">Filling</button>
 </form>
+{% endif %}
+
 <form action="{% url 'gas_filling:order_list' %}" method="get" style="margin-top: 20px;">
     <button type="submit" class="btn-primary">Back</button>
 </form>
