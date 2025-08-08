@@ -46,13 +46,16 @@ class Order(models.Model):
     timestampin = TimeStampMixin
 
     STATUSES = [
-        ('OUTSTANDING', 'Outstanding'),
-        ('IN_PROCESS', 'In Process'),
-        ('COMPLETED', 'Completed'),
-        ('RELEASED', 'Released'),
+        ('OPEN', 'Open'),                            # Sales department are in the process of creating
+        ('IN_PROGRESS', 'In Progress'),              # Sales dept have finalised, and it is in the hands of the packager
+        ('PACKED', 'Packed'),                        # Package has said it is done, now in hands of QC
+        ('PASSED', 'Passed'),                        # QC have passed it
+        ('FAILED', 'Failed'),                        # QC have failed it, and more work required by packager
+        ('REWORKED', 'Reworked'),                    # Package has said it is done, now in hands of QC
+        ('FINISHED', 'Finished'),                    #  Packager has completed all paper work, all done
     ]
     
-    status = models.CharField(max_length=11, choices=STATUSES, default='OUTSTANDING')
+    status = models.CharField(max_length=11, choices=STATUSES, default='OPEN')
 
     class Meta:
         db_table = 'gas_filling_orders'

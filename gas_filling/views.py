@@ -9,9 +9,10 @@ import secret
 from .forms import FillingForm, CylinderForm, OrderForm, OrderLineForm
 from .models import Filling, Cylinder, Order, Batch, Cylinder
 
+from reportlab.lib import colors
 from reportlab.lib.enums import TA_JUSTIFY, TA_CENTER
 from reportlab.lib.pagesizes import A4
-from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Image
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Image, Table, TableStyle
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.lib.units import inch
 
@@ -212,17 +213,20 @@ def cylinder_create(request, barcode, order_id):
 def order_list(request):
     orders = Order.objects.annotate(
         status_order=Case(
-            When(status='OUTSTANDING', then=Value(0)),
-            When(status='IN_PROCESS', then=Value(1)),
-            When(status='COMPLETED', then=Value(2)),
-            When(status='RELEASED', then=Value(3)),
+            When(status='OPEN', then=Value(0)),
+            When(status='IN_PROGRESS', then=Value(1)),
+            When(status='PACKED', then=Value(2)),
+            When(status='PASSED', then=Value(3)),
+            When(status='FAILED', then=Value(4)),
+            When(status='REWORKED', then=Value(5)),
+            When(status='FINISHED', then=Value(6)),
             output_field=IntegerField()
         )
     ).order_by('status_order', 'id')
     
     for order in orders:
-        if order.status == 'OUTSTANDING' and order.fillings.exists():
-            order.status = 'IN_PROCESS'
+        if order.status == 'OPEN' and order.fillings.exists():
+            order.status = 'IN_PROGRESS'
             order.save()
 
     context = {
@@ -338,16 +342,16 @@ def order_status(request, pk):
     order = Order.objects.get(pk=pk)    
 
     if request.method == 'POST':
-        if order.status == 'IN_PROCESS':
-            order.status = 'COMPLETED'
+        if order.status == 'IN_PROGRESS':
+            order.status = 'PACKED'
             send_mail(
                 f'Order Finished',
                 f'Order #{order.id} has been completed.',
                 secret.FROM_EMAIL,
                 [secret.TO_EMAIL],
             )
-        elif order.status == 'COMPLETED':
-            order.status = 'RELEASED'
+        elif order.status == 'PACKED':
+            order.status = 'PASSED'
             send_mail(
                 f'Order Released',
                 f'Order #{order.id} has been released.',
@@ -435,33 +439,35 @@ def pdf_create(request):
     document.append(Paragraph('Summary of Orders and Batches', ParagraphStyle(name='Aloy', fontfamily="Helvetica", fontSize=16, alignment=TA_CENTER)))
     document.append(Spacer(1, 30))
 
-    def organiseOrder(order):
-        text = ""
-        text += "Customer: " + order.customer
+    def organiseOrder(order, number):
+        row = [None] * 7
+        row[0] = number
+        row[1] = order.customer
         if order.comments:
-            text += ", Comments: " + order.comments
-        text += ", Created Time: " + str(order.created_time)
-        text += ", Total Fills: " + str(order.total_fills)
-        text += ", Total Weight of Fills: " + str(order.total_fill_weight)
-        text += ", Order Status: " + order.status
-        return text
+            row[2] = order.comments
+        else:
+            row[2] = 'None'
+        row[3] = str(order.created_time)
+        row[4] = str(order.total_fills)
+        row[5] = str(order.total_fill_weight)
+        row[6] = order.status
+        return row
     
-    def organiseFilling(filling):
-        text = ""
-        text += "Cylinder: " + filling.cylinder
-        text += ", Cylinder Time: " + str(filling.cylinder_time)
-        text += ", Batch Number: " + str(filling.batch_num)
-        text += ", Tare Weight: " + str(filling.tare_weight)
-        text += ", " + str(filling.tare_time)
-        text += ", Heel Weight: " + str(filling.heel_weight)
-        text += ", Connection Weight: " + str(filling.connection_weight)
-        text += ", " + str(filling.connection_time)
-        text += ", End Weight: " + str(filling.end_weight)
-        text += ", " + str(filling.end_time)
-        text += ", Pulled Weight: " + str(filling.pulled_weight)
-        text += ", " + str(filling.pulled_time)
-        text += ", Filling Weight: " + str(filling.fill_weight)
-        return text
+    def organiseFilling(filling, number):
+        row = [None] * 12
+        row[0] = number
+        row[1] = filling.order.customer
+        row[2] = filling.cylinder
+        row[3] = filling.cylinder_time
+        row[4] = filling.batch_num
+        row[5] = filling.tare_weight
+        row[6] = filling.tare_time
+        row[7] = filling.heel_weight
+        row[8] = filling.connection_weight
+        row[9] = filling.end_weight
+        row[10] = filling.pulled_weight
+        row[11] = filling.fill_weight
+        return row
 
 
     def organiseBatch(batch):
@@ -471,12 +477,57 @@ def pdf_create(request):
         text += ", End Weight: " + batch.end_weight
         return text
 
+
+    ### order table ###
+    table_columns = [None] * (len(Order.objects.all())+1)
+    table_columns[0] = ["Num", "Customer", "Comments", "Order Time", "Num Fillings", "Fill Weight", "Status"]
+    count = 1
+
     for order in Order.objects.all():
-        document.append(Paragraph(organiseOrder(order), ParagraphStyle(name='Lara', fontfamily="Helvetica", fontSize=8, alignment=TA_JUSTIFY)))
-        for filling in order.fillings.all():
-            document.append(Spacer(1,2))
-            document.append(Paragraph(organiseFilling(filling), ParagraphStyle(name='Kyle', fontfamily="Helvetica", fontSize=6, alignment=TA_JUSTIFY, leftIndent=20)))
-        document.append(Spacer(1,5))
+        table_columns[count] = organiseOrder(order, count)
+        print(count+1)
+        count += 1
+
+    t = Table(table_columns)
+    t.setStyle(TableStyle([("BOX", (0, 0), (-1, -1), 0.25, colors.black), ('INNERGRID', (0, 0), (-1, -1), 0.25, colors.black)]))
+
+    for i in range(len(table_columns)):
+        if i % 2 == 0:
+            bg_colour = colors.whitesmoke
+        else:
+            bg_colour = colors.lightgrey
+
+        t.setStyle(TableStyle([('BACKGROUND', (0, i), (-1, i), bg_colour), ('FONTSIZE', (0,0), (-1,0), 10), ('FONTSIZE', (0,1), (-1,-1), 8)]))
+
+    document.append(t)
+    document.append(Spacer(1,20))
+    ### ### ###
+
+
+    ### filling table ###
+    table_columns = [None] * (len(Filling.objects.all())+1)
+    table_columns[0] = ["Num", "Order", "Cylinder", "Time", "Batch Number", "Tare Weight", "Tare Time", "Heel Weight", "Connection Weight", "End Weight","Pulled Weight", "Fill Weight"]
+    count = 1
+
+    for filling in Filling.objects.all():
+        table_columns[count] = organiseFilling(filling, count)
+        print(count+1)
+        count += 1
+
+    t = Table(table_columns)
+    t.setStyle(TableStyle([("BOX", (0, 0), (-1, -1), 0.25, colors.black), ('INNERGRID', (0, 0), (-1, -1), 0.25, colors.black)]))
+
+    for i in range(len(table_columns)):
+        if i % 2 == 0:
+            bg_colour = colors.whitesmoke
+        else:
+            bg_colour = colors.lightgrey
+
+        t.setStyle(TableStyle([('BACKGROUND', (0, i), (-1, i), bg_colour), ('FONTSIZE', (0,0), (-1,0), 6), ('FONTSIZE', (0,1), (-1,-1), 6)]))
+
+    document.append(t)
+    document.append(Spacer(1,20))
+    ### ### ###
 
     SimpleDocTemplate('OrdersBatches.pdf', pagesize=A4, rightMargin=12, leftMargin=12, topMargin=12, bottomMargin=6).build(document)
 
