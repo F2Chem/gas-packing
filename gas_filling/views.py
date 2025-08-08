@@ -480,7 +480,7 @@ def pdf_create(request):
 
     ### order table ###
     table_columns = [None] * (len(Order.objects.all())+1)
-    table_columns[0] = ["Num", "Customer", "Comments", "Order Time", "Num Fillings", "Fill Weight", "Status"]
+    table_columns[0] = ["Num", "Customer", "Comments", "Num Fillings", "Fill Weight", "Status"]
     count = 1
 
     for order in Order.objects.all():

@@ -7,8 +7,9 @@
     <button type="submit" class="btn-primary">List all Cylinders</button>
 </form>
 
-
-
+<form action="{% url 'gas_filling:batch_list' %}" method="get" style="margin-top:20px;">
+    <button type="submit" class="btn-primary">List all Batches</button>
+</form>
 
 <form action="{% url 'gas_filling:order_list' %}" method="get" style="margin-top:20px;">
     <button type="submit" class="btn-primary">Orders</button>
