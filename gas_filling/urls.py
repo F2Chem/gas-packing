@@ -25,7 +25,7 @@ urlpatterns = [
 
     path('cylinder/', views.cylinder_list, name='cylinder_list'),
     path('cylinder/show/<int:pk>/', views.cylinder_show, name='cylinder_show'),
-    path('cylinder/create/<int:barcode>/<int:order_id>', views.cylinder_create, name='cylinder_create'),
+    path('cylinder/create/<str:barcode>/<int:order_id>', views.cylinder_create, name='cylinder_create'),
     path('cylinder/edit/<int:pk>/', views.cylinder_edit, name='cylinder_edit'),
 
     path('order/', views.order_list, name='order_list'),

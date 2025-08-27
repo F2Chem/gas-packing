@@ -8,7 +8,6 @@
     <li>Order Number: {{ order.id }}</li>
     <li>Customer: {{ order.customer }}</li>
     <li>Comments: {{ order.comments }}</li>
-    <li>Fill Type: {{ order.fill_type }}</li>
     <li>Created: {{ order.created_time }}</li>
     <li>Total Fills Done: {{ order.total_fills }}</li>
     <li>Total Filled Weight: {{ order.total_fill_weight }}</li>
@@ -39,7 +38,7 @@
 No order lines exist for this order
 {% endif %}
 
-{% if order.status == "OUTSTANDING" %}
+{% if order.status == "OPEN" %}
 <form action="{% url 'gas_filling:orderline_create' order.id %}" method="get" style="margin-top: 20px;">
     <button type="submit" class="btn-primary">New Order Line</button>
 </form>
@@ -56,11 +55,14 @@ No order lines exist for this order
         <tr>
             <th>Cylinder Barcode</th>
             <th>Batch Number</th>
-            <th>Heel Weight</th>
             <th>Tare Weight</th>
+            <th>Time Tare Entered</th>
             <th>Connection Weight</th>
+            <th>Time Connection Entered</th>
             <th>End Weight</th>
+            <th>Time End Entered</th>
             <th>Pulled Weight</th>
+            <th>Time Pulled Entered</th>
             <th>Fill Weight</th>
             <th>Actions</th>
             <th>Complete?</th>
@@ -71,11 +73,14 @@ No order lines exist for this order
         <tr>
             <td>{{ filling.cylinder.barcodeid }}</td>
             <td>{{ filling.batch_num }}</td>
-            <td>{{ filling.heel_weight }}</td>
             <td>{{ filling.tare_weight }}</td>
+            <td>{{ filling.tare_time }}</td>
             <td>{{ filling.connection_weight }}</td>
+            <td>{{ filling.connection_time }}</td>
             <td>{{ filling.end_weight }}</td>
+            <td>{{ filling.end_time }}</td>
             <td>{{ filling.pulled_weight }}</td>
+            <td>{{ filling.pulled_time }}</td>
             <td style="font-weight: bold;">{{ filling.fill_weight }}</td>
             <td>
                 <a href="{% url 'gas_filling:filling_show' filling.id %}">Show</a>
@@ -93,7 +98,7 @@ No order lines exist for this order
 </table>
 {% endif %}
 
-{% if order.status != "OUTSTANDING" %}
+{% if order.status != "OPEN" %}
 <form action="{% url 'gas_filling:gas_filling_filling' order.id %}" method="get" style="margin-top: 20px;">
     <button type="submit" class="btn-primary">Filling</button>
 </form>

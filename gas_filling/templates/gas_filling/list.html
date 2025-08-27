@@ -8,19 +8,26 @@
     <thead>
         <tr>
             <th>Barcode</th>
-            <th>Heel</th>
+            <th>Tare</th>
+            <th>Start Date</th>
             <th>Test Date</th>
             <th>Comments</th>
+            <th>Status</th>
             <th>Actions</th>
         </tr>
     </thead>
     <tbody>
         {% for cylinder in cylinders %}
-        <tr>
+        <tr {% if cylinder.status == 'expired' %}style="background-color: #ffa7a7;"
+            {% elif cylinder.status == 'warning' %}style="background-color: #fff3cd;"
+            {% elif cylinder.status == 'unknown' %}style="background-color: #f0f0f0;" {% endif %}>
+
             <td>{{ cylinder.barcodeid }}</td>
-            <td>{{ cylinder.heel }}</td>
-            <td>{{ cylinder.test_date }}</td>
+            <td>{{ cylinder.tare }}</td>
+            <td>{{ cylinder.start_date|default:"Not set" }}</td>
+            <td>{{ cylinder.test_date|default:"Not set" }}</td>
             <td>{{ cylinder.comments }}</td>
+            <td>{{ cylinder.status_text }}</td>
             <td>
                 <a href="{% url 'gas_filling:cylinder_show' cylinder.id %}">Show</a> |
                 <a href="{% url 'gas_filling:cylinder_edit' pk=cylinder.id %}">Edit</a>
@@ -33,7 +40,7 @@
 <p>No cylinders found.</p>
 {% endif %}
 
-<form action="{% url 'gas_filling:gas_filling_home' %}" method="get" style="margin-top: 20px;">
+<form action="{% url 'gas_filling:order_list' %}" method="get" style="margin-top: 20px;">
     <button type="submit" class="btn-primary">Back</button>
 </form>
 

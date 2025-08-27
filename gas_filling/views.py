@@ -8,6 +8,8 @@ from django.core.mail import send_mail
 import secret
 from .forms import FillingForm, CylinderForm, OrderForm, OrderLineForm
 from .models import Filling, Cylinder, Order, Batch, Cylinder
+from datetime import date, timedelta
+
 
 from reportlab.lib import colors
 from reportlab.lib.enums import TA_JUSTIFY, TA_CENTER
@@ -36,7 +38,8 @@ def gas_filling(request, pk):
                     order=order,
                 )
                 return redirect('gas_filling:gas_filling_batchnum', pk=filling.id)
-            except Cylinder.DoesNotExist:
+
+            except (Cylinder.DoesNotExist, ValueError):
                 return redirect('gas_filling:cylinder_create', barcode=barcode, order_id=order.pk)            
 
     filling_number = order.fillings.count() + 1
@@ -156,6 +159,25 @@ def gas_filling_home(request):
 
 def cylinder_list(request):
     cylinders = Cylinder.objects.all().order_by('id')
+    today = date.today()
+
+    for cyl in cylinders:
+        if cyl.start_date is None:
+            cyl.status = 'unknown'
+            cyl.status_text = 'N/A'
+            continue
+
+        expiry_date = cyl.start_date.replace(year=cyl.start_date.year + 5)
+        if expiry_date < today:
+            cyl.status = 'expired'
+            cyl.status_text = 'Expired'
+        elif expiry_date <= today + timedelta(days=6*30):
+            cyl.status = 'warning'
+            cyl.status_text = 'Expiring Soon'
+        else:
+            cyl.status = 'ok'
+            cyl.status_text = 'Valid'
+
     context = {
         'cylinders': cylinders, 
         'subsections':'gas_filling/subsections.html',
@@ -164,6 +186,19 @@ def cylinder_list(request):
 
 def cylinder_show(request, pk):
     cylinder = Cylinder.objects.get(pk=pk)
+    today = date.today()
+
+    if cylinder.start_date is None:
+        cylinder.status_text = 'N/A'
+    else:
+        expiry_date = cylinder.start_date.replace(year=cylinder.start_date.year + 5)
+        if expiry_date < today:
+            cylinder.status_text = 'Expired'
+        elif expiry_date <= today + timedelta(days=6*30):
+            cylinder.status_text = 'Expiring Soon'
+        else:
+            cylinder.status_text = 'Valid'
+
     context = {
         'cylinder': cylinder, 
         'subsections':'gas_filling/subsections.html',
@@ -240,20 +275,27 @@ def order_create(request):
     if request.method == 'POST':
         order_form = OrderForm(request.POST)
         orderline_form = OrderLineForm(request.POST)
+
         if order_form.is_valid() and orderline_form.is_valid():
-            order = order_form.save()
+            order = order_form.save(commit=False)
             orderline = orderline_form.save(commit=False)
             orderline.order = order
+            order.save()
             orderline.save()
 
             send_mail(
                 f'Order #{order.id} has been created.',
-                f'Customer: {order.customer}. Comments: {order.packaging_instruction}.',
+                f'Order #{order.id} has been created\n'
+                f'-----------------\n'
+                f'Customer: {order.customer}\n'
+                f'-----------------\n'
+                f'Comments: {order.packaging_instruction}\n'
+                f'-----------------',
                 secret.FROM_EMAIL,
                 [secret.TO_EMAIL],
             )
 
-            return redirect('gas_filling:order_list')
+            return redirect('gas_filling:order_show', pk=order.id)
     else:
         order_form = OrderForm()
         orderline_form = OrderLineForm()
@@ -269,7 +311,7 @@ def order_create(request):
 def order_show(request, pk):
     order = Order.objects.get(pk=pk)
 
-    if order.status == 'OUTSTANDING' and order.fillings.exists():
+    if order.status == 'OPEN' and order.fillings.exists():
         order.status = 'IN_PROCESS'
         order.save()
 
