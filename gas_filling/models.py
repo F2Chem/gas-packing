@@ -146,9 +146,7 @@ class Filling(models.Model):
     @property
     def heel_weight(self):
         if self.cylinder and self.tare_weight is not None:
-            cylinder = Cylinder.barcode_search(self.cylinder)
-            if isinstance (cylinder, Cylinder):
-                return round(self.tare_weight - cylinder.heel, 1)
+            return round(self.tare_weight - self.cylinder.heel, 1)
         return 0.0
 
 

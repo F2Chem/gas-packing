@@ -7,6 +7,12 @@
     Mark Order #{{ order.id }} as Packed?
     {% elif order.status == "PACKED" %}
     Mark Order #{{ order.id }} as Passed?
+    {% elif order.status == "PASSED" %}
+    Mark Order #{{ order.id }} as Finished?
+    {% elif order.status == "FAILED" %}
+    Mark Order #{{ order.id }} as Reworked?
+    {% elif order.status == "REWORKED" %}
+    Mark Order #{{ order.id }} as Finished?
     {% endif %}
 </h2>
 
@@ -17,6 +23,12 @@
         Mark as Packed
         {% elif order.status == "PACKED" %}
         Mark as Passed
+        {% elif order.status == "PASSED" %}
+        Mark as Finished
+        {% elif order.status == "FAILED" %}
+        Mark as Reworked
+        {% elif order.status == "REWORKED" %}
+        Mark as Finished
         {% endif %}
     </button>
     <a href="{% url 'gas_filling:order_list' %}" class="btn btn-secondary">Cancel</a>

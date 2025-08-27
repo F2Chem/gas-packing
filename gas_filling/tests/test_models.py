@@ -31,11 +31,14 @@ class CylinderTests(TestCase):
 
 class OrderTests(TestCase):
     def setUp(self):
+        self.cylinder1 = Cylinder.objects.create(id='1234567', barcodeid = '71l4r487', heel = 82, test_date = date(2183, 1, 24))
+        self.cylinder2 = Cylinder.objects.create(id='7654321', barcodeid = 'ky17B031', heel = 57, test_date = date(2025, 3, 24))
+
         self.order = Order.objects.create()
-        self.filling1 = Filling.objects.create(cylinder='71l4r487', order=self.order, tare_weight=100, end_weight=284)
-        self.filling2 = Filling.objects.create(cylinder='ky17B031', order=self.order, tare_weight=32, end_weight=931)
-        self.filling3 = Filling.objects.create(cylinder='bobobobo', order=self.order, tare_weight=12, end_weight=138)
-        self.filling4 = Filling.objects.create(cylinder='0Tu4n1p0', order=self.order, tare_weight=56, end_weight=461)
+        self.filling1 = Filling.objects.create(cylinder=self.cylinder1, order=self.order, tare_weight=100, end_weight=284)
+        self.filling2 = Filling.objects.create(cylinder=self.cylinder2, order=self.order, tare_weight=32, end_weight=931)
+        self.filling3 = Filling.objects.create(cylinder=self.cylinder1, order=self.order, tare_weight=12, end_weight=138)
+        self.filling4 = Filling.objects.create(cylinder=self.cylinder2, order=self.order, tare_weight=56, end_weight=461)
 
     def testTotalFillWeight(self):
         self.assertEqual(self.order.total_fill_weight, 1614)
@@ -48,7 +51,7 @@ class FillingTests(TestCase):
     def setUp(self):
         self.order = Order.objects.create(customer='Test')
         self.cylinder = Cylinder.objects.create(id='1234567', barcodeid = '71l4r487', heel = 82, test_date = date(2183, 1, 24))
-        self.filling = Filling.objects.create(cylinder='71l4r487', order=self.order, tare_weight=100, end_weight=284)
+        self.filling = Filling.objects.create(cylinder=self.cylinder, order=self.order, tare_weight=100, end_weight=284)
 
     def testHeelWeight(self):
         self.assertEqual(self.filling.heel_weight, 18)

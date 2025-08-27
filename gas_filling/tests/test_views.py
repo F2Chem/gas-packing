@@ -61,7 +61,8 @@ class OrderViewsTests(TestCase):
 
     def setUp(self):
         self.order = Order.objects.create(customer='Test')
-        self.filling = Filling.objects.create(cylinder='BO', order=self.order)
+        self.cylinder = Cylinder.objects.create(barcodeid='Kyle81')
+        self.filling = Filling.objects.create(cylinder=self.cylinder, order=self.order)
 
     
     def testOrderList(self):
@@ -112,7 +113,7 @@ class OrderViewsTests(TestCase):
         response = self.client.get(url)
 
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.context['filling'].cylinder, 'BO')
+        self.assertEqual(response.context['filling'].cylinder, self.cylinder)
 
 
     def testFillingTareWeight(self):
@@ -121,7 +122,7 @@ class OrderViewsTests(TestCase):
         response = self.client.get(url)
 
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.context['filling'].cylinder, 'BO')
+        self.assertEqual(response.context['filling'].cylinder, self.cylinder)
 
     
     def testFillingConnectionWeight(self):
@@ -130,7 +131,7 @@ class OrderViewsTests(TestCase):
         response = self.client.get(url)
 
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.context['filling'].cylinder, 'BO')
+        self.assertEqual(response.context['filling'].cylinder, self.cylinder)
 
 
     def testFillingEndWeight(self):
@@ -139,7 +140,7 @@ class OrderViewsTests(TestCase):
         response = self.client.get(url)
 
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.context['filling'].cylinder, 'BO')
+        self.assertEqual(response.context['filling'].cylinder, self.cylinder)
 
 
     def testFillingPulledWeight(self):
@@ -148,7 +149,7 @@ class OrderViewsTests(TestCase):
         response = self.client.get(url)
 
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.context['filling'].cylinder, 'BO')
+        self.assertEqual(response.context['filling'].cylinder, self.cylinder)
 
 
     def testFillingShow(self):
@@ -157,4 +158,4 @@ class OrderViewsTests(TestCase):
         response = self.client.get(url)
 
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.context['filling'].cylinder, 'BO')
+        self.assertEqual(response.context['filling'].cylinder, self.cylinder)
