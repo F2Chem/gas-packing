@@ -7,10 +7,13 @@
     <form method="post">
         {% csrf_token %}
         {{ form.as_p }}
-        <div class="button-group">
+        <div style="margin-top: 20px;">
             <button type="submit" name="submit" class="btn btn-primary">Submit</button>
-            <a href="{% url 'gas_filling:gas_filling_filling' pk=order_id %}" class="btn btn-primary">Cancel</a>
         </div>
+    </form>
+
+    <form action="{% url 'gas_filling:gas_filling_filling' pk=order_id %}" method="get" style="margin-top: 10px;">
+        <button type="submit" class="btn btn-primary">Cancel</button>
     </form>
 </div>
 

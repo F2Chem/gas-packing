@@ -1,22 +1,68 @@
 {% extends "base.html" %}
 
 {% block content %}
+<h1>Create Order</h1>
 
-<div class="container mt-4">
-    <h1>Create Order</h1>
-    <form method="post">
-        {% csrf_token %}
-        <h3>Order Details:</h3>
-        {{ form.as_p }}
-        <hr>
-        <h3>First Order Line:</h3>
-        {{ orderline_form.as_p }}
-        <button type="submit" class="btn btn-primary">Create</button>
-    </form>
-</div>
+<form method="post">
+    {% csrf_token %}
+
+    <h2>Order Details:</h2>
+    <table border="1" cellpadding="5" cellspacing="0">
+        <tr>
+            <th>Customer</th>
+            <td>{{ form.customer }}</td>
+        </tr>
+        <tr>
+            <th>Comments</th>
+            <td>{{ form.comments }}</td>
+        </tr>
+        <tr>
+            <th>Packaging isnstruction</th>
+            <td>{{ form.packaging_instruction }}</td>
+        </tr>
+        <tr>
+            <th>QC instruction</th>
+            <td>{{ form.qc_instruction }}</td>
+        </tr>
+    </table>
+
+    <h2>First Order Line:</h2>
+    <table border="1" cellpadding="5" cellspacing="0">
+        <tr>
+            <th>Product</th>
+            <td>{{ orderline_form.product }}</td>
+        </tr>
+        <tr>
+            <th>Cylinder size</th>
+            <td>{{ orderline_form.cylinder_size }}</td>
+        </tr>
+        <tr>
+            <th>Cylinder type</th>
+            <td>{{ orderline_form.cylinder_type }}</td>
+        </tr>
+        <tr>
+            <th>Fill weight</th>
+            <td>{{ orderline_form.fill_weight }}</td>
+        </tr>
+        <tr>
+            <th>Num cylinders</th>
+            <td>{{ orderline_form.num_cylinders }}</td>
+        </tr>
+        <tr>
+            <th>Keep heel</th>
+            <td>{{ orderline_form.keep_heel }}</td>
+        </tr>
+    </table>
+
+    <div style="margin-top: 20px;">
+        <button type="submit" class="btn-primary">Create</button>
+    </div>
+</form>
 
 <form action="{% url 'gas_filling:order_list' %}" method="get" style="margin-top: 20px;">
-    <button type="submit" class="btn btn-secondary">Back</button>
+    <button type="submit" class="btn-primary">Back</button>
 </form>
+
+
 
 {% endblock %}

@@ -11,7 +11,9 @@ from dateutil.relativedelta import relativedelta
 class Cylinder(models.Model):
     id = models.AutoField(primary_key=True)
     barcodeid = models.CharField(max_length=50, default=0, blank=True, null=True, unique=True)
+    tare = models.FloatField(default=0, blank=True, null=True)
     heel = models.FloatField(default=0, blank=True, null=True)
+    start_date = models.DateField(blank=True, null=True)
     test_date = models.DateField(blank=True, null=True)
     comments = models.TextField(blank=True, null=True)
     timestampin = TimeStampMixin
@@ -40,7 +42,7 @@ class Order(models.Model):
     customer = models.CharField(max_length=50, blank=True, null=True)
     comments = models.TextField(blank=True, null=True)
     packaging_instruction = models.TextField(blank=True, null=True)
-    field_instruction = models.TextField(blank=True, null=True)
+    qc_instruction = models.TextField(blank=True, null=True)
     fill_type = models.CharField(max_length=50, blank=True, null=True)
     created_time = models.DateTimeField(auto_now_add=True)
     timestampin = TimeStampMixin
@@ -85,20 +87,14 @@ class OrderLine(models.Model):
         ('TUBE_TRAILER', 'Tube Trailer'),
         ('ISOTANK', 'Isotank'),
     ]
-    CYLINDER_SIZES = [
-        ("BIG", "Big"),
-        ("MEDIUM", "Medium"),
-        ("SMALL", "Small"),
-    ]
     PRODUCTS = [
-        ("PFLUERO", "Pfluero"),
-        ("CARBON", "Carbon"),
-        ("CHEMICALS", "Chemicals"),
+        ("OCTAFLUOROPROPANE", "Octafluoropropane"),
+        ("PERFLUOROBUTANE", "Perfluorobutane"),
     ]
     id = models.AutoField(primary_key=True)
     order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='order_lines')
     product = models.CharField(choices=PRODUCTS, max_length=50)
-    cylinder_size = models.CharField(choices=CYLINDER_SIZES, max_length=50)   
+    cylinder_size = models.FloatField(default=0, blank=True, null=True)   
     fill_weight = models.FloatField(default=0, blank=True, null=True)
     num_cylinders = models.IntegerField(blank=True, null=True)
     stillage = models.BooleanField(default=False, blank=True, null=True)

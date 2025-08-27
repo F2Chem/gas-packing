@@ -11,33 +11,31 @@ class FillingForm(forms.ModelForm):
 class CylinderForm(forms.ModelForm):
     class Meta:
         model = Cylinder
-        fields = ['barcodeid', 'heel', 'test_date', 'comments']
+        fields = ['barcodeid', 'tare', 'start_date', 'test_date', 'comments']
         widgets = {
+            'start_date': forms.DateInput(attrs={'type': 'date'}),
             'test_date': forms.DateInput(attrs={'type': 'date'}),
             'comments': forms.Textarea(attrs={'rows': 3}),
         }
 
 
 class OrderForm(forms.ModelForm):
-
-
     class Meta:
         model = Order
-        fields = ['customer', 'comments', 'fill_type', 'packaging_instruction', 'field_instruction']
+        fields = ['customer', 'comments', 'packaging_instruction', 'qc_instruction']
         widgets = {
             'comments': forms.Textarea(attrs={'rows': 3}),  
             'packaging_instruction': forms.Textarea(attrs={'rows': 3}),
-            'field_instruction': forms.Textarea(attrs={'rows': 3}),
+            'qc_instruction': forms.Textarea(attrs={'rows': 3}),
             }
 
 
 class OrderLineForm(forms.ModelForm):
     class Meta:
         model = OrderLine
-        fields = ['product', 'cylinder_size', 'cylinder_type', 'fill_weight', 'num_cylinders', 'stillage', 'keep_heel']
+        fields = ['product', 'cylinder_size', 'cylinder_type', 'fill_weight', 'num_cylinders', 'keep_heel']
         widgets = {
             'product': forms.Select(attrs={'class': 'form-control'}),
-            'cylinder_size': forms.Select(attrs={'class': 'form-control'}),
             'cylinder_type': forms.Select(attrs={'class': 'form-control'}),
             'keep_heel': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
         }

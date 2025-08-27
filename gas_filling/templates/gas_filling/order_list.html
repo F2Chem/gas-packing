@@ -78,6 +78,9 @@
 <p>No orders found.</p>
 {% endif %}
 
+<form action="{% url 'gas_filling:cylinder_list' %}" method="get" style="margin-top:20px;">
+    <button type="submit" class="btn-primary">List all Cylinders</button>
+</form>
 
 <form action="{% url 'gas_filling:pdf_create' %}" method="get" style="margin-top:20px;">
     <button type="submit" class="btn-primary">Create PDF</button>
@@ -86,6 +89,12 @@
 
 <form action="{% url 'gas_filling:gas_filling_home' %}" method="get" style="margin-top: 20px;">
     <button type="submit" class="btn-primary">Back</button>
+<form action="{% url 'gas_filling:batch_list' %}" method="get" style="margin-top:20px;">
+    <button type="submit" class="btn-primary">List all Batches</button>
+</form>
+
+<form action="{% url 'gas_filling:pdf_create' %}" method="get" style="margin-top:20px;">
+    <button type="submit" class="btn-primary">Create PDF</button>
 </form>
 
 
