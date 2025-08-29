@@ -515,11 +515,12 @@ def pdf_create(request):
 
 
     def organiseBatch(batch):
-        text = ""
-        text += "Batch Number: " + batch.batch_num
-        text += ", Start Weight: " + batch.start_weight
-        text += ", End Weight: " + batch.end_weight
-        return text
+        row = [None] * 4
+        row[0] = batch.batch_num
+        row[1] = batch.parent_order.customer
+        row[2] = batch.start_weight
+        row[3] = batch.end_weight
+        return row
 
 
     ### order table ###
@@ -529,22 +530,22 @@ def pdf_create(request):
 
     for order in Order.objects.all():
         table_columns[count] = organiseOrder(order, count)
-        print(count+1)
         count += 1
 
-    t = Table(table_columns)
-    t.setStyle(TableStyle([("BOX", (0, 0), (-1, -1), 0.25, colors.black), ('INNERGRID', (0, 0), (-1, -1), 0.25, colors.black)]))
+    t = Table(table_columns, colWidths=[40, 100, 120, 60, 60, 70])
 
-    for i in range(len(table_columns)):
-        if i % 2 == 0:
-            bg_colour = colors.whitesmoke
-        else:
-            bg_colour = colors.lightgrey
-
-        t.setStyle(TableStyle([('BACKGROUND', (0, i), (-1, i), bg_colour), ('FONTSIZE', (0,0), (-1,0), 10), ('FONTSIZE', (0,1), (-1,-1), 8)]))
+    t.setStyle(TableStyle([
+        ("BOX", (0, 0), (-1, -1), 0.25, colors.black),
+        ("INNERGRID", (0, 0), (-1, -1), 0.25, colors.black),
+        ("BACKGROUND", (0, 0), (-1, 0), colors.darkblue),
+        ("TEXTCOLOR", (0, 0), (-1, 0), colors.whitesmoke),
+        ("FONTNAME", (0, 0), (-1, 0), "Helvetica-Bold"),
+        ("FONTSIZE", (0, 0), (-1, 0), 10),
+        ("ROWBACKGROUNDS", (0, 1), (-1, -1), [colors.whitesmoke, colors.lightgrey]),
+    ]))
 
     document.append(t)
-    document.append(Spacer(1,20))
+    document.append(Spacer(1,40))
     ### ### ###
 
 
@@ -555,22 +556,48 @@ def pdf_create(request):
 
     for filling in Filling.objects.all():
         table_columns[count] = organiseFilling(filling, count)
-        print(count+1)
         count += 1
 
-    t = Table(table_columns)
-    t.setStyle(TableStyle([("BOX", (0, 0), (-1, -1), 0.25, colors.black), ('INNERGRID', (0, 0), (-1, -1), 0.25, colors.black)]))
+    t = Table(table_columns, colWidths=[90, 100, 60, 70, 70, 70, 70, 70, 70, 70, 70, 70])
 
-    for i in range(len(table_columns)):
-        if i % 2 == 0:
-            bg_colour = colors.whitesmoke
-        else:
-            bg_colour = colors.lightgrey
-
-        t.setStyle(TableStyle([('BACKGROUND', (0, i), (-1, i), bg_colour), ('FONTSIZE', (0,0), (-1,0), 6), ('FONTSIZE', (0,1), (-1,-1), 6)]))
+    t.setStyle(TableStyle([
+        ("BOX", (0, 0), (-1, -1), 0.25, colors.black),
+        ("INNERGRID", (0, 0), (-1, -1), 0.25, colors.black),
+        ("BACKGROUND", (0, 0), (-1, 0), colors.darkblue),
+        ("TEXTCOLOR", (0, 0), (-1, 0), colors.whitesmoke),
+        ("FONTNAME", (0, 0), (-1, 0), "Helvetica-Bold"),
+        ("FONTSIZE", (0, 0), (-1, 0), 10),
+        ("ROWBACKGROUNDS", (0, 1), (-1, -1), [colors.whitesmoke, colors.lightgrey]),
+    ]))
 
     document.append(t)
-    document.append(Spacer(1,20))
+    document.append(Spacer(1,40))
+    ### ### ###
+
+
+    ### batch table ###
+    table_columns = [None] * (len(Batch.objects.all())+1)
+    table_columns[0] = ["Num", "Parent Order", "Start Weight", "End Weight"]
+    count = 1
+
+    for batch in Batch.objects.all():
+        table_columns[count] = organiseBatch(batch)
+        count += 1
+
+    t = Table(table_columns, colWidths=[40, 100, 120, 60, 60, 70])
+
+    t.setStyle(TableStyle([
+        ("BOX", (0, 0), (-1, -1), 0.25, colors.black),
+        ("INNERGRID", (0, 0), (-1, -1), 0.25, colors.black),
+        ("BACKGROUND", (0, 0), (-1, 0), colors.darkblue),
+        ("TEXTCOLOR", (0, 0), (-1, 0), colors.whitesmoke),
+        ("FONTNAME", (0, 0), (-1, 0), "Helvetica-Bold"),
+        ("FONTSIZE", (0, 0), (-1, 0), 10),
+        ("ROWBACKGROUNDS", (0, 1), (-1, -1), [colors.whitesmoke, colors.lightgrey]),
+    ]))
+
+    document.append(t)
+    document.append(Spacer(1,40))
     ### ### ###
 
     SimpleDocTemplate('OrdersBatches.pdf', pagesize=A4, rightMargin=12, leftMargin=12, topMargin=12, bottomMargin=6).build(document)
