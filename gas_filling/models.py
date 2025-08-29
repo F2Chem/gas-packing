@@ -27,10 +27,14 @@ class Cylinder(models.Model):
             return "barcode error"
         
     
-    # don't use cylinder if in 6 months of it's test date
+    # don't use cylinder if in 6 months of it's test date, or expired
     def check_in_date(self):
-        tolerance = self.test_date + relativedelta(months=-6)
-        return datetime.today().date() < tolerance
+        if datetime.today().date() > self.test_date + relativedelta(years=5):
+            return 2  # expired
+        tolerance = self.test_date + relativedelta(years=5, months=-6)
+        if datetime.today().date() > tolerance:
+            return 1  # warning
+        return 0  # valid
 
 
     class Meta:

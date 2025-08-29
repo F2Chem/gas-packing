@@ -17,11 +17,13 @@ from datetime import datetime
 class CylinderTests(TestCase):
     def setUp(self):
         self.cylinder1 = Cylinder.objects.create(id='1234567', barcodeid = '71l4r487', heel = 82, test_date = date(2183, 1, 24))
-        self.cylinder2 = Cylinder.objects.create(id='7654321', barcodeid = 'ky17B031', heel = 57, test_date = date(2025, 3, 24))
+        self.cylinder2 = Cylinder.objects.create(id='7654321', barcodeid = 'ky17B031', heel = 57, test_date = date(2020, 3, 24))
+        self.cylinder3 = Cylinder.objects.create(id='4236156', barcodeid = 'C4l4L0Y7', heel = 12, test_date = date(2020, 12, 12))
 
     def testCheckinDate(self):
-        self.assertEqual(self.cylinder1.check_in_date(), True)
-        self.assertEqual(self.cylinder2.check_in_date(), False)
+        self.assertEqual(self.cylinder1.check_in_date(), 0)
+        self.assertEqual(self.cylinder2.check_in_date(), 2)
+        self.assertEqual(self.cylinder3.check_in_date(), 1)
 
     def testBarcodeSearch(self):
         self.assertAlmostEqual(Cylinder.barcode_search('71l4r487'), self.cylinder1)
