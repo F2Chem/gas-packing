@@ -11,9 +11,8 @@ class FillingForm(forms.ModelForm):
 class CylinderForm(forms.ModelForm):
     class Meta:
         model = Cylinder
-        fields = ['barcodeid', 'tare', 'start_date', 'test_date', 'comments']
+        fields = ['barcodeid', 'tare', 'test_date', 'comments']
         widgets = {
-            'start_date': forms.DateInput(attrs={'type': 'date'}),
             'test_date': forms.DateInput(attrs={'type': 'date'}),
             'comments': forms.Textarea(attrs={'rows': 3}),
         }

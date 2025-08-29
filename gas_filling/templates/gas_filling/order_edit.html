@@ -2,14 +2,38 @@
 
 {% block content %}
 <h1>Edit Order</h1>
+
 <form method="post">
     {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit" class="btn-primary">Save Changes</button>
-</form>
 
-<form action="{% url 'gas_filling:order_list' %}" method="get" style="margin-top: 20px;">
-    <button type="submit" class="btn-primary">Back</button>
-</form>
+    <h2>Order Details:</h2>
+    <table border="1" cellpadding="5" cellspacing="0">
+        <tr>
+            <th>Customer</th>
+            <td>{{ form.customer }}</td>
+        </tr>
+        <tr>
+            <th>Comments</th>
+            <td>{{ form.comments }}</td>
+        </tr>
+        <tr>
+            <th>Packaging Instruction</th>
+            <td>{{ form.packaging_instruction }}</td>
+        </tr>
+        <tr>
+            <th>QC Instruction</th>
+            <td>{{ form.qc_instruction }}</td>
+        </tr>
+    </table>
+
+    <div style="display: flex; gap: 10px; margin-top: 20px;">
+        <form method="post">
+            <button type="submit" class="btn-primary">Save Changes</button>
+        </form>
+
+        <form action="{% url 'gas_filling:order_list' %}" method="get">
+            <button type="submit" class="btn-secondary">Back</button>
+        </form>
+    </div>
 
 {% endblock %}

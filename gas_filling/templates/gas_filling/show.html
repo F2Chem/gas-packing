@@ -3,13 +3,12 @@
 {% block content %}
 <h1>Show Cylinder Details</h1>
 <ul>
-    <li>Barcode: {{ cylinder.barcodeid }}</li>
-    <li>Tare: {{ cylinder.tare }}</li>
-    <li>Heel: {{ cylinder.heel }}</li>
-    <li>Start Date: {{ cylinder.start_date }}</li>
-    <li>Test Date: {{ cylinder.test_date }}</li>
-    <li>Status: {{ cylinder.status_text }}</li>
-    <li>Comments: {{ cylinder.comments }}</li>
+    <li><em>Barcode:</em> {{ cylinder.barcodeid }}</li>
+    <li><em>Tare:</em> {{ cylinder.tare }}</li>
+    <li><em>Heel:</em> {{ cylinder.heel }}</li>
+    <li><em>Test Date:</em> {{ cylinder.test_date }}</li>
+    <li><em>Status:</em> {{ cylinder.status_text }}</li>
+    <li><em>Comments:</em> {{ cylinder.comments }}</li>
 </ul>
 
 <form action="{% url 'gas_filling:cylinder_list' %}" method="get" style="margin-top: 20px;">

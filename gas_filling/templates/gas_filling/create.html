@@ -7,15 +7,16 @@
     <form method="post">
         {% csrf_token %}
         {{ form.as_p }}
-        <div style="margin-top: 20px;">
-            <button type="submit" name="submit" class="btn btn-primary">Submit</button>
-        </div>
-    </form>
+        <div style="display: flex; gap: 10px; margin-top: 20px;">
+            <form method="post">
+                <button type="submit" class="btn-primary">Submit</button>
+            </form>
 
-    <form action="{% url 'gas_filling:gas_filling_filling' pk=order_id %}" method="get" style="margin-top: 10px;">
-        <button type="submit" class="btn btn-primary">Cancel</button>
-    </form>
-</div>
+            <form action="{% url 'gas_filling:gas_filling_filling' pk=order_id %}" method="get">
+                <button type="submit" class="btn-secondary">Cancel</button>
+            </form>
+        </div>
+
 
 
 

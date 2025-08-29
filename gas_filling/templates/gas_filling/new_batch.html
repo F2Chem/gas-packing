@@ -6,14 +6,19 @@
 
 <form method="post">
     {% csrf_token %}
-    <div class="mb-3">
-        <label for="end_weight" class="form-label">End Weight of Previous Batch #{{ prev_batch }}</label>
+
+    <div class="mb-4">
+        <label for="end_weight" class="form-label">End Weight of Last Batch #{{ prev_batch }}</label>
         <input type="number" step="0.1" class="form-control" name="end_weight" required>
     </div>
-    <div class="mb-3">
+    <p style="margin-bottom: 20px;"></p>
+    <div class="mb-4">
         <label for="start_weight" class="form-label">Start Weight of New Batch #{{ batch_num }}</label>
         <input type="number" step="0.1" class="form-control" name="start_weight" required>
     </div>
-    <button type="submit" class="btn btn-primary">Continue</button>
+    <p style="margin-bottom: 30px;"></p>
+    <div class="mt-4">
+        <button type="submit" class="btn btn-primary">Continue</button>
+    </div>
 </form>
 {% endblock %}

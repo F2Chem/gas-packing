@@ -11,9 +11,9 @@
 <table border="1" cellpadding="5" cellspacing="0">
     <thead>
         <tr>
-            <th>ID</th>
             <th>Customer</th>
-            <th>Comments</th>
+            <th>Target Fill</th>
+            <th>Order Number</th>
             <th>Number of Order Lines</th>
             <th>Added</th>
             <th>Total Fills Done</th>
@@ -40,9 +40,9 @@
             style="background-color: #8fffa9;"
             {% endif %}>
 
-            <td>{{ order.id }}</td>
             <td>{{ order.customer }}</td>
-            <td>{{ order.comments }}</td>
+            <td>{{ order.target_fill }}</td>
+            <td>{{ order.order_number }}</td>
             <td>{{ order.total_orderlines }}</td>
             <td>{{ order.created_time }}</td>
             <td>{{ order.total_fills }}</td>
@@ -78,13 +78,6 @@
 <p>No orders found.</p>
 {% endif %}
 
-<form action="{% url 'gas_filling:cylinder_list' %}" method="get" style="margin-top:20px;">
-    <button type="submit" class="btn-primary">List all Cylinders</button>
-</form>
-
-<form action="{% url 'gas_filling:batch_list' %}" method="get" style="margin-top:20px;">
-    <button type="submit" class="btn-primary">List all Batches</button>
-</form>
 
 <form action="{% url 'gas_filling:pdf_create' %}" method="get" style="margin-top:20px;">
     <button type="submit" class="btn-primary">Create PDF</button>

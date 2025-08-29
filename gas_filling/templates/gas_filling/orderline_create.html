@@ -6,7 +6,13 @@
 <form method="post">
     {% csrf_token %}
     {{ form.as_p }}
-    <button type="submit" class="btn btn-success">Save Order Line</button>
-    <a href="{% url 'gas_filling:order_show' order.id %}" class="btn btn-secondary">Cancel</a>
-</form>
+    <div style="display: flex; gap: 10px; margin-top: 20px;">
+        <form method="post">
+            <button type="submit" class="btn-primary">Save Order Line</button>
+        </form>
+
+        <form action="{% url 'gas_filling:order_show' order.id %}" method="get">
+            <button type="submit" class="btn-secondary">Cancel</button>
+        </form>
+    </div>
 {% endblock %}
