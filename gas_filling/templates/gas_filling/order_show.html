@@ -5,14 +5,21 @@
 
 <h3>General Order Info</h3>
 <ul>
-    <li>Order Number: {{ order.id }}</li>
-    <li>Customer: {{ order.customer }}</li>
-    <li>Comments: {{ order.comments }}</li>
-    <li>Created: {{ order.created_time }}</li>
-    <li>Total Fills Done: {{ order.total_fills }}</li>
-    <li>Total Filled Weight: {{ order.total_fill_weight }}</li>
-    <li>Total Order Lines: {{ order.total_orderlines }}</li>
-    <li>Status: {% if order.status == "PACKED" %}Packed{% elif order.status == "PASSED" %}Passed{% elif order.status == "IN_PROGRESS" %}In Progress{% elif order.status == "FINISHED" %}Finished{% elif order.status == "FAILED" %}Failed{% elif order.status == "REWORKED" %}Reworked{% else %}Open{% endif %}</li>
+    <li><em>Order Number:</em> {{ order.order_number }}</li>
+    <li><em>Customer:</em> {{ order.customer }}</li>
+    <li><em>Comments:</em> {{ order.comments }}</li>
+    <li><em>Packing Instructions:</em> {{ order.packing_instruction }}</li>
+    <li><em>QC Instructions:</em> {{ order.qc_instruction }}</li>
+    <li><em>Created:</em> {{ order.created_time }}</li>
+    <li><em>Target Fill Weight:</em> {{ order.target_fill }}</li>
+    <li><em>Total Fills Done:</em> {{ order.total_fills }}</li>
+    <li><em>Total Filled Weight:</em> {{ order.total_fill_weight }}</li>
+    <li><em>Total Order Lines:</em> {{ order.total_orderlines }}</li>
+    <li>
+        <em>Status:</em><span style="background-color: {{ order.get_status_colour }}; color: white; font-weight: bold; padding: 2px 6px; border-radius: 4px;">
+            {{ order.get_status_display }}
+        </span>
+    </li>
 </ul>
 
 <h3>Order Lines</h3>
@@ -23,13 +30,13 @@
     <li>
         Order Line {{ forloop.counter }}:
         <ul>
-            <li>Product:</> {{ line.product }}</li>
-            <li>Cylinder Size:</> {{ line.cylinder_size }}</li>
-            <li>Fill Weight:</> {{ line.fill_weight }}</li>
-            <li>Number of Cylinders:</> {{ line.num_cylinders }}</li>
-            <li>Cylinder Type:</> {{ line.cylinder_type }}</li>
-            <li>Stillage:</> {{ line.stillage|yesno:"Yes,No" }}</li>
-            <li>Keep Heel:</> {{ line.keep_heel|yesno:"Yes,No" }}</li>
+            <li><em>Product:</em> {{ line.product }}</li>
+            <li><em>Cylinder Size:</em> {{ line.cylinder_size }}</li>
+            <li><em>Fill Weight:</em> {{ line.fill_weight }}</li>
+            <li><em>Number of Cylinders:</em> {{ line.num_cylinders }}</li>
+            <li><em>Cylinder Type:</em> {{ line.cylinder_type }}</li>
+            <li><em>Stillage:</em> {{ line.stillage|yesno:"Yes,No" }}</li>
+            <li><em>Keep Heel:</em> {{ line.keep_heel|yesno:"Yes,No" }}</li>
         </ul>
     </li>
     {% endfor %}
@@ -56,13 +63,9 @@ No order lines exist for this order
             <th>Cylinder Barcode</th>
             <th>Batch Number</th>
             <th>Tare Weight</th>
-            <th>Time Tare Entered</th>
             <th>Connection Weight</th>
-            <th>Time Connection Entered</th>
             <th>End Weight</th>
-            <th>Time End Entered</th>
             <th>Pulled Weight</th>
-            <th>Time Pulled Entered</th>
             <th>Fill Weight</th>
             <th>Actions</th>
             <th>Complete?</th>
@@ -74,13 +77,9 @@ No order lines exist for this order
             <td>{{ filling.cylinder.barcodeid }}</td>
             <td>{{ filling.batch_num }}</td>
             <td>{{ filling.tare_weight }}</td>
-            <td>{{ filling.tare_time }}</td>
             <td>{{ filling.connection_weight }}</td>
-            <td>{{ filling.connection_time }}</td>
             <td>{{ filling.end_weight }}</td>
-            <td>{{ filling.end_time }}</td>
             <td>{{ filling.pulled_weight }}</td>
-            <td>{{ filling.pulled_time }}</td>
             <td style="font-weight: bold;">{{ filling.fill_weight }}</td>
             <td>
                 <a href="{% url 'gas_filling:filling_show' filling.id %}">Show</a>

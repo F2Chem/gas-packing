@@ -158,25 +158,10 @@ def gas_filling_home(request):
     return render(request, 'gas_filling/home.html', context)
 
 def cylinder_list(request):
-    cylinders = Cylinder.objects.all().order_by('id')
-    today = date.today()
-
+    cylinders = Cylinder.objects.all().order_by('id')  
+    
     for cyl in cylinders:
-        if cyl.start_date is None:
-            cyl.status = 'unknown'
-            cyl.status_text = 'N/A'
-            continue
-
-        expiry_date = cyl.start_date.replace(year=cyl.start_date.year + 5)
-        if expiry_date < today:
-            cyl.status = 'expired'
-            cyl.status_text = 'Expired'
-        elif expiry_date <= today + timedelta(days=6*30):
-            cyl.status = 'warning'
-            cyl.status_text = 'Expiring Soon'
-        else:
-            cyl.status = 'ok'
-            cyl.status_text = 'Valid'
+        cyl.status, cyl.status_text = cyl.check_in_date()
 
     context = {
         'cylinders': cylinders, 
@@ -186,18 +171,8 @@ def cylinder_list(request):
 
 def cylinder_show(request, pk):
     cylinder = Cylinder.objects.get(pk=pk)
-    today = date.today()
 
-    if cylinder.start_date is None:
-        cylinder.status_text = 'N/A'
-    else:
-        expiry_date = cylinder.start_date.replace(year=cylinder.start_date.year + 5)
-        if expiry_date < today:
-            cylinder.status_text = 'Expired'
-        elif expiry_date <= today + timedelta(days=6*30):
-            cylinder.status_text = 'Expiring Soon'
-        else:
-            cylinder.status_text = 'Valid'
+    cylinder.status, cylinder.status_text = cylinder.check_in_date()
 
     context = {
         'cylinder': cylinder, 

@@ -9,7 +9,6 @@
         <tr>
             <th>Barcode</th>
             <th>Tare</th>
-            <th>Start Date</th>
             <th>Test Date</th>
             <th>Status</th>
             <th>Actions</th>
@@ -23,11 +22,9 @@
 
             <td>{{ cylinder.barcodeid }}</td>
             <td>{{ cylinder.tare }}</td>
-            <td>{{ cylinder.start_date|default:"Not set" }}</td>
             <td>{{ cylinder.test_date|default:"Not set" }}</td>
-            <td>{% if cylinder.check_in_date == 2 %} expired
-                {% elif cylinder.check_in_date == 1 %} warning
-                {% elif cylinder.check_in_date == 0 %} valid {% endif %}</td>
+            <td>{{ cylinder.status_text }}</td>
+
             <td>
                 <a href="{% url 'gas_filling:cylinder_show' cylinder.id %}">Show</a> |
                 <a href="{% url 'gas_filling:cylinder_edit' pk=cylinder.id %}">Edit</a>
