@@ -4,7 +4,7 @@
 <h1>All Orders</h1>
 
 <form action="{% url 'gas_filling:order_create' %}" method="get" style="margin-top: 20px;">
-    <button type="submit" class="btn-primary">Create New</button>
+    <button type="submit" class="btn-primary">Create New Order</button>
 </form>
 
 {% if orders %}
@@ -58,13 +58,13 @@
                 {% elif order.status == "IN_PROGRESS" %}
                 <a href="{% url 'gas_filling:order_status' order.id %}" class="text-success fw-bold">In Progress</a>
                 {% elif order.status == "PACKED" %}
-                Packed
+                <a href="{% url 'gas_filling:order_status' order.id %}" class="text-success fw-bold">Packed</a>
                 {% elif order.status == "PASSED" %}
-                Passed
+                <a href="{% url 'gas_filling:order_status' order.id %}" class="text-success fw-bold">Passed</a>
                 {% elif order.status == "FAILED" %}
-                Failed
+                <a href="{% url 'gas_filling:order_status' order.id %}" class="text-success fw-bold">Failed</a>
                 {% elif order.status == "REWORKED" %}
-                Reworked
+                <a href="{% url 'gas_filling:order_status' order.id %}" class="text-success fw-bold">Reworked</a>
                 {% elif order.status == "FINISHED" %}
                 Finished
                 {% endif %}
@@ -82,5 +82,10 @@
 <form action="{% url 'gas_filling:pdf_create' %}" method="get" style="margin-top:20px;">
     <button type="submit" class="btn-primary">Create PDF</button>
 </form>
+
+<form action="{% url 'gas_filling:gas_filling_home' %}" method="get" style="margin-top: 20px;">
+    <button type="submit" class="btn-primary">Back</button>
+</form>
+
 
 {% endblock %}

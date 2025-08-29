@@ -26,7 +26,7 @@ class Cylinder(models.Model):
             return "barcode error"
         
     
-    # don't use cylinder if in 6 months of it's test date
+    # don't use cylinder if in 6 months of it's test date, or expired
     def check_in_date(self):
         if self.test_date is None:
             return 'unknown', 'N/A'
@@ -168,9 +168,7 @@ class Filling(models.Model):
     @property
     def heel_weight(self):
         if self.cylinder and self.tare_weight is not None:
-            cylinder = Cylinder.barcode_search(self.cylinder)
-            if isinstance (cylinder, Cylinder):
-                return round(self.tare_weight - cylinder.heel, 1)
+            return round(self.tare_weight - self.cylinder.heel, 1)
         return 0.0
 
 

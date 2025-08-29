@@ -287,7 +287,7 @@ def order_show(request, pk):
     order = Order.objects.get(pk=pk)
 
     if order.status == 'OPEN' and order.fillings.exists():
-        order.status = 'IN_PROCESS'
+        order.status = 'IN_PROGRESS'
         order.save()
 
     fillings = order.fillings.all().order_by('id')
@@ -375,6 +375,8 @@ def order_status(request, pk):
                 secret.FROM_EMAIL,
                 [secret.TO_EMAIL],
             )
+        elif order.status == 'PASSED':
+            order.status = 'FINISHED'
         order.save()        
 
         return redirect('gas_filling:order_list')

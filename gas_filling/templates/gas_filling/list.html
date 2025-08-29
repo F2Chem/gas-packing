@@ -16,14 +16,15 @@
     </thead>
     <tbody>
         {% for cylinder in cylinders %}
-        <tr {% if cylinder.status == 'expired' %}style="background-color: #ffa7a7;"
-            {% elif cylinder.status == 'warning' %}style="background-color: #fff3cd;"
-            {% elif cylinder.status == 'unknown' %}style="background-color: #f0f0f0;" {% endif %}>
+        <tr {% if cylinder.check_in_date == 2 %}style="background-color: #ffa7a7;"
+            {% elif cylinder.check_in_date == 1 %}style="background-color: #fff3cd;"
+            {% elif cylinder.check_in_date == 0 %}style="background-color: #f0f0f0;" {% endif %}>
 
             <td>{{ cylinder.barcodeid }}</td>
             <td>{{ cylinder.tare }}</td>
             <td>{{ cylinder.test_date|default:"Not set" }}</td>
             <td>{{ cylinder.status_text }}</td>
+
             <td>
                 <a href="{% url 'gas_filling:cylinder_show' cylinder.id %}">Show</a> |
                 <a href="{% url 'gas_filling:cylinder_edit' pk=cylinder.id %}">Edit</a>
