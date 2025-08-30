@@ -28,18 +28,12 @@ class Cylinder(models.Model):
     
     # don't use cylinder if in 6 months of it's test date, or expired
     def check_in_date(self):
-        if self.test_date is None:
-            return 'unknown', 'N/A'
-
-        expiry_date = self.test_date.replace(year=self.test_date.year + 5)
-        today = date.today()
-        
-        if expiry_date < today:
-            return 'expired', 'Expired'
-        elif expiry_date <= today + relativedelta(months=+6):
-            return 'warning', 'Expiring Soon'
-        else:
-            return 'ok', 'Valid'
+        if datetime.today().date() > self.test_date + relativedelta(years=5):
+            return 2  # expired
+        tolerance = self.test_date + relativedelta(years=5, months=-6)
+        if datetime.today().date() > tolerance:
+            return 1  # warning
+        return 0  # valid
 
 
     class Meta:
@@ -84,11 +78,11 @@ class Order(models.Model):
 
     @property
     def total_fill_weight(self):
-        return sum(filling.fill_weight for filling in self.fillings.all())
+        return sum(filling.fill_weight for filling in self.fillings.all() if filling.end_weight is not None and filling.end_weight > 0)
 
     @property
     def total_fills(self):
-        return self.fillings.count()
+        return self.fillings.filter(end_weight__isnull=False).exclude(end_weight=0).count()
 
     @property
     def total_orderlines(self):
@@ -144,8 +138,8 @@ class Filling(models.Model):
     batch_num = models.IntegerField(blank=True, null=True)
     batch_time = models.DateTimeField(null=True, blank=True)
 
-    tare_weight = models.FloatField(default=0, blank=True, null=True)
-    tare_time = models.DateTimeField(null=True, blank=True)
+    heel_weight = models.FloatField(default=0, blank=True, null=True)
+    heel_time = models.DateTimeField(null=True, blank=True)
 
     connection_weight = models.FloatField(default=0, blank=True, null=True)
     connection_time = models.DateTimeField(null=True, blank=True)
@@ -161,14 +155,14 @@ class Filling(models.Model):
 
     @property
     def fill_weight(self):
-        if self.end_weight is not None and self.tare_weight is not None:
-            return round(self.end_weight - self.tare_weight, 1)
+        if self.pulled_weight and self.cylinder and self.cylinder.tare:
+            return round(self.pulled_weight - self.cylinder.tare, 1)
         return 0.0
     
     @property
-    def heel_weight(self):
-        if self.cylinder and self.tare_weight is not None:
-            return round(self.tare_weight - self.cylinder.heel, 1)
+    def net_heel_weight(self):
+        if self.cylinder and self.cylinder.tare and self.heel_weight is not None:
+            return round(self.heel_weight - self.cylinder.tare, 1)
         return 0.0
 
 

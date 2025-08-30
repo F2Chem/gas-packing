@@ -10,7 +10,7 @@ urlpatterns = [
 
     path('filling/<int:pk>/', views.gas_filling, name='gas_filling_filling'),
     path('filling/batch/<int:pk>/', views.gas_filling_batchnum, name='gas_filling_batchnum'),
-    path('filling/tareweight/<int:pk>/', views.gas_filling_tareweight, name='gas_filling_tareweight'),
+    path('filling/heelweight/<int:pk>/', views.gas_filling_heelweight, name='gas_filling_heelweight'),
     path('filling/connectionweight/<int:pk>/', views.gas_filling_connectionweight, name='gas_filling_connectionweight'),
     path('filling/endweight/<int:pk>/', views.gas_filling_endweight, name='gas_filling_endweight'),
     path('filling/pulledweight/<int:pk>/', views.gas_filling_pulledweight, name='gas_filling_pulledweight'),
@@ -34,6 +34,7 @@ urlpatterns = [
     path('order/<int:pk>/edit/', views.order_edit, name='order_edit'),
     path('order/<int:pk>/status/', views.order_status, name='order_status'),
     path('order/new_orderline/<int:order_id>/', views.orderline_create, name='orderline_create'),
+    path('order/edit_orderline/<int:orderline_id>/', views.orderline_edit, name='orderline_edit'),
 
 
     path('pdfcreate/', views.pdf_create, name='pdf_create'),

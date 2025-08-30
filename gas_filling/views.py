@@ -7,7 +7,7 @@ from django.utils.timezone import now
 from django.core.mail import send_mail
 import secret
 from .forms import FillingForm, CylinderForm, OrderForm, OrderLineForm
-from .models import Filling, Cylinder, Order, Batch, Cylinder
+from .models import Filling, Cylinder, Order, Batch, Cylinder, OrderLine
 from datetime import date, timedelta
 
 
@@ -68,7 +68,7 @@ def gas_filling_batchnum(request, pk):
         if is_new_batch:
             return redirect('gas_filling:gas_filling_newbatch', pk=filling.id, prev_batch=last_batch_num)
 
-        return redirect('gas_filling:gas_filling_tareweight', pk=filling.id)
+        return redirect('gas_filling:gas_filling_heelweight', pk=filling.id)
 
     context = {
         'filling': filling,
@@ -78,14 +78,14 @@ def gas_filling_batchnum(request, pk):
     return render(request, 'gas_filling/filling_batch.html', context)
 
 
-def gas_filling_tareweight(request, pk):
+def gas_filling_heelweight(request, pk):
     filling = Filling.objects.get(pk=pk)
 
     if request.method == 'POST':
-        tare_weight = request.POST.get('tare_weight')
-        if tare_weight:
-            filling.tare_weight = tare_weight
-            filling.tare_time = now()
+        heel_weight = request.POST.get('heel_weight')
+        if heel_weight:
+            filling.heel_weight = heel_weight
+            filling.heel_time = now()
             filling.save()
             return redirect('gas_filling:gas_filling_connectionweight', pk=filling.id)
             
@@ -93,7 +93,7 @@ def gas_filling_tareweight(request, pk):
         'filling': filling, 
         'subsections':'gas_filling/subsections.html',
     }
-    return render(request, 'gas_filling/filling_tare.html', context)
+    return render(request, 'gas_filling/filling_heel.html', context)
 
 def gas_filling_connectionweight(request, pk):
     filling = Filling.objects.get(pk=pk)
@@ -161,7 +161,15 @@ def cylinder_list(request):
     cylinders = Cylinder.objects.all().order_by('id')  
     
     for cyl in cylinders:
-        cyl.status, cyl.status_text = cyl.check_in_date()
+        status_code = cyl.check_in_date()
+        cyl.status = status_code
+        
+        if status_code == 2:
+            cyl.status_text = 'Expired'
+        elif status_code == 1:
+            cyl.status_text = 'Expiring Soon'
+        else:
+            cyl.status_text = 'Valid'
 
     context = {
         'cylinders': cylinders, 
@@ -172,7 +180,15 @@ def cylinder_list(request):
 def cylinder_show(request, pk):
     cylinder = Cylinder.objects.get(pk=pk)
 
-    cylinder.status, cylinder.status_text = cylinder.check_in_date()
+    status_code = cylinder.check_in_date()
+    cylinder.status = status_code
+    
+    if status_code == 2:
+        cylinder.status_text = 'Expired'
+    elif status_code == 1:
+        cylinder.status_text = 'Expiring Soon'
+    else:
+        cylinder.status_text = 'Valid'
 
     context = {
         'cylinder': cylinder, 
@@ -348,8 +364,8 @@ def continue_filling(request, pk):
 
     if not filling.batch_num:
         return redirect('gas_filling:gas_filling_batchnum', pk=filling.id)
-    elif not filling.tare_weight:
-        return redirect('gas_filling:gas_filling_tareweight', pk=filling.id)
+    elif not filling.heel_weight:
+        return redirect('gas_filling:gas_filling_heelweight', pk=filling.id)
     elif not filling.end_weight:
         return redirect('gas_filling:gas_filling_endweight', pk=filling.id)
     else:
@@ -409,6 +425,26 @@ def orderline_create(request, order_id):
     return render(request, 'gas_filling/orderline_create.html', {'form': form, 'order': order})
 
 
+def orderline_edit(request, orderline_id):
+    orderline = get_object_or_404(OrderLine, id=orderline_id)
+    order = orderline.order
+
+    if request.method == 'POST':
+        form = OrderLineForm(request.POST, instance=orderline)
+        if form.is_valid():
+            form.save()
+            return redirect('gas_filling:order_show', pk=order.id)
+    else:
+        form = OrderLineForm(instance=orderline)
+
+    context = {
+        'order': order,
+        'form': form,
+        'subsections':'gas_filling/subsections.html',
+    }
+    return render(request, 'gas_filling/orderline_edit.html', context)
+
+
 def new_batch(request, pk, prev_batch):
     filling = get_object_or_404(Filling, pk=pk)
     order = filling.order
@@ -432,7 +468,7 @@ def new_batch(request, pk, prev_batch):
             defaults={'start_weight': start_weight}
         )
 
-        return redirect('gas_filling:gas_filling_tareweight', pk=filling.id)
+        return redirect('gas_filling:gas_filling_heelweight', pk=filling.id)
 
     context = {
         'filling': filling,
@@ -479,8 +515,8 @@ def pdf_create(request):
         row[2] = filling.cylinder
         row[3] = filling.cylinder_time
         row[4] = filling.batch_num
-        row[5] = filling.tare_weight
-        row[6] = filling.tare_time
+        row[5] = filling.heel_weight
+        row[6] = filling.heel_time
         row[7] = filling.heel_weight
         row[8] = filling.connection_weight
         row[9] = filling.end_weight
@@ -526,7 +562,7 @@ def pdf_create(request):
 
     ### filling table ###
     table_columns = [None] * (len(Filling.objects.all())+1)
-    table_columns[0] = ["Num", "Order", "Cylinder", "Time", "Batch Number", "Tare Weight", "Tare Time", "Heel Weight", "Connection Weight", "End Weight","Pulled Weight", "Fill Weight"]
+    table_columns[0] = ["Num", "Order", "Cylinder", "Time", "Batch Number", "Heel Weight", "Heel Time", "Tare Weight", "Connection Weight", "End Weight","Pulled Weight", "Fill Weight"]
     count = 1
 
     for filling in Filling.objects.all():

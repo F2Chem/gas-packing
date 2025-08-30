@@ -4,22 +4,46 @@
 
 <h2>Showing Filling</h2>
 
-
-<p>Cylinder: {{ filling.cylinder }}</p>
-<p>Cylinder Time: {{ filling.cylinder_time }}</p>
-<p>Order: {{ filling.order }}</p>
+<p>Cylinder: {{ filling.cylinder.barcodeid }}</p>
+<p>Target Fill Weight: {{ filling.order.target_fill }}</p>
+<p>Order: {{ filling.order.order_number }}</p>
 <p>Batch Number: {{ filling.batch_num }}</p>
-<p>Batch Time: {{ filling.batch_time }}</p>
-<p>Heel Weight: {{ filling.heel_weight }}</p>
-<p>Tare Weight: {{ filling.tare_weight }}</p>
-<p>Tare Time: {{ filling.tare_time }}</p>
-<p>Connection Weight: {{ filling.connection_weight }}</p>
-<p>Connection Time: {{ filling.connection_time }}</p>
-<p>End Weight: {{ filling.end_weight }}</p>
-<p>End Time: {{ filling.end_time }}</p>
-<p>Pulled Weight: {{ filling.pulled_weight }}</p>
-<p>Pulled Time: {{ filling.pulled_time }}</p>
+<p>Tare Weight: {{ filling.cylinder.tare }}</p>
 <p>Fill Weight: <strong>{{ filling.fill_weight }}</strong></p>
+
+<h1>Filling Times</h1>
+
+<table border="1" cellpadding="5" cellspacing="0">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Value</th>
+            <th>Timestamp</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>Heel Weight</td>
+            <td>{{ filling.heel_weight }}</td>
+            <td>{{ filling.heel_time }}</td>
+        </tr>
+        <tr>
+            <td>Connection Weight</td>
+            <td>{{ filling.connection_weight }}</td>
+            <td>{{ filling.connection_time }}</td>
+        </tr>
+        <tr>
+            <td>End Weight</td>
+            <td>{{ filling.end_weight }}</td>
+            <td>{{ filling.end_time }}</td>
+        </tr>
+        <tr>
+            <td>Pulled Weight</td>
+            <td>{{ filling.pulled_weight }}</td>
+            <td>{{ filling.pulled_time }}</td>
+        </tr>
+    </tbody>
+</table>
 
 <form action="{% url 'gas_filling:filling_edit' filling.id %}" method="post">
     {% csrf_token %}

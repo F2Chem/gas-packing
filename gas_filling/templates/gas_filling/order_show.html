@@ -27,8 +27,8 @@
 {% if order.order_lines.exists %}
 <ul>
     {% for line in order.order_lines.all %}
-    <li>
-        Order Line {{ forloop.counter }}:
+    <li style="margin-bottom: 30px;">
+        <strong>Order Line {{ forloop.counter }}:</strong>
         <ul>
             <li><em>Product:</em> {{ line.product }}</li>
             <li><em>Cylinder Size:</em> {{ line.cylinder_size }}</li>
@@ -38,12 +38,18 @@
             <li><em>Stillage:</em> {{ line.stillage|yesno:"Yes,No" }}</li>
             <li><em>Keep Heel:</em> {{ line.keep_heel|yesno:"Yes,No" }}</li>
         </ul>
+
+        <form action="{% url 'gas_filling:orderline_edit' line.id %}" method="get" style="margin-top:5px;">
+            <button type="submit" class="btn-primary">Edit Order Line</button>
+        </form>
     </li>
     {% endfor %}
 </ul>
 {% else %}
 No order lines exist for this order
 {% endif %}
+
+
 
 {% if order.status == "OPEN" %}
 <form action="{% url 'gas_filling:orderline_create' order.id %}" method="get" style="margin-top: 20px;">
@@ -62,7 +68,7 @@ No order lines exist for this order
         <tr>
             <th>Cylinder Barcode</th>
             <th>Batch Number</th>
-            <th>Tare Weight</th>
+            <th>Heel Weight</th>
             <th>Connection Weight</th>
             <th>End Weight</th>
             <th>Pulled Weight</th>
@@ -76,7 +82,7 @@ No order lines exist for this order
         <tr>
             <td>{{ filling.cylinder.barcodeid }}</td>
             <td>{{ filling.batch_num }}</td>
-            <td>{{ filling.tare_weight }}</td>
+            <td>{{ filling.heel_weight }}</td>
             <td>{{ filling.connection_weight }}</td>
             <td>{{ filling.end_weight }}</td>
             <td>{{ filling.pulled_weight }}</td>

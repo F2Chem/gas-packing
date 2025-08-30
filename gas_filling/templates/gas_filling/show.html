@@ -7,7 +7,14 @@
     <li><em>Tare:</em> {{ cylinder.tare }}</li>
     <li><em>Heel:</em> {{ cylinder.heel }}</li>
     <li><em>Test Date:</em> {{ cylinder.test_date }}</li>
-    <li><em>Status:</em> {{ cylinder.status_text }}</li>
+    <li>
+        <em>Status:</em>
+        <span style="background-color:
+            {% if cylinder.status == 2 %}#ffa7a7{% elif cylinder.status == 1 %}#fff3cd{% else %}#d4edda{% endif %};
+            padding: 2px 6px; border-radius: 4px;">
+            {{ cylinder.status_text }}
+        </span>
+    </li>
     <li><em>Comments:</em> {{ cylinder.comments }}</li>
 </ul>
 

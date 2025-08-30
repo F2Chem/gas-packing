@@ -6,7 +6,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('gas_filling', '0005_cylinder_start_date'),
+        ('gas_filling', '0001_initial'),
     ]
 
     operations = [
