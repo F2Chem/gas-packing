@@ -3,7 +3,9 @@
 {% block content %}
 
 <h2>
-    {% if order.status == "IN_PROGRESS" %}
+    {% if order.status == "OPEN" %}
+    Mark Order #{{ order.id }} as In Progress?
+    {% elif order.status == "IN_PROGRESS" %}
     Mark Order #{{ order.id }} as Packed?
     {% elif order.status == "PACKED" %}
     Mark Order #{{ order.id }} as Passed?
@@ -16,22 +18,29 @@
     {% endif %}
 </h2>
 
-<form method="post">
-    {% csrf_token %}
-    <button type="submit" class="btn btn-success">
-        {% if order.status == "IN_PROGRESS" %}
-        Mark as Packed
-        {% elif order.status == "PACKED" %}
-        Mark as Passed
-        {% elif order.status == "PASSED" %}
-        Mark as Finished
-        {% elif order.status == "FAILED" %}
-        Mark as Reworked
-        {% elif order.status == "REWORKED" %}
-        Mark as Finished
-        {% endif %}
-    </button>
-    <a href="{% url 'gas_filling:order_list' %}" class="btn btn-secondary">Cancel</a>
-</form>
+<div style="display: flex; gap: 10px; margin-top: 20px;">
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-success">
+            {% if order.status == "OPEN" %}
+            Mark as In Progress
+            {% elif order.status == "IN_PROGRESS" %}
+            Mark as Packed
+            {% elif order.status == "PACKED" %}
+            Mark as Passed
+            {% elif order.status == "PASSED" %}
+            Mark as Finished
+            {% elif order.status == "FAILED" %}
+            Mark as Reworked
+            {% elif order.status == "REWORKED" %}
+            Mark as Finished
+            {% endif %}
+        </button>
+    </form>
+
+    <form action="{% url 'gas_filling:order_list' %}" method="get">
+        <button type="submit" class="btn btn-secondary">Cancel</button>
+    </form>
+</div>
 
 {% endblock %}

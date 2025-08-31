@@ -54,7 +54,7 @@
             </td>
             <td>
                 {% if order.status == "OPEN" %}
-                Open
+                <a href="{% url 'gas_filling:order_status' order.id %}" class="text-success fw-bold">Open</a>
                 {% elif order.status == "IN_PROGRESS" %}
                 <a href="{% url 'gas_filling:order_status' order.id %}" class="text-success fw-bold">In Progress</a>
                 {% elif order.status == "PACKED" %}

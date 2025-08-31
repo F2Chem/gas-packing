@@ -25,7 +25,8 @@ def home(request):
 
 
 def gas_filling(request, pk):
-    order = Order.objects.get(pk=pk)
+    order_line = OrderLine.objects.get(pk=pk)
+    order = order_line.order
 
     if request.method == 'POST':
         barcode = request.POST.get('cylinder_id', '').strip()
@@ -33,19 +34,21 @@ def gas_filling(request, pk):
         if barcode:
             try:
                 cylinder = Cylinder.objects.get(barcodeid=barcode)
+
                 filling = Filling.objects.create(
                     cylinder=cylinder,
-                    order=order,
+                    order_line=order_line,
                 )
                 return redirect('gas_filling:gas_filling_batchnum', pk=filling.id)
 
             except (Cylinder.DoesNotExist, ValueError):
-                return redirect('gas_filling:cylinder_create', barcode=barcode, order_id=order.pk)            
+                return redirect('gas_filling:cylinder_create', barcode=barcode, orderline_id=order_line.pk)            
 
-    filling_number = order.fillings.count() + 1
+    filling_number = order_line.fillings.count() + 1
 
     context = {
         'order': order,
+        'order_line': order_line,
         'filling_number': filling_number,
         'subsections':'gas_filling/subsections.html',
     }
@@ -136,7 +139,7 @@ def gas_filling_pulledweight(request, pk):
             filling.pulled_weight = pulled_weight
             filling.pulled_time = now()
             filling.save()
-            return redirect('gas_filling:gas_filling_filling', pk=filling.order.id)
+            return redirect('gas_filling:gas_filling_filling', pk=filling.order_line.order.id)
     context = {
         'filling': filling, 
         'subsections':'gas_filling/subsections.html',
@@ -271,6 +274,8 @@ def order_create(request):
             order = order_form.save(commit=False)
             orderline = orderline_form.save(commit=False)
             orderline.order = order
+            orderline.line_number = 1
+
             order.save()
             orderline.save()
 
@@ -375,7 +380,9 @@ def order_status(request, pk):
     order = Order.objects.get(pk=pk)    
 
     if request.method == 'POST':
-        if order.status == 'IN_PROGRESS':
+        if order.status == 'OPEN':
+            order.status = 'IN_PROGRESS'
+        elif order.status == 'IN_PROGRESS':
             order.status = 'PACKED'
             send_mail(
                 f'Order Finished',
@@ -417,6 +424,7 @@ def orderline_create(request, order_id):
         if form.is_valid():
             orderline = form.save(commit=False)
             orderline.order = order
+            orderline.line_number = order.order_lines.count() + 1
             orderline.save()
             return redirect('gas_filling:order_show', order_id)
     else:

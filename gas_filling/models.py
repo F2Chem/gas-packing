@@ -78,11 +78,11 @@ class Order(models.Model):
 
     @property
     def total_fill_weight(self):
-        return sum(filling.fill_weight for filling in self.fillings.all() if filling.end_weight is not None and filling.end_weight > 0)
+        return sum(filling.fill_weight for line in self.order_lines.all() for filling in line.fillings.all() if filling.end_weight is not None and filling.end_weight > 0)
 
     @property
     def total_fills(self):
-        return self.fillings.filter(end_weight__isnull=False).exclude(end_weight=0).count()
+        return sum(line.fillings.filter(end_weight__isnull=False).exclude(end_weight=0).count() for line in self.order_lines.all())
 
     @property
     def total_orderlines(self):
@@ -91,6 +91,10 @@ class Order(models.Model):
     @property
     def target_fill(self):
         return sum(line.fill_weight for line in self.order_lines.all())
+
+    @property
+    def fillings(self):
+        return Filling.objects.filter(order_line__order=self)
 
     def get_status_colour(self):
         return self.STATUS_COLOURS.get(self.status, "#000000")
@@ -113,6 +117,7 @@ class OrderLine(models.Model):
     ]
     id = models.AutoField(primary_key=True)
     order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='order_lines')
+    line_number = models.PositiveIntegerField()
     product = models.CharField(choices=PRODUCTS, max_length=50)
     cylinder_size = models.FloatField(default=0, blank=True, null=True)   
     fill_weight = models.FloatField(default=0, blank=True, null=True)
@@ -133,7 +138,7 @@ class Filling(models.Model):
     cylinder = models.ForeignKey(Cylinder, on_delete=models.CASCADE, related_name='fillings', null=True, blank=True)
     cylinder_time = models.DateTimeField(null=True, blank=True)
 
-    order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='fillings')
+    order_line = models.ForeignKey(OrderLine, on_delete=models.CASCADE, related_name='fillings')
 
     batch_num = models.IntegerField(blank=True, null=True)
     batch_time = models.DateTimeField(null=True, blank=True)
@@ -164,6 +169,10 @@ class Filling(models.Model):
         if self.cylinder and self.cylinder.tare and self.heel_weight is not None:
             return round(self.heel_weight - self.cylinder.tare, 1)
         return 0.0
+
+    @property
+    def order(self):
+        return self.order_line.order
 
 
 class Batch(models.Model):

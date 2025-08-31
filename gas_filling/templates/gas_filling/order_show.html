@@ -28,7 +28,7 @@
 <ul>
     {% for line in order.order_lines.all %}
     <li style="margin-bottom: 30px;">
-        <strong>Order Line {{ forloop.counter }}:</strong>
+        <strong>Order Line {{ line.line_number }}:</strong>
         <ul>
             <li><em>Product:</em> {{ line.product }}</li>
             <li><em>Cylinder Size:</em> {{ line.cylinder_size }}</li>
@@ -42,6 +42,12 @@
         <form action="{% url 'gas_filling:orderline_edit' line.id %}" method="get" style="margin-top:5px;">
             <button type="submit" class="btn-primary">Edit Order Line</button>
         </form>
+
+        {% if order.status != "OPEN" %}
+        <form action="{% url 'gas_filling:gas_filling_filling' order.id %}" method="get" style="margin-top: 20px;">
+            <button type="submit" class="btn-primary">Fill OrderLine {{ forloop.counter }}</button>
+        </form>
+        {% endif %}
     </li>
     {% endfor %}
 </ul>
@@ -66,6 +72,7 @@ No order lines exist for this order
 <table border="1" cellpadding="5" cellspacing="0">
     <thead>
         <tr>
+            <th>Order Line</th>
             <th>Cylinder Barcode</th>
             <th>Batch Number</th>
             <th>Heel Weight</th>
@@ -80,6 +87,7 @@ No order lines exist for this order
     <tbody>
         {% for filling in fillings %}
         <tr>
+            <td>{{ filling.order_line.line_number }}</td>
             <td>{{ filling.cylinder.barcodeid }}</td>
             <td>{{ filling.batch_num }}</td>
             <td>{{ filling.heel_weight }}</td>
@@ -103,11 +111,7 @@ No order lines exist for this order
 </table>
 {% endif %}
 
-{% if order.status != "OPEN" %}
-<form action="{% url 'gas_filling:gas_filling_filling' order.id %}" method="get" style="margin-top: 20px;">
-    <button type="submit" class="btn-primary">Filling</button>
-</form>
-{% endif %}
+
 
 <form action="{% url 'gas_filling:order_list' %}" method="get" style="margin-top: 20px;">
     <button type="submit" class="btn-primary">Back</button>
