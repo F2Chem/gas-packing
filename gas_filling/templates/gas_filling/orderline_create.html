@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h2>New Order Line for Order #{{ order.id }}</h2>
+<h2>New Order Line for Order #{{ order.order_number }}</h2>
 
 <form method="post">
     {% csrf_token %}

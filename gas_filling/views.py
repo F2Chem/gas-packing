@@ -23,40 +23,37 @@ def home(request):
     return render(request, 'gas_filling/index.html')
 
 
-
 def gas_filling(request, pk):
     order_line = OrderLine.objects.get(pk=pk)
     order = order_line.order
 
     if request.method == 'POST':
         barcode = request.POST.get('cylinder_id', '').strip()
-
         if barcode:
             try:
                 cylinder = Cylinder.objects.get(barcodeid=barcode)
-
                 filling = Filling.objects.create(
                     cylinder=cylinder,
                     order_line=order_line,
                 )
                 return redirect('gas_filling:gas_filling_batchnum', pk=filling.id)
-
             except (Cylinder.DoesNotExist, ValueError):
                 return redirect('gas_filling:cylinder_create', barcode=barcode, orderline_id=order_line.pk)            
 
     filling_number = order_line.fillings.count() + 1
-
     context = {
         'order': order,
         'order_line': order_line,
         'filling_number': filling_number,
-        'subsections':'gas_filling/subsections.html',
+        'subsections': 'gas_filling/subsections.html',
     }
     return render(request, 'gas_filling/filling.html', context)
 
 
 def gas_filling_batchnum(request, pk):
     filling = Filling.objects.get(pk=pk)
+    order_line = filling.order_line
+    order = order_line.order
 
     last_filling = Filling.objects.exclude(batch_num__isnull=True).order_by('-id').first()
     last_batch_num = last_filling.batch_num if last_filling else 0
@@ -75,14 +72,18 @@ def gas_filling_batchnum(request, pk):
 
     context = {
         'filling': filling,
-        'last_batch_num' : last_batch_num,   
-        'subsections':'gas_filling/subsections.html',
+        'order': order,
+        'order_line': order_line,
+        'last_batch_num': last_batch_num,
+        'subsections': 'gas_filling/subsections.html',
     }
     return render(request, 'gas_filling/filling_batch.html', context)
 
 
 def gas_filling_heelweight(request, pk):
     filling = Filling.objects.get(pk=pk)
+    order_line = filling.order_line
+    order = order_line.order
 
     if request.method == 'POST':
         heel_weight = request.POST.get('heel_weight')
@@ -91,15 +92,20 @@ def gas_filling_heelweight(request, pk):
             filling.heel_time = now()
             filling.save()
             return redirect('gas_filling:gas_filling_connectionweight', pk=filling.id)
-            
+
     context = {
-        'filling': filling, 
-        'subsections':'gas_filling/subsections.html',
+        'filling': filling,
+        'order': order,
+        'order_line': order_line,
+        'subsections': 'gas_filling/subsections.html',
     }
     return render(request, 'gas_filling/filling_heel.html', context)
 
+
 def gas_filling_connectionweight(request, pk):
     filling = Filling.objects.get(pk=pk)
+    order_line = filling.order_line
+    order = order_line.order
 
     if request.method == 'POST':
         connection_weight = request.POST.get('connection_weight')
@@ -108,14 +114,20 @@ def gas_filling_connectionweight(request, pk):
             filling.connection_time = now()
             filling.save()
             return redirect('gas_filling:gas_filling_endweight', pk=filling.id)
+
     context = {
-        'filling': filling, 
-        'subsections':'gas_filling/subsections.html',
+        'filling': filling,
+        'order': order,
+        'order_line': order_line,
+        'subsections': 'gas_filling/subsections.html',
     }
     return render(request, 'gas_filling/filling_connections.html', context)
 
+
 def gas_filling_endweight(request, pk):
     filling = Filling.objects.get(pk=pk)
+    order_line = filling.order_line
+    order = order_line.order
 
     if request.method == 'POST':
         end_weight = request.POST.get('end_weight')
@@ -124,14 +136,20 @@ def gas_filling_endweight(request, pk):
             filling.end_time = now()
             filling.save()
             return redirect('gas_filling:gas_filling_pulledweight', pk=filling.id)
+
     context = {
-        'filling': filling, 
-        'subsections':'gas_filling/subsections.html',
+        'filling': filling,
+        'order': order,
+        'order_line': order_line,
+        'subsections': 'gas_filling/subsections.html',
     }
     return render(request, 'gas_filling/filling_end.html', context)
 
+
 def gas_filling_pulledweight(request, pk):
     filling = Filling.objects.get(pk=pk)
+    order_line = filling.order_line
+    order = order_line.order
 
     if request.method == 'POST':
         pulled_weight = request.POST.get('pulled_weight')
@@ -139,12 +157,16 @@ def gas_filling_pulledweight(request, pk):
             filling.pulled_weight = pulled_weight
             filling.pulled_time = now()
             filling.save()
-            return redirect('gas_filling:gas_filling_filling', pk=filling.order_line.order.id)
+            return redirect('gas_filling:gas_filling_filling', pk=order_line.id)
+
     context = {
-        'filling': filling, 
-        'subsections':'gas_filling/subsections.html',
+        'filling': filling,
+        'order': order,
+        'order_line': order_line,
+        'subsections': 'gas_filling/subsections.html',
     }
     return render(request, 'gas_filling/filling_pulled.html', context)
+
 
 def gas_filling_table(request):
     all_fillings = Filling.objects.all().order_by('-end_time')
@@ -457,23 +479,24 @@ def new_batch(request, pk, prev_batch):
     filling = get_object_or_404(Filling, pk=pk)
     order = filling.order
     current_batch_num = filling.batch_num
-    prev_batch = prev_batch
 
     if request.method == 'POST':
         end_weight = request.POST.get('end_weight')
         start_weight = request.POST.get('start_weight')
 
         if prev_batch:
-            Batch.objects.update_or_create(
-                batch_num=prev_batch,
-                parent_order=order,
-                defaults={'end_weight': end_weight}
-            )
+            prev_batch_obj, created = Batch.objects.get_or_create(
+            batch_num=prev_batch,
+            parent_order=order,
+            defaults={"start_weight": 0}
+        )
+        prev_batch_obj.end_weight = end_weight
+        prev_batch_obj.save()
 
-        Batch.objects.update_or_create(
+        Batch.objects.get_or_create(
             batch_num=current_batch_num,
             parent_order=order,
-            defaults={'start_weight': start_weight}
+            defaults={"start_weight": start_weight, "end_weight": 0}
         )
 
         return redirect('gas_filling:gas_filling_heelweight', pk=filling.id)

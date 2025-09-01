@@ -43,9 +43,9 @@
             <button type="submit" class="btn-primary">Edit Order Line</button>
         </form>
 
-        {% if order.status != "OPEN" %}
-        <form action="{% url 'gas_filling:gas_filling_filling' order.id %}" method="get" style="margin-top: 20px;">
-            <button type="submit" class="btn-primary">Fill OrderLine {{ forloop.counter }}</button>
+        {% if order.status == "IN_PROGRESS" %}
+        <form action="{% url 'gas_filling:gas_filling_filling' line.id %}" method="get" style="margin-top: 20px;">
+            <button type="submit" class="btn-primary">Fill OrderLine {{ line.line_number }}</button>
         </form>
         {% endif %}
     </li>
