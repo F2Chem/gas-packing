@@ -43,7 +43,7 @@
             <button type="submit" class="btn-primary">Edit Order Line</button>
         </form>
 
-        {% if order.status == "IN_PROGRESS" %}
+        {% if order.status == "IN_PROGRESS" or order.status == "OPEN" %}
         <form action="{% url 'gas_filling:gas_filling_filling' line.id %}" method="get" style="margin-top: 20px;">
             <button type="submit" class="btn-primary">Fill OrderLine {{ line.line_number }}</button>
         </form>

@@ -12,7 +12,7 @@
                 <button type="submit" class="btn-primary">Submit</button>
             </form>
 
-            <form action="{% url 'gas_filling:gas_filling_filling' pk=order_id %}" method="get">
+            <form action="{% url 'gas_filling:gas_filling_filling' pk=orderline_id %}" method="get">
                 <button type="submit" class="btn-secondary">Cancel</button>
             </form>
         </div>

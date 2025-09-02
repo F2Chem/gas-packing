@@ -237,8 +237,8 @@ def cylinder_edit(request, pk):
     }
     return render(request, 'gas_filling/edit.html', context)
 
-def cylinder_create(request, barcode, order_id):
-    order = get_object_or_404(Order, pk=order_id)
+def cylinder_create(request, barcode, orderline_id):
+    order_line = get_object_or_404(OrderLine, pk=orderline_id)
 
     if request.method == 'POST':
         form = CylinderForm(request.POST)
@@ -246,7 +246,7 @@ def cylinder_create(request, barcode, order_id):
             cylinder = form.save()
             filling = Filling.objects.create(
                 cylinder=cylinder,
-                order=order,
+                order_line=order_line,
             )
             return redirect('gas_filling:gas_filling_batchnum', pk=filling.id)
       
@@ -256,7 +256,8 @@ def cylinder_create(request, barcode, order_id):
     context = {
         'form': form,
         'barcode': barcode,
-        'order_id': order_id,
+        'orderline_id': orderline_id,
+        'order_line' : order_line,
         'subsections': 'gas_filling/subsections.html',
     }
     return render(request, 'gas_filling/create.html', context)

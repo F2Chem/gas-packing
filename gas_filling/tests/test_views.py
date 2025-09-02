@@ -22,7 +22,7 @@ class CylinderViewTests(TestCase):
 
 
     def setUp(self):
-        self.cylinder = Cylinder.objects.create(barcodeid='Kyle81')
+        self.cylinder = Cylinder.objects.create(barcodeid='Kyle81', tare = 50, test_date = date(2183, 1, 24))
 
 
     def testCylinderList(self):
@@ -61,8 +61,9 @@ class OrderViewsTests(TestCase):
 
     def setUp(self):
         self.order = Order.objects.create(customer='Test')
-        self.cylinder = Cylinder.objects.create(barcodeid='Kyle81')
-        self.filling = Filling.objects.create(cylinder=self.cylinder, order=self.order)
+        self.order_line = OrderLine.objects.create(order=self.order, line_number=1, product="OCTAFLUOROPROPANE", cylinder_size=10, cylinder_type="STANDARD")
+        self.cylinder = Cylinder.objects.create(barcodeid='Kyle81', tare = 12, test_date = date(2183, 1, 24))
+        self.filling = Filling.objects.create(cylinder=self.cylinder, order_line=self.order_line)
 
     
     def testOrderList(self):
@@ -116,8 +117,8 @@ class OrderViewsTests(TestCase):
         self.assertEqual(response.context['filling'].cylinder, self.cylinder)
 
 
-    def testFillingTareWeight(self):
-        url = f'/gas_filling/filling/tareweight/{self.filling.id}/'
+    def testFillingHeelWeight(self):
+        url = f'/gas_filling/filling/heelweight/{self.filling.id}/'
 
         response = self.client.get(url)
 
