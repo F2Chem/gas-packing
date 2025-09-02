@@ -2,8 +2,12 @@
 
 {% block content %}
 
+
 <div class="container mt-4">
     <h1>Create New Cylinder</h1>
+    <div class="alert alert-warning">
+        {{ alert_message }}
+    </div>
     <form method="post">
         {% csrf_token %}
         {{ form.as_p }}

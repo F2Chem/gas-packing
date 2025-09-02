@@ -11,6 +11,12 @@
     <li><strong>Target Fill Weight:</strong> {{ order_line.fill_weight }}</li>
 </ul>
 
+{% if alert_message %}
+<div class="alert alert-warning">
+    {{ alert_message }}
+</div>
+{% endif %}
+
 <h2>Step 1: Enter Cylinder ID or Scan Barcode</h2>
 
 <form method="post">

@@ -32,6 +32,26 @@ def gas_filling(request, pk):
         if barcode:
             try:
                 cylinder = Cylinder.objects.get(barcodeid=barcode)
+                cylinder_testdate = cylinder.check_in_date()
+                alert_message = None
+                if cylinder_testdate == 2:
+                    alert_message = "Cylinder has expired!"
+                    return render(request, 'gas_filling/filling.html', {
+                        'order': order,
+                        'order_line': order_line,
+                        'filling_number': order_line.fillings.count(),
+                        'alert_message': alert_message,
+                        'subsections': 'gas_filling/subsections.html',
+                    })
+                elif cylinder_testdate == 1:
+                    alert_message = "Cylinder approaching expiry"
+                    return render(request, 'gas_filling/filling.html', {
+                        'order': order,
+                        'order_line': order_line,
+                        'filling_number': order_line.fillings.count(),
+                        'alert_message': alert_message,
+                        'subsections': 'gas_filling/subsections.html',
+                    })
                 filling = Filling.objects.create(
                     cylinder=cylinder,
                     order_line=order_line,
@@ -239,11 +259,32 @@ def cylinder_edit(request, pk):
 
 def cylinder_create(request, barcode, orderline_id):
     order_line = get_object_or_404(OrderLine, pk=orderline_id)
+    order = order_line.order
+
 
     if request.method == 'POST':
         form = CylinderForm(request.POST)
         if form.is_valid():
             cylinder = form.save()
+            cylinder_testdate = cylinder.check_in_date()
+
+            alert_message = None
+            if cylinder_testdate == 2:
+                alert_message = "Cylinder has expired!"
+            elif cylinder_testdate == 1:
+                alert_message = "Cylinder approaching expiry"
+
+            if alert_message:
+                context = {
+                    'form': form,
+                    'barcode': barcode,
+                    'orderline_id': orderline_id,
+                    'order_line': order_line,
+                    'alert_message': alert_message,
+                    'subsections': 'gas_filling/subsections.html',
+                }
+                return render(request, 'gas_filling/create.html', context)
+            
             filling = Filling.objects.create(
                 cylinder=cylinder,
                 order_line=order_line,
