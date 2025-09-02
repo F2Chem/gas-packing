@@ -203,7 +203,7 @@ def gas_filling_home(request):
     return render(request, 'gas_filling/home.html', context)
 
 def cylinder_list(request):
-    cylinders = Cylinder.objects.all().order_by('id')  
+    cylinders = Cylinder.objects.all().order_by('test_date')
     
     for cyl in cylinders:
         status_code = cyl.check_in_date()
@@ -306,16 +306,18 @@ def cylinder_create(request, barcode, orderline_id):
 def order_list(request):
     orders = Order.objects.annotate(
         status_order=Case(
-            When(status='OPEN', then=Value(0)),
-            When(status='IN_PROGRESS', then=Value(1)),
-            When(status='PACKED', then=Value(2)),
-            When(status='PASSED', then=Value(3)),
-            When(status='FAILED', then=Value(4)),
-            When(status='REWORKED', then=Value(5)),
-            When(status='FINISHED', then=Value(6)),
+            When(status='OPEN', then=Value(1)),
+            When(status='IN_PROGRESS', then=Value(2)),
+            When(status='PACKED', then=Value(3)),
+            When(status='PASSED', then=Value(4)),
+            When(status='FAILED', then=Value(5)),
+            When(status='REWORKED', then=Value(6)),
+            When(status='FINISHED', then=Value(7)),
+            default=Value(100),
             output_field=IntegerField()
         )
     ).order_by('status_order', 'id')
+
     
     for order in orders:
         if order.status == 'OPEN' and order.fillings.exists():
