@@ -297,6 +297,8 @@ def cylinder_create(request, barcode, orderline_id):
                 alert_message = "Cylinder approaching expiry"
 
             if alert_message:
+                form = CylinderForm()
+
                 context = {
                     'form': form,
                     'barcode': barcode,
@@ -326,6 +328,8 @@ def cylinder_create(request, barcode, orderline_id):
     return render(request, 'gas_filling/create.html', context)
 
 def order_list(request):
+    status_filter = request.GET.get("status")
+
     orders = Order.objects.annotate(
         status_order=Case(
             When(status='OPEN', then=Value(1)),
@@ -340,6 +344,8 @@ def order_list(request):
         )
     ).order_by('status_order', 'id')
 
+    if status_filter:
+        orders = orders.filter(status=status_filter)
     
     for order in orders:
         if order.status == 'OPEN' and order.fillings.exists():
@@ -348,6 +354,7 @@ def order_list(request):
 
     context = {
         'orders': orders, 
+        'status_filter': status_filter,
         'subsections':'gas_filling/subsections.html',
     }
     return render(request, 'gas_filling/order_list.html', context)
@@ -553,7 +560,6 @@ def new_batch(request, pk, prev_batch):
         if prev_batch:
             prev_batch_obj, created = Batch.objects.get_or_create(
             batch_num=prev_batch,
-            parent_order=order,
             defaults={"start_weight": 0}
         )
         prev_batch_obj.end_weight = end_weight
