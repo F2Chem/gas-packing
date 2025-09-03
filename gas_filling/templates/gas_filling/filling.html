@@ -5,6 +5,7 @@
 <h1>Gas Filling</h1>
 
 <h2>Order Line {{ order_line.line_number }}</h2>
+<h2>Filling: {{ fill_progress }}</h2>
 <ul>
     <li><strong>Product:</strong> {{ order_line.product }}</li>
     <li><strong>Cylinder Size:</strong> {{ order_line.cylinder_size }}</li>
@@ -17,7 +18,6 @@
 </div>
 {% endif %}
 
-<h3>Cylinder {{ filling_number }}</h3>
 <h2>Step 1: Enter Cylinder ID or Scan Barcode</h2>
 
 <form method="post">

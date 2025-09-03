@@ -27,6 +27,8 @@ def gas_filling(request, pk):
     order_line = OrderLine.objects.get(pk=pk)
     order = order_line.order
 
+    fill_progress = (str((order_line.cylinders_somewhat_filled()) + 1) + "/" + str(order_line.num_cylinders))
+
     if request.method == 'POST':
         barcode = request.POST.get('cylinder_id', '').strip()
         if barcode:
@@ -65,6 +67,7 @@ def gas_filling(request, pk):
         'order': order,
         'order_line': order_line,
         'filling_number': filling_number,
+        'fill_progress': fill_progress,
         'subsections': 'gas_filling/subsections.html',
     }
     return render(request, 'gas_filling/filling.html', context)
@@ -198,7 +201,11 @@ def gas_filling_pulledweight(request, pk):
             filling.pulled_weight = pulled_weight
             filling.pulled_time = now()
             filling.save()
-            return redirect('gas_filling:gas_filling_filling', pk=order_line.id)
+
+            if order_line.all_somewhat_filled():
+                return redirect('gas_filling:order_show', pk=order.id)
+            else:
+                return redirect('gas_filling:gas_filling_filling', pk=order_line.id)
 
     context = {
         'filling': filling,
@@ -413,7 +420,7 @@ def order_show(request, pk):
         order.status = 'IN_PROGRESS'
         order.save()
 
-    fillings = order.fillings.all().order_by('id')
+    fillings = order.fillings.all().order_by('order_line')
     context = {
         'order': order,
         'fillings': fillings,

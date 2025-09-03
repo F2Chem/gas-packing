@@ -128,6 +128,18 @@ class OrderLine(models.Model):
     cylinder_type = models.CharField(max_length=20, choices=CYLINDER_TYPES)
     keep_heel = models.BooleanField(default=False)
 
+    def cylinders_filled(self):
+        return self.fillings.exclude(pulled_weight=0).count()
+
+    def cylinders_somewhat_filled(self):
+        return self.fillings.count()
+
+    def all_filled(self):
+        return self.cylinders_filled() == self.num_cylinders
+
+    def all_somewhat_filled(self):
+        return self.cylinders_somewhat_filled() == self.num_cylinders
+
 
 class CylinderSet(models.Model):
     id = models.AutoField(primary_key=True)

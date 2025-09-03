@@ -33,11 +33,13 @@
             <li><em>Product:</em> {{ line.product }}</li>
             <li><em>Cylinder Size:</em> {{ line.cylinder_size }}</li>
             <li><em>Fill Weight:</em> {{ line.fill_weight }}</li>
-            <li><em>Number of Cylinders:</em> {{ line.num_cylinders }}</li>
+            <li><em>Number of Cylinders Required:</em> {{ line.num_cylinders }}</li>
+            <li><em>Number of Cylinders Filled:</em> {{ line.cylinders_filled }}</li>
             <li><em>Cylinder Type:</em> {{ line.cylinder_type }}</li>
             <li><em>Stillage:</em> {{ line.stillage|yesno:"Yes,No" }}</li>
             <li><em>Keep Heel:</em> {{ line.keep_heel|yesno:"Yes,No" }}</li>
         </ul>
+        {% if line.all_filled %} <strong>Order Line Completed</strong> {% endif %}
 
         {% if order.status == "OPEN" %}
         <form action="{% url 'gas_filling:orderline_edit' line.id %}" method="get" style="margin-top:5px;">
@@ -46,9 +48,11 @@
         {% endif %}
 
         {% if order.status == "IN_PROGRESS" or order.status == "CLOSED" %}
-        <form action="{% url 'gas_filling:gas_filling_filling' line.id %}" method="get" style="margin-top: 20px;">
-            <button type="submit" class="btn-primary">Fill OrderLine {{ line.line_number }}</button>
-        </form>
+            {% if not line.all_somewhat_filled %}
+                <form action="{% url 'gas_filling:gas_filling_filling' line.id %}" method="get" style="margin-top: 20px;">
+                    <button type="submit" class="btn-primary">Fill OrderLine {{ line.line_number }}</button>
+                </form>
+            {% endif %}
         {% endif %}
     </li>
     {% endfor %}
@@ -75,6 +79,7 @@ No order lines exist for this order
     <thead>
         <tr>
             <th>Order Line</th>
+            <th>Fill Number</th>
             <th>Cylinder Barcode</th>
             <th>Batch Number</th>
             <th>Heel Weight</th>
@@ -95,6 +100,7 @@ No order lines exist for this order
             {% endif %}>
             
             <td>{{ filling.order_line.line_number }}</td>
+            <td>{{ forloop.counter }}/{{ filling.order_line.num_cylinders }}</td>
             <td>{{ filling.cylinder.barcodeid }}</td>
             <td>{{ filling.batch_num }}</td>
             <td>{{ filling.heel_weight }}</td>
