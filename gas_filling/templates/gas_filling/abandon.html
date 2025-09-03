@@ -1,0 +1,47 @@
+
+  <br>
+  <br>
+<form action="{% url 'gas_filling:order_show' filling.order_line.order.id %}" method="get" style="display:inline">
+    <button type="submit" class="btn-primary" style="margin-top:20px;">Cancel</button>
+</form>
+
+<button onclick="abandon()">Abandon</button>
+
+<p class=footnote">
+You can click <i>Cancel</i> to temporarily stop filling, and resume later. Click <i>Abandon</i> if something has gone wrong and this fill needs to be scrapped.
+<p>
+
+
+<div style="display:none" id="abandon">
+  <br>
+  <hr>
+  <br>
+  Please record what went wrong, then click <i>Okay</i> to confirm.
+  You will not be able to resume, and will need to start the filling again to continue the order.
+  <form action="{% url 'gas_filling:abandon' filling.order_line.order.id %}" method="post" style="display:inline">
+  <br>
+  <br>
+  <textarea name="abandon" rows="5" cols="33"></textarea>
+  <br>
+  <br>
+  <button type="submit" class="btn-primary">Okay</button>
+</form>
+<button onclick="cancelAbandon()">Cancel</a>
+  <br>
+</div>
+
+
+
+
+<script>
+const abandon = function() {
+  document.getElementById('abandon').style.display = 'block'
+}
+
+const cancelAbandon = function() {
+  document.getElementById('abandon').style.display = 'none'
+}
+
+
+
+</script>
