@@ -53,7 +53,8 @@ class Order(models.Model):
 
     STATUSES = [
         ('OPEN', 'Open '),                            # Sales department are in the process of creating
-        ('IN_PROGRESS', 'In Progress '),              # Sales dept have finalised, and it is in the hands of the packager
+        ('CLOSED', 'Closed '),                        # Sales department have finalised order
+        ('IN_PROGRESS', 'In Progress '),              # Order is in the hands of the packager
         ('PACKED', 'Packed '),                        # Package has said it is done, now in hands of QC
         ('PASSED', 'Passed '),                        # QC have passed it
         ('FAILED', 'Failed '),                        # QC have failed it, and more work required by packager
@@ -63,6 +64,7 @@ class Order(models.Model):
 
     STATUS_COLOURS = {
     "OPEN": "#fff3cd",
+    "CLOSED": "#eca8fd",
     "IN_PROGRESS": "#d4edda",
     "PACKED": "#cce5ff",
     "PASSED": "#a9fbd1",

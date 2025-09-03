@@ -4,7 +4,7 @@
 
 <h2>
     {% if order.status == "OPEN" %}
-    Mark Order #{{ order.id }} as In Progress?
+    Mark Order #{{ order.id }} as Closed?
     {% elif order.status == "IN_PROGRESS" %}
     Mark Order #{{ order.id }} as Packed?
     {% elif order.status == "PACKED" %}
@@ -23,7 +23,7 @@
         {% csrf_token %}
         <button type="submit" class="btn btn-success">
             {% if order.status == "OPEN" %}
-            Mark as In Progress
+            Mark as Closed
             {% elif order.status == "IN_PROGRESS" %}
             Mark as Packed
             {% elif order.status == "PACKED" %}

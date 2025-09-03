@@ -15,6 +15,7 @@
     <select name="status" id="status" onchange="this.form.submit()">
         <option value="">All</option>
         <option value="OPEN" {% if status_filter == "OPEN" %}selected{% endif %}>Open</option>
+        <option value="CLOSED" {% if status_filter == "CLOSED" %}selected{% endif %}>Closed</option>
         <option value="IN_PROGRESS" {% if status_filter == "IN_PROGRESS" %}selected{% endif %}>In Progress</option>
         <option value="PACKED" {% if status_filter == "PACKED" %}selected{% endif %}>Packed</option>
         <option value="PASSED" {% if status_filter == "PASSED" %}selected{% endif %}>Passed</option>
@@ -56,6 +57,8 @@
             style="background-color: #ebcefa;"
             {% elif order.status == "FINISHED" %}
             style="background-color: #8fffa9;"
+            {% elif order.status == "CLOSED" %}
+            style="background-color: #eca8fd;"
             {% endif %}>
 
             <td>{{ order.customer }}</td>
@@ -72,6 +75,8 @@
             <td>
                 {% if order.status == "OPEN" %}
                 <a href="{% url 'gas_filling:order_status' order.id %}" class="text-success fw-bold">Open</a>
+                {% elif order.status == "CLOSED" %}
+                Closed
                 {% elif order.status == "IN_PROGRESS" %}
                 <a href="{% url 'gas_filling:order_status' order.id %}" class="text-success fw-bold">In Progress</a>
                 {% elif order.status == "PACKED" %}

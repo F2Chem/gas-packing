@@ -16,7 +16,7 @@
     <li><em>Total Filled Weight:</em> {{ order.total_fill_weight }}</li>
     <li><em>Total Order Lines:</em> {{ order.total_orderlines }}</li>
     <li>
-        <em>Status:</em><span style="background-color: {{ order.get_status_colour }}; color: white; font-weight: bold; padding: 2px 6px; border-radius: 4px;">
+        <em>Status:</em><span style="background-color: {{ order.get_status_colour }}; color: #808080; font-weight: bold; padding: 2px 6px; border-radius: 4px;">
             {{ order.get_status_display }}
         </span>
     </li>
@@ -39,11 +39,13 @@
             <li><em>Keep Heel:</em> {{ line.keep_heel|yesno:"Yes,No" }}</li>
         </ul>
 
+        {% if order.status == "OPEN" %}
         <form action="{% url 'gas_filling:orderline_edit' line.id %}" method="get" style="margin-top:5px;">
             <button type="submit" class="btn-primary">Edit Order Line</button>
         </form>
+        {% endif %}
 
-        {% if order.status == "IN_PROGRESS" or order.status == "OPEN" %}
+        {% if order.status == "IN_PROGRESS" or order.status == "CLOSED" %}
         <form action="{% url 'gas_filling:gas_filling_filling' line.id %}" method="get" style="margin-top: 20px;">
             <button type="submit" class="btn-primary">Fill OrderLine {{ line.line_number }}</button>
         </form>
@@ -86,7 +88,12 @@ No order lines exist for this order
     </thead>
     <tbody>
         {% for filling in fillings %}
-        <tr>
+        <tr {% if filling.end_weight %}
+            style="background-color: #a9fbd1;"
+            {% else %}
+            style="background-color: #fff3cd;"
+            {% endif %}>
+            
             <td>{{ filling.order_line.line_number }}</td>
             <td>{{ filling.cylinder.barcodeid }}</td>
             <td>{{ filling.batch_num }}</td>

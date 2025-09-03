@@ -333,12 +333,13 @@ def order_list(request):
     orders = Order.objects.annotate(
         status_order=Case(
             When(status='OPEN', then=Value(1)),
-            When(status='IN_PROGRESS', then=Value(2)),
-            When(status='PACKED', then=Value(3)),
-            When(status='PASSED', then=Value(4)),
-            When(status='FAILED', then=Value(5)),
-            When(status='REWORKED', then=Value(6)),
-            When(status='FINISHED', then=Value(7)),
+            When(status='CLOSED', then=Value(2)),
+            When(status='IN_PROGRESS', then=Value(3)),
+            When(status='PACKED', then=Value(4)),
+            When(status='PASSED', then=Value(5)),
+            When(status='FAILED', then=Value(6)),
+            When(status='REWORKED', then=Value(7)),
+            When(status='FINISHED', then=Value(8)),
             default=Value(100),
             output_field=IntegerField()
         )
@@ -349,6 +350,9 @@ def order_list(request):
     
     for order in orders:
         if order.status == 'OPEN' and order.fillings.exists():
+            order.status = 'IN_PROGRESS'
+            order.save()
+        if order.status == 'CLOSED' and order.fillings.exists():
             order.status = 'IN_PROGRESS'
             order.save()
 
@@ -403,6 +407,9 @@ def order_show(request, pk):
     order = Order.objects.get(pk=pk)
 
     if order.status == 'OPEN' and order.fillings.exists():
+        order.status = 'IN_PROGRESS'
+        order.save()
+    if order.status == 'CLOSED' and order.fillings.exists():
         order.status = 'IN_PROGRESS'
         order.save()
 
@@ -476,7 +483,7 @@ def order_status(request, pk):
 
     if request.method == 'POST':
         if order.status == 'OPEN':
-            order.status = 'IN_PROGRESS'
+            order.status = 'CLOSED'
         elif order.status == 'IN_PROGRESS':
             order.status = 'PACKED'
             send_mail(
