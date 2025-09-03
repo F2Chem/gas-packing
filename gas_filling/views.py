@@ -104,19 +104,32 @@ def gas_filling_heelweight(request, pk):
     filling = Filling.objects.get(pk=pk)
     order_line = filling.order_line
     order = order_line.order
+    cylinder = filling.cylinder
+    error_message = None
 
     if request.method == 'POST':
-        heel_weight = request.POST.get('heel_weight')
-        if heel_weight:
-            filling.heel_weight = heel_weight
-            filling.heel_time = now()
+        heel_weight = float(request.POST.get('heel_weight'))
+        filling.heel_weight = heel_weight
+        filling.heel_time = now()
+
+        difference = round(heel_weight - cylinder.tare, 2)
+        if difference != 0:
+            if order_line.keep_heel:
+                filling.save()
+                return redirect('gas_filling:gas_filling_connectionweight', pk=filling.id)
+            else:
+                error_message = ("A heel of " + str(difference) + "kg was detected. This order line does not allow keeping heels.")
+        else:
             filling.save()
             return redirect('gas_filling:gas_filling_connectionweight', pk=filling.id)
+
 
     context = {
         'filling': filling,
         'order': order,
         'order_line': order_line,
+        'cylinder': cylinder,
+        'error_message': error_message,
         'subsections': 'gas_filling/subsections.html',
     }
     return render(request, 'gas_filling/filling_heel.html', context)
@@ -148,6 +161,10 @@ def gas_filling_endweight(request, pk):
     filling = Filling.objects.get(pk=pk)
     order_line = filling.order_line
     order = order_line.order
+    cylinder = filling.cylinder
+
+    connections = filling.connection_weight - filling.heel_weight
+    target_weight = round(cylinder.tare + order_line.fill_weight + connections, 2)
 
     if request.method == 'POST':
         end_weight = request.POST.get('end_weight')
@@ -161,6 +178,7 @@ def gas_filling_endweight(request, pk):
         'filling': filling,
         'order': order,
         'order_line': order_line,
+        'target_weight': target_weight,
         'subsections': 'gas_filling/subsections.html',
     }
     return render(request, 'gas_filling/filling_end.html', context)
@@ -170,6 +188,9 @@ def gas_filling_pulledweight(request, pk):
     filling = Filling.objects.get(pk=pk)
     order_line = filling.order_line
     order = order_line.order
+    cylinder = filling.cylinder
+
+    target_weight = round(cylinder.tare + order_line.fill_weight, 2)
 
     if request.method == 'POST':
         pulled_weight = request.POST.get('pulled_weight')
@@ -183,6 +204,7 @@ def gas_filling_pulledweight(request, pk):
         'filling': filling,
         'order': order,
         'order_line': order_line,
+        'target_weight': target_weight,
         'subsections': 'gas_filling/subsections.html',
     }
     return render(request, 'gas_filling/filling_pulled.html', context)

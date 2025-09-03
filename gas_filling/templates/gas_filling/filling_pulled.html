@@ -5,6 +5,10 @@
 
 <h2>Step 6: Enter Weight After Pulling Out</h2>
 
+{% if target_weight %}
+<p><strong>Target Weight:</strong> {{ target_weight }} kg</p>
+{% endif %}
+
 <form method="post">
     {% csrf_token %}
     <label for="end_weight">Weight After Pulling Out (kg):</label>
