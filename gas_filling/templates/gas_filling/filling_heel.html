@@ -3,6 +3,14 @@
 
 <h1>Gas Filling</h1>
 
+<h2>Order Line {{ order_line.line_number }}</h2>
+<h2>Filling: {{ fill_progress }}</h2>
+<ul>
+    <li><strong>Product:</strong> {{ order_line.product }}</li>
+    <li><strong>Cylinder Size:</strong> {{ order_line.cylinder_size }}</li>
+    <li><strong>Target Fill Weight:</strong> {{ order_line.fill_weight }}</li>
+</ul>
+
 <h2>Step 3: Enter Start Weight</h2>
 
 {% if cylinder.tare %}
@@ -17,10 +25,6 @@
     <input type="number" step="0.01" name="heel_weight" required autofocus>
     <button type="submit" class="btn-primary">Next</button>
 </form>
-
-{% if error_message %}
-<p> {{ error_message }} </p>
-{% endif %}
 
 <form action="{% url 'gas_filling:order_show' filling.order_line.order.id %}" method="get" style="margin-top: 20px;">
     <button type="submit" class="btn-primary" style="margin-top:20px;">Cancel</button>

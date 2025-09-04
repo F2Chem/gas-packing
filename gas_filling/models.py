@@ -42,8 +42,8 @@ class Cylinder(models.Model):
 
 class Order(models.Model):
     id = models.AutoField(primary_key=True)
-    order_number = models.CharField(max_length=20, blank=True, null=True)
-    customer = models.CharField(max_length=50, blank=True, null=True)
+    order_number = models.CharField(max_length=20, blank=False, null=False)
+    customer = models.CharField(max_length=50, blank=False, null=False)
     comments = models.TextField(blank=True, null=True)
     packaging_instruction = models.TextField(blank=True, null=True)
     qc_instruction = models.TextField(blank=True, null=True)
@@ -121,10 +121,9 @@ class OrderLine(models.Model):
     order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='order_lines')
     line_number = models.PositiveIntegerField()
     product = models.CharField(choices=PRODUCTS, max_length=50)
-    cylinder_size = models.FloatField(default=0, blank=True, null=True)   
-    fill_weight = models.FloatField(default=0, blank=True, null=True)
-    num_cylinders = models.IntegerField(blank=True, null=True)
-    stillage = models.BooleanField(default=False, blank=True, null=True)
+    cylinder_size = models.FloatField(blank=False, null=False)   
+    fill_weight = models.FloatField(blank=False, null=False)
+    num_cylinders = models.IntegerField(blank=False, null=False)
     cylinder_type = models.CharField(max_length=20, choices=CYLINDER_TYPES)
     keep_heel = models.BooleanField(default=False)
 
@@ -159,6 +158,7 @@ class Filling(models.Model):
 
     heel_weight = models.FloatField(default=0, blank=True, null=True)
     heel_time = models.DateTimeField(null=True, blank=True)
+    heel_weight_b = models.FloatField(blank=True, null=True)
 
     connection_weight = models.FloatField(default=0, blank=True, null=True)
     connection_time = models.DateTimeField(null=True, blank=True)
@@ -168,6 +168,8 @@ class Filling(models.Model):
 
     pulled_weight = models.FloatField(default=0, blank=True, null=True)
     pulled_time = models.DateTimeField(null=True, blank=True)
+
+    filling_number = models.IntegerField(default=1)
 
     class Meta:
         db_table = 'gas_filling_fillings'

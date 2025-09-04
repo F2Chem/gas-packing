@@ -3,10 +3,19 @@
 
 <h1>Gas Filling</h1>
 
+<h2>Order Line {{ order_line.line_number }}</h2>
+<h2>Filling: {{ fill_progress }}</h2>
+<ul>
+    <li><strong>Product:</strong> {{ order_line.product }}</li>
+    <li><strong>Cylinder Size:</strong> {{ order_line.cylinder_size }}</li>
+    <li><strong>Target Fill Weight:</strong> {{ order_line.fill_weight }}</li>
+</ul>
+
 <h2>Step 6: Enter Weight After Pulling Out</h2>
 
 {% if target_weight %}
 <p><strong>Target Weight:</strong> {{ target_weight }} kg</p>
+<p><strong>Target Net Weight:</strong> {{ order_line.fill_weight }} kg</p>
 {% endif %}
 
 <form method="post">

@@ -11,6 +11,7 @@ urlpatterns = [
     path('filling/<int:pk>/', views.gas_filling, name='gas_filling_filling'),
     path('filling/batch/<int:pk>/', views.gas_filling_batchnum, name='gas_filling_batchnum'),
     path('filling/heelweight/<int:pk>/', views.gas_filling_heelweight, name='gas_filling_heelweight'),
+    path('filling/heelweight_b/<int:pk>/', views.gas_filling_heelweight_b, name='gas_filling_heelweight_b'),
     path('filling/connectionweight/<int:pk>/', views.gas_filling_connectionweight, name='gas_filling_connectionweight'),
     path('filling/endweight/<int:pk>/', views.gas_filling_endweight, name='gas_filling_endweight'),
     path('filling/pulledweight/<int:pk>/', views.gas_filling_pulledweight, name='gas_filling_pulledweight'),

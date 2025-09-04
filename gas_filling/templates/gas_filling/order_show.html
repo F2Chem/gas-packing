@@ -8,7 +8,7 @@
     <li><em>Order Number:</em> {{ order.order_number }}</li>
     <li><em>Customer:</em> {{ order.customer }}</li>
     <li><em>Comments:</em> {{ order.comments }}</li>
-    <li><em>Packing Instructions:</em> {{ order.packing_instruction }}</li>
+    <li><em>Packing Instructions:</em> {{ order.packaging_instruction }}</li>
     <li><em>QC Instructions:</em> {{ order.qc_instruction }}</li>
     <li><em>Created:</em> {{ order.created_time }}</li>
     <li><em>Target Fill Weight:</em> {{ order.target_fill }}</li>
@@ -21,6 +21,12 @@
         </span>
     </li>
 </ul>
+
+{% if order.status != "CLOSED" %}
+<form action="{% url 'gas_filling:order_edit' order.id %}" method="get" style="margin-top:5px;">
+    <button type="submit" class="btn-primary">Edit Order</button>
+</form>
+{% endif %}
 
 <h3>Order Lines</h3>
 
@@ -36,7 +42,6 @@
             <li><em>Number of Cylinders Required:</em> {{ line.num_cylinders }}</li>
             <li><em>Number of Cylinders Filled:</em> {{ line.cylinders_filled }}</li>
             <li><em>Cylinder Type:</em> {{ line.cylinder_type }}</li>
-            <li><em>Stillage:</em> {{ line.stillage|yesno:"Yes,No" }}</li>
             <li><em>Keep Heel:</em> {{ line.keep_heel|yesno:"Yes,No" }}</li>
         </ul>
         {% if line.all_filled %} <strong>Order Line Completed</strong> {% endif %}
@@ -98,9 +103,9 @@ No order lines exist for this order
             {% else %}
             style="background-color: #fff3cd;"
             {% endif %}>
-            
+
             <td>{{ filling.order_line.line_number }}</td>
-            <td>{{ forloop.counter }}/{{ filling.order_line.num_cylinders }}</td>
+            <td>{{ filling.filling_number }}/{{ filling.order_line.num_cylinders }}</td>
             <td>{{ filling.cylinder.barcodeid }}</td>
             <td>{{ filling.batch_num }}</td>
             <td>{{ filling.heel_weight }}</td>

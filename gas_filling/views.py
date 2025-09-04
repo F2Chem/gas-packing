@@ -57,16 +57,15 @@ def gas_filling(request, pk):
                 filling = Filling.objects.create(
                     cylinder=cylinder,
                     order_line=order_line,
+                    filling_number = order_line.fillings.count() + 1
                 )
                 return redirect('gas_filling:gas_filling_batchnum', pk=filling.id)
             except (Cylinder.DoesNotExist, ValueError):
                 return redirect('gas_filling:cylinder_create', barcode=barcode, orderline_id=order_line.pk)            
 
-    filling_number = order_line.fillings.count() + 1
     context = {
         'order': order,
         'order_line': order_line,
-        'filling_number': filling_number,
         'fill_progress': fill_progress,
         'subsections': 'gas_filling/subsections.html',
     }
@@ -78,6 +77,7 @@ def gas_filling_batchnum(request, pk):
     order_line = filling.order_line
     order = order_line.order
 
+    fill_progress = (str(filling.filling_number) + "/" + str(order_line.num_cylinders))
     last_filling = Filling.objects.exclude(batch_num__isnull=True).order_by('-id').first()
     last_batch_num = last_filling.batch_num if last_filling else 0
 
@@ -97,6 +97,7 @@ def gas_filling_batchnum(request, pk):
         'filling': filling,
         'order': order,
         'order_line': order_line,
+        'fill_progress': fill_progress,
         'last_batch_num': last_batch_num,
         'subsections': 'gas_filling/subsections.html',
     }
@@ -108,7 +109,8 @@ def gas_filling_heelweight(request, pk):
     order_line = filling.order_line
     order = order_line.order
     cylinder = filling.cylinder
-    error_message = None
+
+    fill_progress = (str(filling.filling_number) + "/" + str(order_line.num_cylinders))
 
     if request.method == 'POST':
         heel_weight = float(request.POST.get('heel_weight'))
@@ -116,12 +118,15 @@ def gas_filling_heelweight(request, pk):
         filling.heel_time = now()
 
         difference = round(heel_weight - cylinder.tare, 2)
+
         if difference != 0:
             if order_line.keep_heel:
                 filling.save()
                 return redirect('gas_filling:gas_filling_connectionweight', pk=filling.id)
             else:
-                error_message = ("A heel of " + str(difference) + "kg was detected. This order line does not allow keeping heels.")
+                filling.heel_weight_b = heel_weight
+                filling.save()
+                return redirect('gas_filling:gas_filling_heelweight_b', pk=filling.id)
         else:
             filling.save()
             return redirect('gas_filling:gas_filling_connectionweight', pk=filling.id)
@@ -132,16 +137,47 @@ def gas_filling_heelweight(request, pk):
         'order': order,
         'order_line': order_line,
         'cylinder': cylinder,
-        'error_message': error_message,
+        'fill_progress': fill_progress,
         'subsections': 'gas_filling/subsections.html',
     }
     return render(request, 'gas_filling/filling_heel.html', context)
+
+def gas_filling_heelweight_b(request, pk):
+    filling = Filling.objects.get(pk=pk)
+    order_line = filling.order_line
+    order = order_line.order
+    cylinder = filling.cylinder
+
+    fill_progress = (str(filling.filling_number) + "/" + str(order_line.num_cylinders))
+    difference = round(filling.heel_weight_b - cylinder.tare, 2)
+    error_message = ("A heel of " + str(difference) + "kg was detected. This order line does not allow keeping heels. Remove the heel and weigh again.")
+
+    if request.method == 'POST':
+        heel_weight = float(request.POST.get('heel_weight'))
+        if heel_weight != filling.heel_weight_b:
+            filling.heel_weight = heel_weight
+            filling.heel_time = now()
+            filling.save()
+            return redirect('gas_filling:gas_filling_connectionweight', pk=filling.id)
+
+    context = {
+        'filling': filling,
+        'order': order,
+        'order_line': order_line,
+        'cylinder': cylinder,
+        'fill_progress': fill_progress,
+        'error_message': error_message,
+        'subsections': 'gas_filling/subsections.html',
+    }
+    return render(request, 'gas_filling/filling_heel_b.html', context)
 
 
 def gas_filling_connectionweight(request, pk):
     filling = Filling.objects.get(pk=pk)
     order_line = filling.order_line
     order = order_line.order
+
+    fill_progress = (str(filling.filling_number) + "/" + str(order_line.num_cylinders))
 
     if request.method == 'POST':
         connection_weight = request.POST.get('connection_weight')
@@ -155,6 +191,7 @@ def gas_filling_connectionweight(request, pk):
         'filling': filling,
         'order': order,
         'order_line': order_line,
+        'fill_progress': fill_progress,
         'subsections': 'gas_filling/subsections.html',
     }
     return render(request, 'gas_filling/filling_connections.html', context)
@@ -166,6 +203,7 @@ def gas_filling_endweight(request, pk):
     order = order_line.order
     cylinder = filling.cylinder
 
+    fill_progress = (str(filling.filling_number) + "/" + str(order_line.num_cylinders))
     connections = filling.connection_weight - filling.heel_weight
     target_weight = round(cylinder.tare + order_line.fill_weight + connections, 2)
 
@@ -181,6 +219,7 @@ def gas_filling_endweight(request, pk):
         'filling': filling,
         'order': order,
         'order_line': order_line,
+        'fill_progress': fill_progress,
         'target_weight': target_weight,
         'subsections': 'gas_filling/subsections.html',
     }
@@ -193,6 +232,7 @@ def gas_filling_pulledweight(request, pk):
     order = order_line.order
     cylinder = filling.cylinder
 
+    fill_progress = (str(filling.filling_number) + "/" + str(order_line.num_cylinders))
     target_weight = round(cylinder.tare + order_line.fill_weight, 2)
 
     if request.method == 'POST':
@@ -211,6 +251,7 @@ def gas_filling_pulledweight(request, pk):
         'filling': filling,
         'order': order,
         'order_line': order_line,
+        'fill_progress': fill_progress,
         'target_weight': target_weight,
         'subsections': 'gas_filling/subsections.html',
     }
@@ -413,14 +454,11 @@ def order_create(request):
 def order_show(request, pk):
     order = Order.objects.get(pk=pk)
 
-    if order.status == 'OPEN' and order.fillings.exists():
-        order.status = 'IN_PROGRESS'
-        order.save()
     if order.status == 'CLOSED' and order.fillings.exists():
         order.status = 'IN_PROGRESS'
         order.save()
 
-    fillings = order.fillings.all().order_by('order_line')
+    fillings = order.fillings.all().order_by('order_line', 'filling_number')
     context = {
         'order': order,
         'fillings': fillings,
@@ -491,6 +529,13 @@ def order_status(request, pk):
     if request.method == 'POST':
         if order.status == 'OPEN':
             order.status = 'CLOSED'
+
+            send_mail(
+                f'Order Closed',
+                f'Order #{order.id} has been closed.',
+                secret.FROM_EMAIL,
+                [secret.TO_EMAIL],
+            )
         elif order.status == 'IN_PROGRESS':
             order.status = 'PACKED'
             send_mail(

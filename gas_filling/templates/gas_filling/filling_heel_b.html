@@ -11,17 +11,22 @@
     <li><strong>Target Fill Weight:</strong> {{ order_line.fill_weight }}</li>
 </ul>
 
-<h2>Step 5: Enter Weight After Filling</h2>
+<h2>Step 3a: Re-Enter Start Weight</h2>
 
-{% if target_weight %}
-<p><strong>Target Weight:</strong> {{ target_weight }} kg</p>
-<p><strong>Target Net Weight:</strong> {{ order_line.fill_weight }} kg</p>
+{% if cylinder.tare %}
+<p><strong>Expected Tare Weight:</strong> {{ cylinder.tare }} kg</p>
+{% else %}
+<p>No tare weight recorded for this cylinder.</p>
+{% endif %}
+
+{% if error_message %}
+<p> {{ error_message }} </p>
 {% endif %}
 
 <form method="post">
     {% csrf_token %}
-    <label for="end_weight">Weight After Filling (kg):</label>
-    <input type="number" step="0.01" name="end_weight" required autofocus>
+    <label for="tare_weight">Weight with Heel(kg):</label>
+    <input type="number" step="0.01" name="heel_weight" required autofocus>
     <button type="submit" class="btn-primary">Next</button>
 </form>
 

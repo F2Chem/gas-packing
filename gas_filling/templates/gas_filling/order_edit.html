@@ -12,6 +12,10 @@
             <th>Customer</th>
             <td>{{ form.customer }}</td>
         </tr>
+        </tr>
+            <th>Order Number</th>
+            <td>{{ form.order_number }}</td>
+        <tr>
         <tr>
             <th>Comments</th>
             <td>{{ form.comments }}</td>
@@ -31,7 +35,7 @@
             <button type="submit" class="btn-primary">Save Changes</button>
         </form>
 
-        <form action="{% url 'gas_filling:order_list' %}" method="get">
+        <form action="{% url 'gas_filling:order_show' order.id %}" method="get">
             <button type="submit" class="btn-secondary">Back</button>
         </form>
     </div>
