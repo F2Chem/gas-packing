@@ -86,6 +86,7 @@ No order lines exist for this order
             <th>Order Line</th>
             <th>Fill Number</th>
             <th>Cylinder Barcode</th>
+            <th>Cylinder Tare</th>
             <th>Batch Number</th>
             <th>Heel Weight</th>
             <th>Connection Weight</th>
@@ -107,6 +108,7 @@ No order lines exist for this order
             <td>{{ filling.order_line.line_number }}</td>
             <td>{{ filling.filling_number }}/{{ filling.order_line.num_cylinders }}</td>
             <td>{{ filling.cylinder.barcodeid }}</td>
+            <td>{{ filling.cylinder.tare }}</td>
             <td>{{ filling.batch_num }}</td>
             <td>{{ filling.heel_weight }}</td>
             <td>{{ filling.connection_weight }}</td>

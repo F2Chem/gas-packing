@@ -391,7 +391,7 @@ def order_list(request):
             default=Value(100),
             output_field=IntegerField()
         )
-    ).order_by('status_order', 'id')
+    ).order_by('-id')
 
     if status_filter:
         orders = orders.filter(status=status_filter)
@@ -527,33 +527,66 @@ def order_status(request, pk):
     order = Order.objects.get(pk=pk)    
 
     if request.method == 'POST':
-        if order.status == 'OPEN':
-            order.status = 'CLOSED'
+        action = request.POST.get("action")
+        print(action)
+
+        if action == "failed" and order.status == "PACKED":
+            order.status = "FAILED"
 
             send_mail(
-                f'Order Closed',
-                f'Order #{order.id} has been closed.',
-                secret.FROM_EMAIL,
-                [secret.TO_EMAIL],
-            )
-        elif order.status == 'IN_PROGRESS':
-            order.status = 'PACKED'
-            send_mail(
-                f'Order Finished',
-                f'Order #{order.id} has been completed.',
-                secret.FROM_EMAIL,
-                [secret.TO_EMAIL],
-            )
-        elif order.status == 'PACKED':
-            order.status = 'PASSED'
-            send_mail(
-                f'Order Released',
-                f'Order #{order.id} has been released.',
-                secret.FROM_EMAIL,
-                [secret.TO_EMAIL],
-            )
-        elif order.status == 'PASSED':
-            order.status = 'FINISHED'
+                    f'Order Failed',
+                    f'Order #{order.id} has failed and needs reworking.',
+                    f'http://127.0.0.1:8000/gas_filling/{order.id}/',
+                    secret.FROM_EMAIL,
+                    [secret.TO_EMAIL],
+                )
+        else: 
+            if order.status == 'OPEN':
+                order.status = 'CLOSED'
+
+                send_mail(
+                    f'Order Closed',
+                    f'Order #{order.id} has been closed.',
+                    f'http://127.0.0.1:8000/gas_filling/{order.id}/',
+                    secret.FROM_EMAIL,
+                    [secret.TO_EMAIL],
+                )
+            elif order.status == 'IN_PROGRESS':
+                order.status = 'PACKED'
+                send_mail(
+                    f'Order Packed',
+                    f'Order #{order.id} has been packed.',
+                    f'http://127.0.0.1:8000/gas_filling/{order.id}/',
+                    secret.FROM_EMAIL,
+                    [secret.TO_EMAIL],
+                )
+            elif order.status == 'PACKED':
+                order.status = 'PASSED'
+                send_mail(
+                    f'Order Passed',
+                    f'Order #{order.id} has passed QA testing.',
+                    f'http://127.0.0.1:8000/gas_filling/{order.id}/',
+                    secret.FROM_EMAIL,
+                    [secret.TO_EMAIL],
+                )
+            elif order.status == 'PASSED' or order.status == 'REWORKED':
+                order.status = 'FINISHED'
+                send_mail(
+                    f'Order Finished',
+                    f'Order #{order.id} has been completed.',
+                    f'http://127.0.0.1:8000/gas_filling/{order.id}/',
+                    secret.FROM_EMAIL,
+                    [secret.TO_EMAIL],
+                )                
+            elif order.status == 'FAILED':
+                order.status = 'REWORKED'
+                send_mail(
+                    f'Order Reworked',
+                    f'Order #{order.id} has been reworked.',
+                    f'http://127.0.0.1:8000/gas_filling/{order.id}/',
+                    secret.FROM_EMAIL,
+                    [secret.TO_EMAIL],
+                )
         order.save()        
 
         return redirect('gas_filling:order_list')

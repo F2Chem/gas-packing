@@ -1,12 +1,14 @@
 from django.urls import path
 #from util.util import add_std_to_paths
 from . import views
+from django.shortcuts import redirect
+
 
 app_name = "gas_filling"
 
 
 urlpatterns = [
-    path('', views.gas_filling_home, name='gas_filling_home'),
+    path('', lambda request: redirect('order/', permanent=True)),
 
     path('filling/<int:pk>/', views.gas_filling, name='gas_filling_filling'),
     path('filling/batch/<int:pk>/', views.gas_filling_batchnum, name='gas_filling_batchnum'),

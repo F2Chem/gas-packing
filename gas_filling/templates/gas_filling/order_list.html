@@ -8,9 +8,8 @@
     <button type="submit" class="btn-primary">Create New Order</button>
 </form>
 
-{% if orders %}
 
-<form method="get" class="mb-3" style="margin-left: 1022px; margin-bottom: 5px;">
+<form method="get" class="mb-3" style="margin-left: 953px; margin-bottom: 5px;">
     <label for="status">Filter by Status:</label>
     <select name="status" id="status" onchange="this.form.submit()">
         <option value="">All</option>
@@ -26,6 +25,7 @@
 </form>
 
 
+{% if orders %}
 
 <table border="1" cellpadding="5" cellspacing="0">
     <thead>
@@ -33,7 +33,6 @@
             <th>Customer</th>
             <th>Target Fill</th>
             <th>Order Number</th>
-            <th>Number of Order Lines</th>
             <th>Added</th>
             <th>Total Fills Done</th>
             <th>Total Filled Weight</th>
@@ -64,13 +63,14 @@
             <td>{{ order.customer }}</td>
             <td>{{ order.target_fill }}</td>
             <td>{{ order.order_number }}</td>
-            <td>{{ order.total_orderlines }}</td>
             <td>{{ order.created_time }}</td>
             <td>{{ order.total_fills }}</td>
             <td>{{ order.total_fill_weight }}</td>
             <td>
                 <a href="{% url 'gas_filling:order_show' order.id %}">Show</a> |
+                {% if order.status == "OPEN" %}
                 <a href="{% url 'gas_filling:order_edit' order.id %}">Edit</a> |
+                {% endif %}
             </td>
             <td>
                 {% if order.status == "OPEN" %}

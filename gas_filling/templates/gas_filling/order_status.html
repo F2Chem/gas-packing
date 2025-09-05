@@ -21,7 +21,7 @@
 <div style="display: flex; gap: 10px; margin-top: 20px;">
     <form method="post">
         {% csrf_token %}
-        <button type="submit" class="btn btn-success">
+        <button type="submit" name="action" value="success" class="btn btn-success">
             {% if order.status == "OPEN" %}
             Mark as Closed
             {% elif order.status == "IN_PROGRESS" %}
@@ -36,6 +36,12 @@
             Mark as Finished
             {% endif %}
         </button>
+        {% if order.status == "PACKED" %}
+        <button type="submit" name="action" value="failed" class="btn btn-Failedsuccess">
+            Mark as Failed
+        </button>
+        {% endif %}
+
     </form>
 
     <form action="{% url 'gas_filling:order_list' %}" method="get">
