@@ -426,18 +426,6 @@ def order_create(request):
             order.save()
             orderline.save()
 
-            send_mail(
-                f'Order #{order.id} has been created.',
-                f'Order #{order.id} has been created\n'
-                f'-----------------\n'
-                f'Customer: {order.customer}\n'
-                f'-----------------\n'
-                f'Comments: {order.packaging_instruction}\n'
-                f'-----------------',
-                secret.FROM_EMAIL,
-                [secret.TO_EMAIL],
-            )
-
             return redirect('gas_filling:order_show', pk=order.id)
     else:
         order_form = OrderForm()
@@ -534,19 +522,19 @@ def order_status(request, pk):
             order.status = "FAILED"
 
             send_mail(
-                    f'Order Failed',
-                    f'Order #{order.id} has failed and needs reworking.',
-                    f'http://127.0.0.1:8000/gas_filling/{order.id}/',
-                    secret.FROM_EMAIL,
-                    [secret.TO_EMAIL],
-                )
+                f'Order Failed',
+                f'Order #{order.id} has failed and needs reworking.'
+                f'http://127.0.0.1:8000/gas_filling/{order.id}/',
+                secret.FROM_EMAIL,
+                [secret.TO_EMAIL],
+            )
         else: 
             if order.status == 'OPEN':
                 order.status = 'CLOSED'
 
                 send_mail(
                     f'Order Closed',
-                    f'Order #{order.id} has been closed.',
+                    f'Order #{order.id} has been closed.'
                     f'http://127.0.0.1:8000/gas_filling/{order.id}/',
                     secret.FROM_EMAIL,
                     [secret.TO_EMAIL],
@@ -555,7 +543,7 @@ def order_status(request, pk):
                 order.status = 'PACKED'
                 send_mail(
                     f'Order Packed',
-                    f'Order #{order.id} has been packed.',
+                    f'Order #{order.id} has been packed.'
                     f'http://127.0.0.1:8000/gas_filling/{order.id}/',
                     secret.FROM_EMAIL,
                     [secret.TO_EMAIL],
@@ -564,7 +552,7 @@ def order_status(request, pk):
                 order.status = 'PASSED'
                 send_mail(
                     f'Order Passed',
-                    f'Order #{order.id} has passed QA testing.',
+                    f'Order #{order.id} has passed QA testing.'
                     f'http://127.0.0.1:8000/gas_filling/{order.id}/',
                     secret.FROM_EMAIL,
                     [secret.TO_EMAIL],
@@ -573,7 +561,7 @@ def order_status(request, pk):
                 order.status = 'FINISHED'
                 send_mail(
                     f'Order Finished',
-                    f'Order #{order.id} has been completed.',
+                    f'Order #{order.id} has been completed.'
                     f'http://127.0.0.1:8000/gas_filling/{order.id}/',
                     secret.FROM_EMAIL,
                     [secret.TO_EMAIL],
@@ -582,13 +570,13 @@ def order_status(request, pk):
                 order.status = 'REWORKED'
                 send_mail(
                     f'Order Reworked',
-                    f'Order #{order.id} has been reworked.',
+                    f'Order #{order.id} has been reworked.'
                     f'http://127.0.0.1:8000/gas_filling/{order.id}/',
                     secret.FROM_EMAIL,
                     [secret.TO_EMAIL],
                 )
-        order.save()        
 
+        order.save()        
         return redirect('gas_filling:order_list')
 
     context = {

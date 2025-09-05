@@ -7,12 +7,11 @@
 <ul>
     <li><em>Order Number:</em> {{ order.order_number }}</li>
     <li><em>Customer:</em> {{ order.customer }}</li>
-    <li><em>Comments:</em> {{ order.comments }}</li>
     <li><em>Packing Instructions:</em> {{ order.packaging_instruction }}</li>
     <li><em>QC Instructions:</em> {{ order.qc_instruction }}</li>
     <li><em>Created:</em> {{ order.created_time }}</li>
     <li><em>Target Fill Weight:</em> {{ order.target_fill }}</li>
-    <li><em>Total Fills Done:</em> {{ order.total_fills }}</li>
+    <li><em>Total Fills Done:</em> {{ order.total_cylinders_filled }}/{{ order.total_cylinders_required }}</li>
     <li><em>Total Filled Weight:</em> {{ order.total_fill_weight }}</li>
     <li><em>Total Order Lines:</em> {{ order.total_orderlines }}</li>
     <li>
@@ -20,9 +19,19 @@
             {{ order.get_status_display }}
         </span>
     </li>
+    {% if order.packer_comments != "not yet" %}
+    <li><em>Packer Comments:</em> {{ order.packer_comments }}</li>
+    {% else %}
+    <li><em>Packer Comments:</em> Not packed yet</li>
+    {% endif %}
+    {% if order.analyst_comments != "not yet" %}
+    <li><em>Analyst Comments:</em> {{ order.analyst_comments }}</li>
+    {% else %}
+    <li><em>Analyst Comments:</em> Not finished yet</li>
+    {% endif %}
 </ul>
 
-{% if order.status != "CLOSED" %}
+{% if order.status == "OPEN" %}
 <form action="{% url 'gas_filling:order_edit' order.id %}" method="get" style="margin-top:5px;">
     <button type="submit" class="btn-primary">Edit Order</button>
 </form>
@@ -89,6 +98,7 @@ No order lines exist for this order
             <th>Cylinder Tare</th>
             <th>Batch Number</th>
             <th>Heel Weight</th>
+            <th>Heel Weightb</th>
             <th>Connection Weight</th>
             <th>End Weight</th>
             <th>Pulled Weight</th>
@@ -111,6 +121,7 @@ No order lines exist for this order
             <td>{{ filling.cylinder.tare }}</td>
             <td>{{ filling.batch_num }}</td>
             <td>{{ filling.heel_weight }}</td>
+            <td>{{ filling.heel_weight_b }}</td>
             <td>{{ filling.connection_weight }}</td>
             <td>{{ filling.end_weight }}</td>
             <td>{{ filling.pulled_weight }}</td>

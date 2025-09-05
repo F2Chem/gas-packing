@@ -64,12 +64,12 @@
             <td>{{ order.target_fill }}</td>
             <td>{{ order.order_number }}</td>
             <td>{{ order.created_time }}</td>
-            <td>{{ order.total_fills }}</td>
+            <td>{{ order.total_cylinders_filled }}/{{ order.total_cylinders_required }}</td>
             <td>{{ order.total_fill_weight }}</td>
             <td>
-                <a href="{% url 'gas_filling:order_show' order.id %}">Show</a> |
+                <a href="{% url 'gas_filling:order_show' order.id %}">Show</a>
                 {% if order.status == "OPEN" %}
-                <a href="{% url 'gas_filling:order_edit' order.id %}">Edit</a> |
+                <a href="{% url 'gas_filling:order_edit' order.id %}"> | Edit</a> |
                 {% endif %}
             </td>
             <td>

@@ -44,7 +44,8 @@ class Order(models.Model):
     id = models.AutoField(primary_key=True)
     order_number = models.CharField(max_length=20, blank=False, null=False)
     customer = models.CharField(max_length=50, blank=False, null=False)
-    comments = models.TextField(blank=True, null=True)
+    packer_comments = models.TextField(default = "not yet", blank=True, null=True)
+    analyst_comments = models.TextField(default = "not yet", blank=False, null=False)
     packaging_instruction = models.TextField(blank=True, null=True)
     qc_instruction = models.TextField(blank=True, null=True)
     fill_type = models.CharField(max_length=50, blank=True, null=True)
@@ -97,6 +98,12 @@ class Order(models.Model):
     @property
     def fillings(self):
         return Filling.objects.filter(order_line__order=self)
+
+    def total_cylinders_required(self):
+        return sum(line.num_cylinders for line in self.order_lines.all())
+
+    def total_cylinders_filled(self):
+        return sum(line.cylinders_filled() for line in self.order_lines.all())
 
     def get_status_colour(self):
         return self.STATUS_COLOURS.get(self.status, "#000000")
@@ -184,6 +191,24 @@ class Filling(models.Model):
     def net_heel_weight(self):
         if self.cylinder and self.cylinder.tare and self.heel_weight is not None:
             return round(self.heel_weight - self.cylinder.tare, 1)
+        return 0.0
+
+    @property
+    def taken_weight(self):
+        if self.connection_weight and self.end_weight:
+            return round(self.end_weight - self.connection_weight, 1)
+        return 0.0
+        
+    @property
+    def recycle_weight(self):
+        if self.heel_weight and self.heel_weight_b:
+            return round(self.heel_weight_b - self.heel_weight, 1)
+        return 0.0
+        
+    @property
+    def pulled_diff_weight(self):
+        if self.pulled_weight and self.end_weight:
+            return round(self.end_weight - self.pulled_weight, 1)
         return 0.0
 
     @property

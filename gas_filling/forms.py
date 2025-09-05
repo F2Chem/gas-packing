@@ -21,9 +21,8 @@ class CylinderForm(forms.ModelForm):
 class OrderForm(forms.ModelForm):
     class Meta:
         model = Order
-        fields = ['customer', 'order_number', 'comments', 'packaging_instruction', 'qc_instruction']
+        fields = ['customer', 'order_number', 'packaging_instruction', 'qc_instruction']
         widgets = {
-            'comments': forms.Textarea(attrs={'rows': 3}),  
             'packaging_instruction': forms.Textarea(attrs={'rows': 3}),
             'qc_instruction': forms.Textarea(attrs={'rows': 3}),
             }

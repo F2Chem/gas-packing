@@ -11,7 +11,7 @@
     <li><strong>Target Fill Weight:</strong> {{ order_line.fill_weight }}</li>
 </ul>
 
-<h2>Step 3a: Re-Enter Start Weight</h2>
+<h2>Step 3a: Weight After Heel Removed</h2>
 
 {% if cylinder.tare %}
 <p><strong>Expected Tare Weight:</strong> {{ cylinder.tare }} kg</p>
@@ -33,5 +33,7 @@
 <form action="{% url 'gas_filling:order_show' filling.order_line.order.id %}" method="get" style="margin-top: 20px;">
     <button type="submit" class="btn-primary" style="margin-top:20px;">Cancel</button>
 </form>
+
+{% include "gas_filling/abandon.html" %}
 
 {% endblock %}
