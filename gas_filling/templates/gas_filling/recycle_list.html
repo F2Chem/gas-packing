@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Recycles</h1>
+
+{% if recycles %}
+<table border="1" cellpadding="5" cellspacing="0">
+    <thead>
+        <tr>
+            <th>Recycle Number</th>
+            <th>Order ID</th>
+            <th>Start Weight</th>
+            <th>End Weight</th>
+            <th>Weight Recycled</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for recycle in recycles %}
+        <tr>
+            <td>{{ recycle.recycle_num }}</td>
+            <td>{{ recycle.parent_order.id }}</td>
+            <td>{{ recycle.start_weight }}</td>
+            <td>
+                {% if recycle.end_weight == 0 %} {{ "-" }} {% else %} {{ recycle.end_weight }} {% endif %}
+            </td>
+            <td>
+                {% if recycle.end_weight %} {{recycle.recycled_weight}} {% else %} {{ "-" }} {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% else %}
+<p>No recycles found.</p>
+{% endif %}
+
+{% endblock %}

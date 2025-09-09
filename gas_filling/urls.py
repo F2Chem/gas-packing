@@ -27,6 +27,9 @@ urlpatterns = [
     path('batch/new_batch/<int:pk>/<int:prev_batch>/', views.new_batch, name='gas_filling_newbatch'),
     path('batch/', views.batch_list, name='batch_list'),
 
+    path('recycle/new_recycle/<int:pk>/<int:prev_recycle>/', views.new_recycle, name='gas_filling_newrecycle'),
+    path('recycle/', views.recycle_list, name='recycle_list'),
+
     path('cylinder/', views.cylinder_list, name='cylinder_list'),
     path('cylinder/show/<int:pk>/', views.cylinder_show, name='cylinder_show'),
     path('cylinder/create/<str:barcode>/<int:orderline_id>/', views.cylinder_create, name='cylinder_create'),

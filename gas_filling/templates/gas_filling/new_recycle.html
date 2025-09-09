@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<h2>New Recycle #{{ recycle_num }} Started</h2>
+
+<form method="post">
+    {% csrf_token %}
+
+    <div class="mb-4">
+        <label for="end_weight" class="form-label">End Weight of Last Recycle #{{ prev_recycle }}</label>
+        <input type="number" step="0.1" class="form-control" name="end_weight" required>
+    </div>
+    <p style="margin-bottom: 20px;"></p>
+    <div class="mb-4">
+        <label for="start_weight" class="form-label">Start Weight of New Recycle #{{ recycle_num }}</label>
+        <input type="number" step="0.1" class="form-control" name="start_weight" required>
+    </div>
+    <p style="margin-bottom: 30px;"></p>
+    <div class="mt-4">
+        <button type="submit" class="btn btn-primary">Continue</button>
+    </div>
+</form>
+{% endblock %}

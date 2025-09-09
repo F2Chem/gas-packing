@@ -7,7 +7,7 @@ from django.utils.timezone import now
 from django.core.mail import send_mail
 import secret
 from .forms import FillingForm, CylinderForm, OrderForm, OrderLineForm
-from .models import Filling, Cylinder, Order, Batch, Cylinder, OrderLine
+from .models import *
 from datetime import date, timedelta
 
 
@@ -669,6 +669,48 @@ def batch_list(request):
         'subsections':'gas_filling/subsections.html',
     }
     return render(request, 'gas_filling/batch_list.html', context)
+
+def new_recycle(request, pk, prev_recycle):
+    filling = get_object_or_404(Filling, pk=pk)
+    order = filling.order
+    current_recycle_num = filling.recycle_num
+
+    if request.method == 'POST':
+        end_weight = request.POST.get('end_weight')
+        start_weight = request.POST.get('start_weight')
+
+        if prev_recycle:
+            prev_recycle_obj, created = Recycle.objects.get_or_create(
+            recycle_num=prev_recycle,
+            defaults={"start_weight": 0}
+        )
+        prev_recycle_obj.end_weight = end_weight
+        prev_recycle_obj.save()
+
+        Recycle.objects.get_or_create(
+            recycle_num=current_recycle_num,
+            parent_order=order,
+            defaults={"start_weight": start_weight, "end_weight": 0}
+        )
+
+        return redirect('gas_filling:recycle_list')
+
+    context = {
+        'filling': filling,
+        'recycle_num': current_recycle_num,
+        'order': order,
+        'prev_recycle': prev_recycle,
+        'subsections':'gas_filling/subsections.html',
+    }
+    return render(request, 'gas_filling/new_recycle.html', context)
+
+def recycle_list(request):
+    recycles = Recycle.objects.all().order_by('-id')
+    context = {
+        'recycles': recycles,
+        'subsections':'gas_filling/subsections.html',
+    }
+    return render(request, 'gas_filling/recycle_list.html', context)
 
 def pdf_create(request):
     document = []

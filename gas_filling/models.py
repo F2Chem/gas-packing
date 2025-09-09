@@ -232,3 +232,19 @@ class Batch(models.Model):
     class Meta:
         db_table = 'gas_filling_batches'
 
+
+class Recycle(models.Model):
+    id = models.AutoField(primary_key=True)
+    recycle_num = models.IntegerField(blank=True, null=True, unique=True)
+    parent_order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='recycles')
+    start_weight = models.FloatField(default=0, null=True, blank=True)
+    end_weight = models.FloatField(default=0, null=True, blank=True)
+
+    @property
+    def recycled_weight(self):
+        if self.end_weight is not None:
+            return self.end_weight - self.start_weight
+
+    class Meta:
+        db_table = 'gas_filling_recycles'
+
