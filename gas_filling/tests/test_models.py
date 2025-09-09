@@ -97,13 +97,28 @@ class FillingTests(TestCase):
         self.order = Order.objects.create(id=91, customer='Bo')
         self.order_line = OrderLine.objects.create(id=72, order=self.order, line_number=1, product="OCTAFLUOROPROPANE", cylinder_size=10, num_cylinders=3, cylinder_type="STANDARD", fill_weight=500)
         self.cylinder = Cylinder.objects.create(id='1234567', barcodeid = '71l4r487', tare = 82, test_date = date(2183, 1, 24))
-        self.filling = Filling.objects.create(cylinder=self.cylinder, order_line=self.order_line, heel_weight= 100, end_weight=284, pulled_weight=284)
+        self.filling = Filling.objects.create(cylinder=self.cylinder, order_line=self.order_line, heel_weight=100, heel_weight_b=103, connection_weight=102, end_weight=284, pulled_weight=262)
+        self.filling2 = Filling.objects.create(cylinder=self.cylinder, order_line=self.order_line, heel_weight=None, heel_weight_b=None, connection_weight=None, end_weight=None, pulled_weight=None)
 
     def testHeelWeight(self):
         self.assertEqual(self.filling.net_heel_weight, 18)
+        self.assertEqual(self.filling2.net_heel_weight, 0.0)
 
     def testFillWeight(self):
-        self.assertEqual(self.filling.fill_weight, 202)
+        self.assertEqual(self.filling.fill_weight, 180)
+        self.assertEqual(self.filling2.fill_weight, 0.0)
+
+    def testTakenWeight(self):
+        self.assertEqual(self.filling.taken_weight, 182)
+        self.assertEqual(self.filling2.taken_weight, 0.0)
+
+    def testRecycleWeight(self):
+        self.assertEqual(self.filling.recycle_weight, 3)
+        self.assertEqual(self.filling2.recycle_weight, 0.0)
+
+    def testPulledDiffWeight(self):
+        self.assertEqual(self.filling.pulled_diff_weight, 22)
+        self.assertEqual(self.filling2.pulled_diff_weight, 0.0)
 
 
 

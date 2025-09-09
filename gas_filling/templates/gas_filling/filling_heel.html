@@ -26,10 +26,6 @@
     <button type="submit" class="btn-primary">Next</button>
 </form>
 
-<form action="{% url 'gas_filling:order_show' filling.order_line.order.id %}" method="get" style="margin-top: 20px;">
-    <button type="submit" class="btn-primary" style="margin-top:20px;">Cancel</button>
-</form>
-
 {% include "gas_filling/abandon.html" %}
 
 {% endblock %}

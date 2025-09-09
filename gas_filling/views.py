@@ -677,30 +677,37 @@ def pdf_create(request):
     document.append(Paragraph('Summary of Orders and Batches', ParagraphStyle(name='Aloy', fontfamily="Helvetica", fontSize=16, alignment=TA_CENTER)))
     document.append(Spacer(1, 30))
 
-    def organiseOrder(order, number):
-        row = [None] * 7
-        row[0] = number
+    def organiseOrder(order):
+        row = [None] * 8
+        row[0] = order.order_number
         row[1] = order.customer
-        if order.comments:
-            row[2] = order.comments
+        if order.packer_comments:
+            row[2] = order.packer_comments
         else:
-            row[2] = 'None'
-        row[3] = str(order.created_time)
-        row[4] = str(order.total_fills)
-        row[5] = str(order.total_fill_weight)
-        row[6] = order.status
+            row[2] = None
+        if order.analyst_comments:
+            row[3] = order.analyst_comments
+        else:
+            row[3] = None
+        if order.qc_instruction:
+            row[4] = order.qc_instruction
+        else:
+            row[4] = None
+        row[5] = order.fill_type
+        row[6] = str(order.created_time)
+        row[7] = order.status
         return row
     
-    def organiseFilling(filling, number):
+    def organiseFilling(filling):
         row = [None] * 12
-        row[0] = number
-        row[1] = filling.order.customer
-        row[2] = filling.cylinder
+        row[0] = id
+        row[1] = filling.order.order_number
+        row[2] = filling.cylinder.barcodeid
         row[3] = filling.cylinder_time
         row[4] = filling.batch_num
         row[5] = filling.heel_weight
         row[6] = filling.heel_time
-        row[7] = filling.heel_weight
+        row[7] = filling.cylinder.tare
         row[8] = filling.connection_weight
         row[9] = filling.end_weight
         row[10] = filling.pulled_weight
@@ -711,7 +718,7 @@ def pdf_create(request):
     def organiseBatch(batch):
         row = [None] * 4
         row[0] = batch.batch_num
-        row[1] = batch.parent_order.customer
+        row[1] = batch.parent_order.order_number
         row[2] = batch.start_weight
         row[3] = batch.end_weight
         return row
@@ -719,11 +726,11 @@ def pdf_create(request):
 
     ### order table ###
     table_columns = [None] * (len(Order.objects.all())+1)
-    table_columns[0] = ["Num", "Customer", "Comments", "Num Fillings", "Fill Weight", "Status"]
+    table_columns[0] = ["Num", "Customer", "Packer Comments", "Analyst Comments", "Packaging Instruction" "Fill Type", "Time Created", "Status"]
     count = 1
 
     for order in Order.objects.all():
-        table_columns[count] = organiseOrder(order, count)
+        table_columns[count] = organiseOrder(order)
         count += 1
 
     t = Table(table_columns, colWidths=[40, 100, 120, 60, 60, 70])
@@ -745,11 +752,11 @@ def pdf_create(request):
 
     ### filling table ###
     table_columns = [None] * (len(Filling.objects.all())+1)
-    table_columns[0] = ["Num", "Order", "Cylinder", "Time", "Batch Number", "Heel Weight", "Heel Time", "Tare Weight", "Connection Weight", "End Weight","Pulled Weight", "Fill Weight"]
+    table_columns[0] = ["id", "Order", "Cylinder", "Time", "Batch Number", "Heel Weight", "Heel Time", "Tare Weight", "Connection Weight", "End Weight","Pulled Weight", "Fill Weight"]
     count = 1
 
     for filling in Filling.objects.all():
-        table_columns[count] = organiseFilling(filling, count)
+        table_columns[count] = organiseFilling(filling)
         count += 1
 
     t = Table(table_columns, colWidths=[90, 100, 60, 70, 70, 70, 70, 70, 70, 70, 70, 70])
