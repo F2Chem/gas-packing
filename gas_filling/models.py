@@ -108,7 +108,8 @@ class Order(models.Model):
     def get_status_colour(self):
         return self.STATUS_COLOURS.get(self.status, "#000000")
        
-    def reset():
+    # Used for debugging only; excluded from testing
+    def reset():   # pragma: no cover
         Filling.objects.all().delete()
         Order.objects.all().delete()
 

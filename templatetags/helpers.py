@@ -225,10 +225,9 @@ def get(obj, cell, metal):
 
 
 
-"""
-The following functions are for creating HTML. They do so on the basis of meta_data.
-Details in docs\docs\generic_views.txt
-"""
+# The following functions are for creating HTML. They do so on the basis of meta_data.
+# Details in docs\docs\generic_views.txt
+
 
 
 
