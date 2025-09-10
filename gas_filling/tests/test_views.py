@@ -66,6 +66,36 @@ class BatchViewTests(TestCase):
 
 
 
+class RecycleViewTests(TestCase):
+    def setUp(self):
+        self.order = Order.objects.create(id=71, customer='Kyle')
+        self.order_line = OrderLine.objects.create(id=72, order=self.order, line_number=1, product="OCTAFLUOROPROPANE", cylinder_size=10, num_cylinders=3, cylinder_type="STANDARD", fill_weight=500)
+        self.cylinder = Cylinder.objects.create(id=102, barcodeid='Kyle81', tare = 12, test_date = date(2183, 1, 24))
+        self.filling = Filling.objects.create(cylinder=self.cylinder, order_line=self.order_line)
+        self.recycle = Recycle.objects.create(id=12, recycle_num=47, parent_order=self.order, start_weight=500, end_weight=50)
+
+
+    def testRecycleList(self):
+        url = '/gas_filling/recycle/'
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertIn('recycles', response.context)
+
+    def testNewRecycke(self):
+        url = f'/gas_filling/recycle/new_recycle/{self.filling.id}/{self.recycle.recycle_num}/'
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context['recycle_num'], self.filling.recycle_num)
+
+    def testContinueFillingRedirectRecycleNum(self):
+        self.filling.recycle_num = None
+        self.filling.save()
+        url = f'/gas_filling/filling/continue/{self.filling.id}/'
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 302)
+
+
+
 class OrderViewsTests(TestCase):
     def setUp(self):
         self.order = Order.objects.create(id=71, customer='Lara')

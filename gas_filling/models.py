@@ -164,6 +164,9 @@ class Filling(models.Model):
     batch_num = models.IntegerField(blank=True, null=True)
     batch_time = models.DateTimeField(null=True, blank=True)
 
+    recycle_num = models.IntegerField(blank=True, null=True)
+    recycle_time = models.DateTimeField(null=True, blank=True)
+
     heel_weight = models.FloatField(default=0, blank=True, null=True)
     heel_time = models.DateTimeField(null=True, blank=True)
     heel_weight_b = models.FloatField(blank=True, null=True)

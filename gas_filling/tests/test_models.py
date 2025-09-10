@@ -129,3 +129,13 @@ class BatchTests(TestCase):
 
     def testUsedWeight(self):
         self.assertEqual(self.batch.used_weight, 4988)
+
+
+
+class RecycleTests(TestCase):
+    def setUp(self):
+        self.order = Order.objects.create(id=91, customer='Sailor Sloth')
+        self.recycle = Recycle.objects.create(id=36, recycle_num = 81, parent_order=self.order, start_weight=12, end_weight=5000)
+
+    def testRecycledWeight(self):
+        self.assertEqual(self.recycle.recycled_weight, 4988)

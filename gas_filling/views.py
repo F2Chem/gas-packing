@@ -91,7 +91,7 @@ def gas_filling_batchnum(request, pk):
         if is_new_batch:
             return redirect('gas_filling:gas_filling_newbatch', pk=filling.id, prev_batch=last_batch_num)
 
-        return redirect('gas_filling:gas_filling_heelweight', pk=filling.id)
+        return redirect('gas_filling:gas_filling_recyclenum', pk=filling.id)
 
     context = {
         'filling': filling,
@@ -102,6 +102,38 @@ def gas_filling_batchnum(request, pk):
         'subsections': 'gas_filling/subsections.html',
     }
     return render(request, 'gas_filling/filling_batch.html', context)
+
+
+def gas_filling_recyclenum(request, pk):
+    filling = Filling.objects.get(pk=pk)
+    order_line = filling.order_line
+    order = order_line.order
+
+    fill_progress = (str(filling.filling_number) + "/" + str(order_line.num_cylinders))
+    last_filling = Filling.objects.exclude(recycle_num__isnull=True).order_by('-id').first()
+    last_recycle_num = last_filling.recycle_num if last_filling else 0
+
+    if request.method == 'POST':
+        recycle_num = int(request.POST.get('recycle_num'))
+        filling.recycle_num = recycle_num
+        filling.save()
+
+        is_new_recycle = (last_recycle_num is None) or (recycle_num != last_recycle_num)
+        print(last_recycle_num)
+        if is_new_recycle:
+            return redirect('gas_filling:gas_filling_newrecycle', pk=filling.id, prev_recycle=last_recycle_num)
+
+        return redirect('gas_filling:gas_filling_heelweight', pk=filling.id)
+
+    context = {
+        'filling': filling,
+        'order': order,
+        'order_line': order_line,
+        'fill_progress': fill_progress,
+        'last_recycle_num': last_recycle_num,
+        'subsections': 'gas_filling/subsections.html',
+    }
+    return render(request, 'gas_filling/filling_recycle.html', context)
 
 
 def gas_filling_heelweight(request, pk):
@@ -504,6 +536,8 @@ def continue_filling(request, pk):
 
     if not filling.batch_num:
         return redirect('gas_filling:gas_filling_batchnum', pk=filling.id)
+    elif not filling.recycle_num:
+        return redirect('gas_filling:gas_filling_recyclenum', pk=filling.id)
     elif not filling.heel_weight:
         return redirect('gas_filling:gas_filling_heelweight', pk=filling.id)
     elif not filling.end_weight:
@@ -651,7 +685,10 @@ def new_batch(request, pk, prev_batch):
             defaults={"start_weight": start_weight, "end_weight": 0}
         )
 
-        return redirect('gas_filling:gas_filling_heelweight', pk=filling.id)
+        print(filling.order_line.cylinder_type)
+        # if filling.order_line.cylinder_type == 'STILLAGE':
+        #     return redirect('gas_filling:recycle/new_recycle', pk=filling.id, prev_batch=last_batch_num)
+        return redirect('gas_filling:gas_filling_recyclenum', pk=filling.id)
 
     context = {
         'filling': filling,
@@ -678,22 +715,25 @@ def new_recycle(request, pk, prev_recycle):
     if request.method == 'POST':
         end_weight = request.POST.get('end_weight')
         start_weight = request.POST.get('start_weight')
-
+        
         if prev_recycle:
+            print("------------ HERE --------------")
             prev_recycle_obj, created = Recycle.objects.get_or_create(
             recycle_num=prev_recycle,
-            defaults={"start_weight": 0}
+            defaults={"end_weight": 0,
+                      "parent_order": order
+                      }
         )
-        prev_recycle_obj.end_weight = end_weight
+        prev_recycle_obj.start_weight = start_weight
         prev_recycle_obj.save()
 
         Recycle.objects.get_or_create(
             recycle_num=current_recycle_num,
             parent_order=order,
-            defaults={"start_weight": start_weight, "end_weight": 0}
+            defaults={"start_weight": 0, "end_weight": end_weight}
         )
 
-        return redirect('gas_filling:recycle_list')
+        return redirect('gas_filling:gas_filling_heelweight', pk=filling.id)
 
     context = {
         'filling': filling,

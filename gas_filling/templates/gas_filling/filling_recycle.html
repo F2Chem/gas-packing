@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h1>Gas Filling</h1>
+
+<h2>Order Line {{ order_line.line_number }}</h2>
+<h2>Filling: {{ fill_progress }}</h2>
+<ul>
+    <li><strong>Product:</strong> {{ order_line.product }}</li>
+    <li><strong>Cylinder Size:</strong> {{ order_line.cylinder_size }}</li>
+    <li><strong>Target Fill Weight:</strong> {{ order_line.fill_weight }}</li>
+</ul>
+
+<h2>Step 2: Enter Recycle Number</h2>
+
+<form method="post">
+    {% csrf_token %}
+    <label for="recycle_number">Recycle Number:</label>
+    <input type="number" name="recycle_num" required autofocus
+           value="{% if filling.recycle_num %}{{ filling.recycle_num }}{% else %}{{ last_recycle_num|default:'' }}{% endif %}">
+    <button type="submit" class="btn-primary">Next</button>
+</form>
+
+{% include "gas_filling/abandon.html" %}
+
+{% endblock %}
