@@ -220,6 +220,39 @@ class Filling(models.Model):
         return self.order_line.order
 
 
+
+class Stillage(models.Model):
+    id = models.AutoField(primary_key=True)
+    stillage_num = models.IntegerField(blank=True, null=True)
+    filling = models.ForeignKey(Filling, on_delete=models.CASCADE, related_name='stillages', null=True, blank=True)
+
+    end_weight = models.FloatField(default=0, blank=True, null=True)
+    end_time = models.DateTimeField(null=True, blank=True)
+
+    pulled_weight = models.FloatField(default=0, blank=True, null=True)
+    pulled_time = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        db_table = 'gas_filling_stillages'
+
+    @staticmethod
+    def finished_end_weight(filling):
+        stillages = Stillage.objects.filter(filling=filling)
+        weight = 0
+        for stillage in stillages:
+            weight += stillage.end_weight
+        return weight
+    
+    @staticmethod
+    def finished_pulled_weight(filling):
+        stillages = Stillage.objects.filter(filling=filling)
+        weight = 0
+        for stillage in stillages:
+            weight += stillage.pulled_weight
+        return weight
+
+
+
 class Batch(models.Model):
     id = models.AutoField(primary_key=True)
     batch_num = models.IntegerField(blank=True, null=True, unique=True)
@@ -234,6 +267,7 @@ class Batch(models.Model):
 
     class Meta:
         db_table = 'gas_filling_batches'
+
 
 
 class Recycle(models.Model):

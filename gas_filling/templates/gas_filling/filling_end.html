@@ -10,6 +10,9 @@
     <li><strong>Cylinder Size:</strong> {{ order_line.cylinder_size }}</li>
     <li><strong>Target Fill Weight:</strong> {{ order_line.fill_weight }}</li>
 </ul>
+{% if stillage_progress %}
+<h2>Stillage: {{ stillage_progress }}</h2>
+{% endif %}
 
 <h2>Step 5: Enter Weight After Filling</h2>
 

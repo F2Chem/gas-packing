@@ -13,10 +13,12 @@
 
 <h2>Step 3a: Weight After Heel Removed</h2>
 
+{% if order_line.cylinder_type != "STILLAGE" %}
 {% if cylinder.tare %}
 <p><strong>Expected Tare Weight:</strong> {{ cylinder.tare }} kg</p>
 {% else %}
 <p>No tare weight recorded for this cylinder.</p>
+{% endif %}
 {% endif %}
 
 {% if error_message %}

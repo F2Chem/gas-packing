@@ -151,6 +151,11 @@ def gas_filling_heelweight(request, pk):
 
         difference = round(heel_weight - cylinder.tare, 2)
 
+        if filling.order_line.cylinder_type == "STILLAGE":
+            filling.heel_weight_b = heel_weight
+            filling.save()
+            return redirect('gas_filling:gas_filling_heelweight_b', pk=filling.id)
+
         if difference != 0:
             if order_line.keep_heel:
                 filling.save()
@@ -181,15 +186,21 @@ def gas_filling_heelweight_b(request, pk):
     cylinder = filling.cylinder
 
     fill_progress = (str(filling.filling_number) + "/" + str(order_line.num_cylinders))
-    difference = round(filling.heel_weight_b - cylinder.tare, 2)
-    error_message = ("A heel of " + str(difference) + "kg was detected. This order line does not allow keeping heels. Remove the heel and weigh again.")
+
+    if filling.order_line.cylinder_type != "STILLAGE":
+        difference = round(filling.heel_weight_b - cylinder.tare, 2)
+        error_message = ("A heel of " + str(difference) + "kg was detected. This order line does not allow keeping heels. Remove the heel and weigh again.")
+    else:
+        error_message = ("Now remove stillage heel and weigh again.")
 
     if request.method == 'POST':
         heel_weight = float(request.POST.get('heel_weight'))
-        if heel_weight != filling.heel_weight_b:
+        if heel_weight != filling.heel_weight_b or order_line.cylinder_type == "STILLAGE":
             filling.heel_weight = heel_weight
             filling.heel_time = now()
             filling.save()
+            if filling.order_line.cylinder_type != "STILLAGE":
+                cylinder.tare = heel_weight
             return redirect('gas_filling:gas_filling_connectionweight', pk=filling.id)
 
     context = {
@@ -217,6 +228,8 @@ def gas_filling_connectionweight(request, pk):
             filling.connection_weight = connection_weight
             filling.connection_time = now()
             filling.save()
+            if order_line.cylinder_type == "STILLAGE":
+                Stillage.objects.get_or_create(stillage_num=Stillage.objects.filter(filling=filling).count(), filling = filling)
             return redirect('gas_filling:gas_filling_endweight', pk=filling.id)
 
     context = {
@@ -234,14 +247,28 @@ def gas_filling_endweight(request, pk):
     order_line = filling.order_line
     order = order_line.order
     cylinder = filling.cylinder
+    stillage = None
+    if order_line.cylinder_type == "STILLAGE":
+        stillage, created = Stillage.objects.get_or_create(stillage_num=Stillage.objects.filter(filling=filling).count()-1, filling = filling)
 
     fill_progress = (str(filling.filling_number) + "/" + str(order_line.num_cylinders))
+    stillage_progress = None
+    if stillage:
+        stillage_progress = (str(Stillage.objects.filter(filling=filling).count()))
     connections = filling.connection_weight - filling.heel_weight
     target_weight = round(cylinder.tare + order_line.fill_weight + connections, 2)
 
     if request.method == 'POST':
         end_weight = request.POST.get('end_weight')
         if end_weight:
+            if stillage:
+                stillage.end_weight = end_weight
+                stillage.end_time = now()
+                stillage.save()
+                if Stillage.objects.filter(filling=filling).count() < order_line.num_cylinders:
+                    Stillage.objects.get_or_create(stillage_num=Stillage.objects.filter(filling=filling).count(), filling = filling)
+                    return redirect('gas_filling:gas_filling_endweight', pk=filling.id)
+                end_weight = stillage.finished_end_weight(filling)
             filling.end_weight = end_weight
             filling.end_time = now()
             filling.save()
@@ -252,6 +279,7 @@ def gas_filling_endweight(request, pk):
         'order': order,
         'order_line': order_line,
         'fill_progress': fill_progress,
+        'stillage_progress': stillage_progress,
         'target_weight': target_weight,
         'subsections': 'gas_filling/subsections.html',
     }
@@ -263,17 +291,37 @@ def gas_filling_pulledweight(request, pk):
     order_line = filling.order_line
     order = order_line.order
     cylinder = filling.cylinder
+    stillage = None
+    if order_line.cylinder_type == "STILLAGE":
+        stillage = Stillage.objects.filter(filling=filling, pulled_time=None).exclude(end_time=None).order_by("end_time").first()
 
     fill_progress = (str(filling.filling_number) + "/" + str(order_line.num_cylinders))
+    stillage_progress = None
+    if stillage:
+        stillage_progress = (str(order_line.num_cylinders+1-Stillage.objects.filter(filling=filling, pulled_time=None).count()))
     target_weight = round(cylinder.tare + order_line.fill_weight, 2)
 
     if request.method == 'POST':
         pulled_weight = request.POST.get('pulled_weight')
         if pulled_weight:
+            if stillage:
+                stillage.pulled_weight = pulled_weight
+                stillage.pulled_time = now()
+                stillage.save()
+                if (order_line.num_cylinders - Stillage.objects.filter(filling=filling, pulled_time=None).count()) < order_line.num_cylinders:
+                    print("Cal")
+                    return redirect('gas_filling:gas_filling_pulledweight', pk=filling.id)
+                else:
+                    filling.pulled_weight = stillage.finished_pulled_weight(filling)
+                    filling.pulled_time = now()
+                    filling.save()
+
+                    return redirect('gas_filling:order_show', pk=order.id)
+                
             filling.pulled_weight = pulled_weight
             filling.pulled_time = now()
             filling.save()
-
+            
             if order_line.all_somewhat_filled():
                 return redirect('gas_filling:order_show', pk=order.id)
             else:
@@ -284,6 +332,7 @@ def gas_filling_pulledweight(request, pk):
         'order': order,
         'order_line': order_line,
         'fill_progress': fill_progress,
+        'stillage_progress': stillage_progress,
         'target_weight': target_weight,
         'subsections': 'gas_filling/subsections.html',
     }
