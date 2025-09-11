@@ -142,10 +142,16 @@ class OrderLine(models.Model):
         return self.fillings.count()
 
     def all_filled(self):
-        return self.cylinders_filled() == self.num_cylinders
+        if self.cylinder_type == "STILLAGE":
+            return self.cylinders_filled() > 0
+        else:
+            return self.cylinders_filled() == self.num_cylinders
 
     def all_somewhat_filled(self):
-        return self.cylinders_somewhat_filled() == self.num_cylinders
+        if self.cylinder_type == "STILLAGE":
+            return self.cylinders_somewhat_filled() > 0
+        else:
+            return self.cylinders_somewhat_filled() == self.num_cylinders
 
 
 class CylinderSet(models.Model):

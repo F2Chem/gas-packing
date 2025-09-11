@@ -48,6 +48,31 @@
     </tbody>
 </table>
 
+{% if stillages %}
+<h1>Stillage Cylinders</h1>
+<table border="1" cellpadding="5" cellspacing="0">
+    <thead>
+        <tr>
+            <th>Number</th>
+            <th>End Weight</th>
+            <th>End Time</th>
+            <th>Pulled Weight</th>
+            <th>Pulled Time</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for stillage in stillages %}
+            <td>{{ stillage.stillage_num }}</td>
+            <td>{{ stillage.end_weight }}</td>
+            <td>{{ stillage.end_time }}</td>
+            <td>{{ stillage.pulled_weight }}</td>
+            <td>{{ stillage.pulled_time }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endif %}
+
 <form action="{% url 'gas_filling:order_show' filling.order.id %}" method="get" style="margin-top: 20px;">
     <button type="submit" class="btn-primary">Back</button>
 </form>

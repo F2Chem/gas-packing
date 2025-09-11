@@ -199,8 +199,6 @@ def gas_filling_heelweight_b(request, pk):
             filling.heel_weight = heel_weight
             filling.heel_time = now()
             filling.save()
-            if filling.order_line.cylinder_type != "STILLAGE":
-                cylinder.tare = heel_weight
             return redirect('gas_filling:gas_filling_connectionweight', pk=filling.id)
 
     context = {
@@ -253,10 +251,12 @@ def gas_filling_endweight(request, pk):
 
     fill_progress = (str(filling.filling_number) + "/" + str(order_line.num_cylinders))
     stillage_progress = None
-    if stillage:
-        stillage_progress = (str(Stillage.objects.filter(filling=filling).count()))
     connections = filling.connection_weight - filling.heel_weight
     target_weight = round(cylinder.tare + order_line.fill_weight + connections, 2)
+    if stillage:
+        stillage_progress = (str(Stillage.objects.filter(filling=filling).count()))
+        target_weight = round(filling.heel_weight + order_line.fill_weight + connections, 2)
+    
 
     if request.method == 'POST':
         end_weight = request.POST.get('end_weight')
@@ -297,9 +297,11 @@ def gas_filling_pulledweight(request, pk):
 
     fill_progress = (str(filling.filling_number) + "/" + str(order_line.num_cylinders))
     stillage_progress = None
+    target_weight = round(cylinder.tare + order_line.fill_weight, 2)
     if stillage:
         stillage_progress = (str(order_line.num_cylinders+1-Stillage.objects.filter(filling=filling, pulled_time=None).count()))
-    target_weight = round(cylinder.tare + order_line.fill_weight, 2)
+        target_weight = round(filling.heel_weight + order_line.fill_weight, 2)
+    
 
     if request.method == 'POST':
         pulled_weight = request.POST.get('pulled_weight')
@@ -309,14 +311,8 @@ def gas_filling_pulledweight(request, pk):
                 stillage.pulled_time = now()
                 stillage.save()
                 if (order_line.num_cylinders - Stillage.objects.filter(filling=filling, pulled_time=None).count()) < order_line.num_cylinders:
-                    print("Cal")
                     return redirect('gas_filling:gas_filling_pulledweight', pk=filling.id)
-                else:
-                    filling.pulled_weight = stillage.finished_pulled_weight(filling)
-                    filling.pulled_time = now()
-                    filling.save()
-
-                    return redirect('gas_filling:order_show', pk=order.id)
+                pulled_weight = stillage.finished_pulled_weight(filling)
                 
             filling.pulled_weight = pulled_weight
             filling.pulled_time = now()
@@ -557,8 +553,10 @@ def order_edit(request, pk):
 
 def filling_show(request, pk):
     filling = get_object_or_404(Filling, pk=pk)
+    stillages = Stillage.objects.filter(filling=filling).order_by("stillage_num")
     context = {
         'filling': filling,
+        'stillages': stillages,
         'subsections':'gas_filling/subsections.html',
     }
     return render(request, 'gas_filling/filling_show.html', context)
