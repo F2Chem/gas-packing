@@ -29,10 +29,16 @@
         <label for="import_certificate"><strong>Import Certificate Number:</strong></label><br>
         <textarea id="import_certificate" name="import_certificate" rows="1" cols="50"></textarea>
         <br>
-        <label for="export_certificate_applied">
-            <input type="checkbox" id="export_certificate_applied" name="export_certificate_applied">
+        <label for="export_certificate">
+            <input type="checkbox" id="export_certificate" name="export_certificate">
             <strong>Export Certificate Applied For?</strong>
         </label>
+
+        {% if warning %}
+        <div style="color: #856404; background-color: #fff3cd; padding: 10px; margin-bottom: 15px; border-radius: 4px;">
+            {{ warning }}
+        </div>
+        {% endif %}
 
         {% elif order.status == "PASSED" or order.status == "REWORKED" %}
         <label for="analyst_comments"><strong>Analyst Comments:</strong></label><br>
@@ -61,6 +67,8 @@
                 Mark as Failed
             </button>
             {% endif %}
+
+
 
             <a href="{% url 'gas_filling:order_list' %}">
                 <button type="button" class="btn btn-secondary">Cancel</button>

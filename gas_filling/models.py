@@ -46,6 +46,8 @@ class Order(models.Model):
     customer = models.CharField(max_length=50, blank=False, null=False)
     packer_comments = models.TextField(default = "not yet", blank=True, null=True)
     analyst_comments = models.TextField(default = "not yet", blank=False, null=False)
+    import_certificate = models.CharField(max_length=20, blank=True, null=True)
+    export_certificate = models.BooleanField(default=False)
     packaging_instruction = models.TextField(blank=True, null=True)
     qc_instruction = models.TextField(blank=True, null=True)
     fill_type = models.CharField(max_length=50, blank=True, null=True)
@@ -99,11 +101,13 @@ class Order(models.Model):
     def fillings(self):
         return Filling.objects.filter(order_line__order=self)
 
+    @property
     def total_cylinders_required(self):
         return sum(line.num_cylinders for line in self.order_lines.all())
 
+    @property
     def total_cylinders_filled(self):
-        return sum(line.cylinders_filled() for line in self.order_lines.all())
+        return sum(line.cylinders_filled for line in self.order_lines.all())
 
     def get_status_colour(self):
         return self.STATUS_COLOURS.get(self.status, "#000000")
@@ -135,23 +139,27 @@ class OrderLine(models.Model):
     cylinder_type = models.CharField(max_length=20, choices=CYLINDER_TYPES)
     keep_heel = models.BooleanField(default=False)
 
+    @property
     def cylinders_filled(self):
         return self.fillings.exclude(pulled_weight=0).count()
-
+    
+    @property
     def cylinders_somewhat_filled(self):
         return self.fillings.count()
 
+    @property
     def all_filled(self):
         if self.cylinder_type == "STILLAGE":
-            return self.cylinders_filled() > 0
+            return self.cylinders_filled > 0
         else:
-            return self.cylinders_filled() == self.num_cylinders
+            return self.cylinders_filled == self.num_cylinders
 
+    @property
     def all_somewhat_filled(self):
         if self.cylinder_type == "STILLAGE":
-            return self.cylinders_somewhat_filled() > 0
+            return self.cylinders_somewhat_filled > 0
         else:
-            return self.cylinders_somewhat_filled() == self.num_cylinders
+            return self.cylinders_somewhat_filled == self.num_cylinders
 
 
 class CylinderSet(models.Model):

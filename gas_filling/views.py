@@ -27,7 +27,7 @@ def gas_filling(request, pk):
     order_line = OrderLine.objects.get(pk=pk)
     order = order_line.order
 
-    fill_progress = (str((order_line.cylinders_somewhat_filled()) + 1) + "/" + str(order_line.num_cylinders))
+    fill_progress = (str((order_line.cylinders_somewhat_filled) + 1) + "/" + str(order_line.num_cylinders))
 
     if request.method == 'POST':
         barcode = request.POST.get('cylinder_id', '').strip()
@@ -317,7 +317,7 @@ def gas_filling_pulledweight(request, pk):
             filling.pulled_time = now()
             filling.save()
             
-            if order_line.all_somewhat_filled():
+            if order_line.all_somewhat_filled:
                 return redirect('gas_filling:order_show', pk=order.id)
             else:
                 return redirect('gas_filling:gas_filling_filling', pk=order_line.id)
@@ -592,10 +592,15 @@ def continue_filling(request, pk):
         return redirect('gas_filling:gas_filling', pk=filling.order.id)
 
 def order_status(request, pk):
-    order = Order.objects.get(pk=pk)    
+    order = Order.objects.get(pk=pk)  
+    warning = None
 
     if request.method == 'POST':
         action = request.POST.get("action")
+        packer_comments = request.POST.get("packer_comments")
+        analyst_comments = request.POST.get("analyst_comments")
+        import_certificate = request.POST.get("import_certificate")
+        export_certificate = request.POST.get("export_certificate") == "on"
 
         if action == "failed" and order.status == "PACKED":
             order.status = "FAILED"
@@ -620,6 +625,9 @@ def order_status(request, pk):
                 )
             elif order.status == 'IN_PROGRESS':
                 order.status = 'PACKED'
+                order.packer_comments = packer_comments
+                order.import_certificate = import_certificate
+                order.export_certificate = export_certificate 
                 send_mail(
                     f'Order Packed',
                     f'Order #{order.order_number} has been packed.\n'
@@ -627,6 +635,7 @@ def order_status(request, pk):
                     secret.FROM_EMAIL,
                     [secret.TO_EMAIL],
                 )
+                
             elif order.status == 'PACKED':
                 order.status = 'PASSED'
                 send_mail(
@@ -638,6 +647,7 @@ def order_status(request, pk):
                 )
             elif order.status == 'PASSED' or order.status == 'REWORKED':
                 order.status = 'FINISHED'
+                order.analyst_comments = analyst_comments
                 send_mail(
                     f'Order Finished',
                     f'Order #{order.order_number} has been completed.\n'
@@ -658,8 +668,13 @@ def order_status(request, pk):
         order.save()        
         return redirect('gas_filling:order_list')
 
+    if order.status == "IN_PROGRESS":
+        if order.total_cylinders_filled != order.total_cylinders_required:
+            warning = "Warning: " + str(order.total_cylinders_filled) + " / " + str(order.total_cylinders_required) + " cylinders are filled."
+
     context = {
         'order': order,
+        'warning': warning,
         'subsections':'gas_filling/subsections.html',
     }
     return render(request, 'gas_filling/order_status.html', context)
@@ -928,5 +943,6 @@ def pdf_create(request):
 
     context = {
         'subsections':'gas_filling/subsections.html',
+
     }
     return render(request, 'gas_filling/pdf_create.html', context)

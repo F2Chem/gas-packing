@@ -21,6 +21,7 @@
     </li>
     {% if order.packer_comments != "not yet" %}
     <li><em>Packer Comments:</em> {{ order.packer_comments }}</li>
+    <li><em>Import Certificate Number:</em> {{ order.import_certificate }}</li>
     {% else %}
     <li><em>Packer Comments:</em> Not packed yet</li>
     {% endif %}
@@ -98,7 +99,6 @@ No order lines exist for this order
             <th>Cylinder Tare</th>
             <th>Batch Number</th>
             <th>Heel Weight</th>
-            <th>Heel Weightb</th>
             <th>Connection Weight</th>
             <th>End Weight</th>
             <th>Pulled Weight</th>
@@ -121,7 +121,6 @@ No order lines exist for this order
             <td>{{ filling.cylinder.tare }}</td>
             <td>{{ filling.batch_num }}</td>
             <td>{{ filling.heel_weight }}</td>
-            <td>{{ filling.heel_weight_b }}</td>
             <td>{{ filling.connection_weight }}</td>
             <td>{{ filling.end_weight }}</td>
             <td>{{ filling.pulled_weight }}</td>
