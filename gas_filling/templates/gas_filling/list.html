@@ -22,7 +22,7 @@
 
             <td>{{ cylinder.barcodeid }}</td>
             <td>{{ cylinder.tare }}</td>
-            <td>{{ cylinder.test_date|default:"Not set" }}</td>
+            <td>{{ cylinder.test_date|date:"d/M/y" }}</td>
             <td>{{ cylinder.status_text }}</td>
 
             <td>

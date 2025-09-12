@@ -337,7 +337,7 @@ def gas_filling_pulledweight(request, pk):
 def gas_filling_table(request):
     all_fillings = Filling.objects.all().order_by('-end_time')
     context = {
-        'all_filling': all_filling, 
+        'all_fillings': all_fillings, 
         'subsections':'gas_filling/subsections.html',
     }
     return render(request, 'gas_filling/filling_table.html', context)
@@ -602,8 +602,8 @@ def order_status(request, pk):
 
             send_mail(
                 f'Order Failed',
-                f'Order #{order.id} has failed and needs reworking.'
-                f'http://127.0.0.1:8000/gas_filling/{order.id}/',
+                f'Order #{order.order_number} has failed and needs reworking.\n'
+                f'localhost:8000/gas_filling/order/{order.id}/',
                 secret.FROM_EMAIL,
                 [secret.TO_EMAIL],
             )
@@ -613,8 +613,8 @@ def order_status(request, pk):
 
                 send_mail(
                     f'Order Closed',
-                    f'Order #{order.id} has been closed.'
-                    f'http://127.0.0.1:8000/gas_filling/{order.id}/',
+                    f'Order #{order.order_number} has been closed.\n'
+                    f'localhost:8000/gas_filling/order/{order.id}/',
                     secret.FROM_EMAIL,
                     [secret.TO_EMAIL],
                 )
@@ -622,8 +622,8 @@ def order_status(request, pk):
                 order.status = 'PACKED'
                 send_mail(
                     f'Order Packed',
-                    f'Order #{order.id} has been packed.'
-                    f'http://127.0.0.1:8000/gas_filling/{order.id}/',
+                    f'Order #{order.order_number} has been packed.\n'
+                    f'localhost:8000/gas_filling/order/{order.id}/',
                     secret.FROM_EMAIL,
                     [secret.TO_EMAIL],
                 )
@@ -631,8 +631,8 @@ def order_status(request, pk):
                 order.status = 'PASSED'
                 send_mail(
                     f'Order Passed',
-                    f'Order #{order.id} has passed QA testing.'
-                    f'http://127.0.0.1:8000/gas_filling/{order.id}/',
+                    f'Order #{order.order_number} has passed QA testing.\n'
+                    f'localhost:8000/gas_filling/order/{order.id}/',
                     secret.FROM_EMAIL,
                     [secret.TO_EMAIL],
                 )
@@ -640,8 +640,8 @@ def order_status(request, pk):
                 order.status = 'FINISHED'
                 send_mail(
                     f'Order Finished',
-                    f'Order #{order.id} has been completed.'
-                    f'http://127.0.0.1:8000/gas_filling/{order.id}/',
+                    f'Order #{order.order_number} has been completed.\n'
+                    f'localhost:8000/gas_filling/order/{order.id}/',
                     secret.FROM_EMAIL,
                     [secret.TO_EMAIL],
                 )                
@@ -649,8 +649,8 @@ def order_status(request, pk):
                 order.status = 'REWORKED'
                 send_mail(
                     f'Order Reworked',
-                    f'Order #{order.id} has been reworked.'
-                    f'http://127.0.0.1:8000/gas_filling/{order.id}/',
+                    f'Order #{order.order_number} has been reworked.\n'
+                    f'localhost:8000/gas_filling/order/{order.id}/',
                     secret.FROM_EMAIL,
                     [secret.TO_EMAIL],
                 )

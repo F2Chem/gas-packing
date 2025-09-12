@@ -5,8 +5,7 @@
 <ul>
     <li><em>Barcode:</em> {{ cylinder.barcodeid }}</li>
     <li><em>Tare:</em> {{ cylinder.tare }}</li>
-    <li><em>Heel:</em> {{ cylinder.heel }}</li>
-    <li><em>Test Date:</em> {{ cylinder.test_date }}</li>
+    <li><em>Test Date:</em> {{ cylinder.test_date|date:"d/M/y" }}</li>
     <li>
         <em>Status:</em>
         <span style="background-color:
@@ -18,8 +17,14 @@
     <li><em>Comments:</em> {{ cylinder.comments }}</li>
 </ul>
 
-<form action="{% url 'gas_filling:cylinder_list' %}" method="get" style="margin-top: 20px;">
-    <button type="submit" class="btn-primary">Back</button>
-</form>
+<div style="display: flex; gap: 10px; margin-top: 20px;">
+    <form action="{% url 'gas_filling:cylinder_edit' cylinder.id %}" method="get">
+        <button type="submit" class="btn-secondary">Edit</button>
+    </form>
+
+    <form action="{% url 'gas_filling:cylinder_list' %}" method="get">
+        <button type="submit" class="btn-secondary">Back</button>
+    </form>
+</div>
 
 {% endblock %}

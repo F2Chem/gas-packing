@@ -4,17 +4,17 @@
 
 <h2>
     {% if order.status == "OPEN" %}
-    Mark Order #{{ order.id }} as Closed?
+    Mark Order #{{ order.order_number }} as Closed?
     {% elif order.status == "IN_PROGRESS" %}
-    Mark Order #{{ order.id }} as Packed?
+    Mark Order #{{ order.order_number }} as Packed?
     {% elif order.status == "PACKED" %}
-    Mark Order #{{ order.id }} as Passed?
+    Mark Order #{{ order.order_number }} as Passed?
     {% elif order.status == "PASSED" %}
-    Mark Order #{{ order.id }} as Finished?
+    Mark Order #{{ order.order_number }} as Finished?
     {% elif order.status == "FAILED" %}
-    Mark Order #{{ order.id }} as Reworked?
+    Mark Order #{{ order.order_number }} as Reworked?
     {% elif order.status == "REWORKED" %}
-    Mark Order #{{ order.id }} as Finished?
+    Mark Order #{{ order.order_number }} as Finished?
     {% endif %}
 </h2>
 
@@ -23,10 +23,19 @@
         {% csrf_token %}
 
         {% if order.status == "IN_PROGRESS" %}
-        <label for="packer_comments"><strong>Packer Instructions:</strong></label><br>
+        <label for="packer_comments"><strong>Packer Comments:</strong></label><br>
         <textarea id="packer_comments" name="packer_comments" rows="2" cols="50"></textarea>
+        <br>
+        <label for="import_certificate"><strong>Import Certificate Number:</strong></label><br>
+        <textarea id="import_certificate" name="import_certificate" rows="1" cols="50"></textarea>
+        <br>
+        <label for="export_certificate_applied">
+            <input type="checkbox" id="export_certificate_applied" name="export_certificate_applied">
+            <strong>Export Certificate Applied For?</strong>
+        </label>
+
         {% elif order.status == "PASSED" or order.status == "REWORKED" %}
-        <label for="analyst_comments"><strong>Analyst Instructions:</strong></label><br>
+        <label for="analyst_comments"><strong>Analyst Comments:</strong></label><br>
         <textarea id="analyst_comments" name="analyst_comments" rows="2" cols="50" required></textarea>
         {% endif %}
 

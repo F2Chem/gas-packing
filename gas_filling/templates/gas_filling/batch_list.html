@@ -8,7 +8,7 @@
     <thead>
         <tr>
             <th>Batch Number</th>
-            <th>Order ID</th>
+            <th>Order Number</th>
             <th>Start Weight</th>
             <th>End Weight</th>
             <th>Weight Used</th>
@@ -18,7 +18,7 @@
         {% for batch in batches %}
         <tr>
             <td>{{ batch.batch_num }}</td>
-            <td>{{ batch.parent_order.id }}</td>
+            <td>{{ batch.parent_order.order_number }}</td>
             <td>{{ batch.start_weight }}</td>
             <td>
                 {% if batch.end_weight == 0 %} {{ "-" }} {% else %} {{ batch.end_weight }} {% endif %}
