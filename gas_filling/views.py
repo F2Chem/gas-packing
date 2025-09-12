@@ -119,7 +119,6 @@ def gas_filling_recyclenum(request, pk):
         filling.save()
 
         is_new_recycle = (last_recycle_num is None) or (recycle_num != last_recycle_num)
-        print(last_recycle_num)
         if is_new_recycle:
             return redirect('gas_filling:gas_filling_newrecycle', pk=filling.id, prev_recycle=last_recycle_num)
 
@@ -597,7 +596,6 @@ def order_status(request, pk):
 
     if request.method == 'POST':
         action = request.POST.get("action")
-        print(action)
 
         if action == "failed" and order.status == "PACKED":
             order.status = "FAILED"
@@ -721,6 +719,7 @@ def new_batch(request, pk, prev_batch):
         if prev_batch:
             prev_batch_obj, created = Batch.objects.get_or_create(
             batch_num=prev_batch,
+            parent_order=order,
             defaults={"start_weight": 0}
         )
         prev_batch_obj.end_weight = end_weight
@@ -732,9 +731,6 @@ def new_batch(request, pk, prev_batch):
             defaults={"start_weight": start_weight, "end_weight": 0}
         )
 
-        print(filling.order_line.cylinder_type)
-        # if filling.order_line.cylinder_type == 'STILLAGE':
-        #     return redirect('gas_filling:recycle/new_recycle', pk=filling.id, prev_batch=last_batch_num)
         return redirect('gas_filling:gas_filling_recyclenum', pk=filling.id)
 
     context = {
@@ -764,12 +760,10 @@ def new_recycle(request, pk, prev_recycle):
         start_weight = request.POST.get('start_weight')
         
         if prev_recycle:
-            print("------------ HERE --------------")
             prev_recycle_obj, created = Recycle.objects.get_or_create(
             recycle_num=prev_recycle,
-            defaults={"end_weight": 0,
-                      "parent_order": order
-                      }
+            parent_order=order,
+            defaults={"end_weight": 0}
         )
         prev_recycle_obj.start_weight = start_weight
         prev_recycle_obj.save()
