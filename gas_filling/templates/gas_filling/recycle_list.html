@@ -8,7 +8,7 @@
     <thead>
         <tr>
             <th>Recycle Number</th>
-            <th>Order ID</th>
+            <th>Order Number</th>
             <th>Start Weight</th>
             <th>End Weight</th>
             <th>Weight Recycled</th>
@@ -18,7 +18,7 @@
         {% for recycle in recycles %}
         <tr>
             <td>{{ recycle.recycle_num }}</td>
-            <td>{{ recycle.parent_order.id }}</td>
+            <td>{{ recycle.parent_order.order_number }}</td>
             <td>{{ recycle.start_weight }}</td>
             <td>
                 {% if recycle.end_weight == 0 %} {{ "-" }} {% else %} {{ recycle.end_weight }} {% endif %}

@@ -11,7 +11,7 @@
     <li><strong>Target Fill Weight:</strong> {{ order_line.fill_weight }}</li>
 </ul>
 
-<h2>Step 3a: Weight After Heel Removed</h2>
+<h2>Remove Heel: Enter Weight After Heel Removed</h2>
 
 {% if order_line.cylinder_type != "STILLAGE" %}
 {% if cylinder.tare %}
@@ -28,7 +28,7 @@
 <form method="post">
     {% csrf_token %}
     <label for="tare_weight">Weight with Heel(kg):</label>
-    <input type="number" step="0.01" name="heel_weight" required autofocus>
+    <input type="number" step="0.01" name="empty_weight" required autofocus>
     <button type="submit" class="btn-primary">Next</button>
 </form>
 

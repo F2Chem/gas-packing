@@ -18,6 +18,7 @@ urlpatterns = [
     path('filling/connectionweight/<int:pk>/', views.gas_filling_connectionweight, name='gas_filling_connectionweight'),
     path('filling/endweight/<int:pk>/', views.gas_filling_endweight, name='gas_filling_endweight'),
     path('filling/pulledweight/<int:pk>/', views.gas_filling_pulledweight, name='gas_filling_pulledweight'),
+    path('filling/finalweight/<int:pk>/', views.gas_filling_finalweight, name='gas_filling_finalweight'),
     path('filling/continue/<int:pk>/', views.continue_filling, name='continue_filling'),
     path('filling/abandon/<int:pk>/', views.continue_filling, name='abandon'),  # TODO!!!!
 

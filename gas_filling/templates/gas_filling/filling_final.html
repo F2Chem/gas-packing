@@ -10,22 +10,21 @@
     <li><strong>Cylinder Size:</strong> {{ order_line.cylinder_size }}</li>
     <li><strong>Target Fill Weight:</strong> {{ order_line.fill_weight }}</li>
 </ul>
-
-<h2>Step 3: Enter Start Weight</h2>
-
-{% if order_line.cylinder_type != "STILLAGE" %}
-{% if cylinder.tare %}
-<p><strong>Expected Tare Weight:</strong> {{ cylinder.tare }} kg</p>
-{% else %}
-<p>No tare weight recorded for this cylinder.</p>
+{% if stillage_progress %}
+<h2>Stillage: {{ stillage_progress }}</h2>
 {% endif %}
+
+<h2>Step 7: Enter Weight After Removing Connections</h2>
+
+{% if target_weight %}
+<p><strong>Target Weight:</strong> {{ target_weight }} kg</p>
 {% endif %}
 
 <form method="post">
     {% csrf_token %}
-    <label for="tare_weight">Weight with Heel(kg):</label>
-    <input type="number" step="0.01" name="start_weight" required autofocus>
-    <button type="submit" class="btn-primary">Next</button>
+    <label for="end_weight">Weight After Pulling Out (kg):</label>
+    <input type="number" step="0.01" name="final_weight" required autofocus>
+    <button type="submit" class="btn-primary">Submit</button>
 </form>
 
 {% include "gas_filling/abandon.html" %}

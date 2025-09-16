@@ -98,10 +98,11 @@ No order lines exist for this order
             <th>Cylinder Barcode</th>
             <th>Cylinder Tare</th>
             <th>Batch Number</th>
-            <th>Heel Weight</th>
+            <th>Start Weight</th>
             <th>Connection Weight</th>
             <th>End Weight</th>
             <th>Pulled Weight</th>
+            <th>Final Weight</th>
             <th>Fill Weight</th>
             <th>Actions</th>
             <th>Complete?</th>
@@ -120,10 +121,11 @@ No order lines exist for this order
             <td>{{ filling.cylinder.barcodeid }}</td>
             <td>{{ filling.cylinder.tare }}</td>
             <td>{{ filling.batch_num }}</td>
-            <td>{{ filling.heel_weight }}</td>
+            <td>{{ filling.start_weight }}</td>
             <td>{{ filling.connection_weight }}</td>
             <td>{{ filling.end_weight }}</td>
             <td>{{ filling.pulled_weight }}</td>
+            <td>{{ filling.final_weight }}</td>
             <td style="font-weight: bold;">{{ filling.fill_weight }}</td>
             <td>
                 <a href="{% url 'gas_filling:filling_show' filling.id %}">Show</a>

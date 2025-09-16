@@ -141,7 +141,7 @@ class OrderLine(models.Model):
 
     @property
     def cylinders_filled(self):
-        return self.fillings.exclude(pulled_weight=0).count()
+        return self.fillings.exclude(final_weight=0).count()
     
     @property
     def cylinders_somewhat_filled(self):
@@ -181,9 +181,9 @@ class Filling(models.Model):
     recycle_num = models.IntegerField(blank=True, null=True)
     recycle_time = models.DateTimeField(null=True, blank=True)
 
-    heel_weight = models.FloatField(default=0, blank=True, null=True)
-    heel_time = models.DateTimeField(null=True, blank=True)
-    heel_weight_b = models.FloatField(blank=True, null=True)
+    start_weight = models.FloatField(default=0, blank=True, null=True)
+    start_time = models.DateTimeField(null=True, blank=True)
+    empty_weight = models.FloatField(blank=True, null=True)
 
     connection_weight = models.FloatField(default=0, blank=True, null=True)
     connection_time = models.DateTimeField(null=True, blank=True)
@@ -194,6 +194,9 @@ class Filling(models.Model):
     pulled_weight = models.FloatField(default=0, blank=True, null=True)
     pulled_time = models.DateTimeField(null=True, blank=True)
 
+    final_weight = models.FloatField(default=0, blank=True, null=True)
+    final_time = models.DateTimeField(null=True, blank=True)
+
     filling_number = models.IntegerField(default=1)
 
     class Meta:
@@ -201,14 +204,14 @@ class Filling(models.Model):
 
     @property
     def fill_weight(self):
-        if self.pulled_weight and self.cylinder and self.cylinder.tare:
-            return round(self.pulled_weight - self.cylinder.tare, 1)
+        if self.final_weight and self.cylinder and self.cylinder.tare:
+            return round(self.final_weight - self.cylinder.tare, 1)
         return 0.0
     
     @property
     def net_heel_weight(self):
-        if self.cylinder and self.cylinder.tare and self.heel_weight is not None:
-            return round(self.heel_weight - self.cylinder.tare, 1)
+        if self.cylinder and self.cylinder.tare and self.start_weight is not None:
+            return round(self.start_weight - self.cylinder.tare, 1)
         return 0.0
 
     @property
@@ -219,8 +222,8 @@ class Filling(models.Model):
         
     @property
     def recycle_weight(self):
-        if self.heel_weight and self.heel_weight_b:
-            return round(self.heel_weight_b - self.heel_weight, 1)
+        if self.start_weight and self.end_weight:
+            return round(self.end_weight - self.start_weight, 1)
         return 0.0
         
     @property
@@ -269,7 +272,7 @@ class Stillage(models.Model):
 
 class Batch(models.Model):
     id = models.AutoField(primary_key=True)
-    batch_num = models.IntegerField(blank=True, null=True, unique=True)
+    batch_num = models.IntegerField(blank=True, null=True, unique=False)
     parent_order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='batches')
     start_weight = models.FloatField(default=0, null=True, blank=True)
     end_weight = models.FloatField(default=0, null=True, blank=True)
@@ -286,7 +289,7 @@ class Batch(models.Model):
 
 class Recycle(models.Model):
     id = models.AutoField(primary_key=True)
-    recycle_num = models.IntegerField(blank=True, null=True, unique=True)
+    recycle_num = models.IntegerField(blank=True, null=True, unique=False)
     parent_order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='recycles')
     start_weight = models.FloatField(default=0, null=True, blank=True)
     end_weight = models.FloatField(default=0, null=True, blank=True)
