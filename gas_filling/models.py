@@ -16,6 +16,8 @@ class Cylinder(models.Model):
     test_date = models.DateField()
     comments = models.TextField(blank=True, null=True)
     timestampin = TimeStampMixin
+    EXPIRES_AFTER = relativedelta(years=5)
+    WARNING_AFTER = relativedelta(years=5, months=-6)
 
     @staticmethod 
     def barcode_search(barcode):
@@ -28,9 +30,9 @@ class Cylinder(models.Model):
     
     # don't use cylinder if in 6 months of it's test date, or expired
     def check_in_date(self):
-        if datetime.today().date() > self.test_date + relativedelta(years=5):
+        if datetime.today().date() > self.test_date + self.EXPIRES_AFTER:
             return 2  # expired
-        tolerance = self.test_date + relativedelta(years=5, months=-6)
+        tolerance = self.test_date + self.WARNING_AFTER
         if datetime.today().date() > tolerance:
             return 1  # warning
         return 0  # valid
@@ -115,6 +117,9 @@ class Order(models.Model):
     # Used for debugging only; excluded from testing
     def reset():   # pragma: no cover
         Filling.objects.all().delete()
+        Batch.objects.all().delete()
+        OrderLine.objects.all().delete()
+        Recycle.objects.all().delete()
         Order.objects.all().delete()
 
 
