@@ -37,6 +37,9 @@ class Cylinder(models.Model):
             return 1  # warning
         return 0  # valid
 
+    @property
+    def expiry_date(self):
+        return self.test_date + self.EXPIRES_AFTER
 
     class Meta:
         db_table = 'gas_filling_cylinders'
@@ -48,8 +51,9 @@ class Order(models.Model):
     customer = models.CharField(max_length=50, blank=False, null=False)
     packer_comments = models.TextField(default = "not yet", blank=True, null=True)
     analyst_comments = models.TextField(default = "not yet", blank=False, null=False)
-    import_certificate = models.CharField(max_length=20, blank=True, null=True)
+    import_certificate = models.CharField(max_length=20, default = 1, blank=False, null=False)
     export_certificate = models.BooleanField(default=False)
+    transport_company = models.CharField(max_length=100, blank=True, null=True, default="")
     packaging_instruction = models.TextField(blank=True, null=True)
     qc_instruction = models.TextField(blank=True, null=True)
     fill_type = models.CharField(max_length=50, blank=True, null=True)
@@ -65,6 +69,7 @@ class Order(models.Model):
         ('FAILED', 'Failed '),                        # QC have failed it, and more work required by packager
         ('REWORKED', 'Reworked '),                    # Package has said it is done, now in hands of QC
         ('FINISHED', 'Finished '),                    #  Packager has completed all paper work, all done
+        ('DISPATCHED', 'Dispatched '),                # Package has been dispatched
     ]
 
     STATUS_COLOURS = {
@@ -76,6 +81,7 @@ class Order(models.Model):
     "FAILED": "#ffa7a7",
     "REWORKED": "#ebcefa",
     "FINISHED": "#8fffa9",
+    "DISPATCHED": "#66c2ff",
 }
     
     status = models.CharField(max_length=11, choices=STATUSES, default='OPEN')
@@ -227,8 +233,8 @@ class Filling(models.Model):
         
     @property
     def recycle_weight(self):
-        if self.start_weight and self.end_weight:
-            return round(self.end_weight - self.start_weight, 1)
+        if self.start_weight and self.empty_weight and self.end_weight and self.pulled_weight:
+            return (round(self.start_weight - self.empty_weight, 1) + round(self.end_weight - self.pulled_weight, 1))
         return 0.0
         
     @property

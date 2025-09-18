@@ -13,7 +13,7 @@
 <p>Taken Weight: {{ filling.taken_weight }}</p>
 <p>Recycled Weight: {{ filling.recycle_weight }}</p>
 <p>Pulled Weight: {{ filling.pulled_diff_weight }}</p>
-<p>Empty Weight: {% if filling.empty_weight %} {{ filling.empty_weight }} {% else %} None {% endif %}</p>
+<p>{% if filling.empty_weight %} Empty Weight: {{ filling.empty_weight }}{% endif %}</p>
 
 <h1>Filling Times</h1>
 

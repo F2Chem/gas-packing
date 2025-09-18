@@ -19,17 +19,35 @@
             {{ order.get_status_display }}
         </span>
     </li>
+
     {% if order.packer_comments != "not yet" %}
     <li><em>Packer Comments:</em> {{ order.packer_comments }}</li>
-    <li><em>Import Certificate Number:</em> {{ order.import_certificate }}</li>
     {% else %}
     <li><em>Packer Comments:</em> Not packed yet</li>
     {% endif %}
+
     {% if order.analyst_comments != "not yet" %}
     <li><em>Analyst Comments:</em> {{ order.analyst_comments }}</li>
     {% else %}
     <li><em>Analyst Comments:</em> Not finished yet</li>
     {% endif %}
+    
+    {% if order.transport_company %}
+    <li><em>Transport Company:</em> {{ order.transport_company }}</li>
+    {% else %}
+    <li><em>Transport Company:</em> Not dispatched yet</li>
+    {% endif %}
+
+    {% if order.import_certificate != "1" %}
+    <li><em>Import Certificate Number:</em> {{ order.import_certificate }}</li>
+
+    {% if order.export_certificate %}
+    <li><em>Export Certificate Applied For</em></li>
+    {% else %}
+    <li><em>Export Certificate Not Applied For</em></li>
+    {% endif %}
+    {% endif %}
+
 </ul>
 
 {% if order.status == "OPEN" %}

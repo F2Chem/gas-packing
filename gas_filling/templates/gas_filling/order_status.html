@@ -15,6 +15,8 @@
     Mark Order #{{ order.order_number }} as Reworked?
     {% elif order.status == "REWORKED" %}
     Mark Order #{{ order.order_number }} as Finished?
+    {% elif order.status == "FINISHED" %}
+    Mark Order #{{ order.order_number }} as Dispatched?
     {% endif %}
 </h2>
 
@@ -25,14 +27,6 @@
         {% if order.status == "IN_PROGRESS" %}
         <label for="packer_comments"><strong>Packer Comments:</strong></label><br>
         <textarea id="packer_comments" name="packer_comments" rows="2" cols="50"></textarea>
-        <br>
-        <label for="import_certificate"><strong>Import Certificate Number:</strong></label><br>
-        <textarea id="import_certificate" name="import_certificate" rows="1" cols="50"></textarea>
-        <br>
-        <label for="export_certificate">
-            <input type="checkbox" id="export_certificate" name="export_certificate">
-            <strong>Export Certificate Applied For?</strong>
-        </label>
 
         {% if warning %}
         <div style="color: #856404; background-color: #fff3cd; padding: 10px; margin-bottom: 15px; border-radius: 4px;">
@@ -40,10 +34,26 @@
         </div>
         {% endif %}
 
-        {% elif order.status == "PASSED" or order.status == "REWORKED" %}
+        {% elif order.status == "PACKED" %}
         <label for="analyst_comments"><strong>Analyst Comments:</strong></label><br>
         <textarea id="analyst_comments" name="analyst_comments" rows="2" cols="50" required></textarea>
         {% endif %}
+
+        {% if order.status == "PASSED" or order.status == "REWORKED" %}
+        <label for="import_certificate"><strong>Import Certificate Number:</strong></label><br>
+        <textarea id="import_certificate" name="import_certificate" rows="1" cols="50" required></textarea>
+        <br>
+        <label for="export_certificate">
+            <input type="checkbox" id="export_certificate" name="export_certificate">
+            <strong>Export Certificate Applied For?</strong>
+        </label>
+        {% endif %}
+
+        {% if order.status == "FINISHED" %}
+        <label for="transport_company"><strong>Transport Company:</strong></label><br>
+        <textarea id="transport_company" name="transport_company" rows="2" cols="50"></textarea>
+        {% endif %}
+
 
         <div style="display: flex; gap: 10px; margin-top: 10px;">
             <button type="submit" name="action" value="success" class="btn btn-success">
@@ -59,6 +69,8 @@
                 Mark as Reworked
                 {% elif order.status == "REWORKED" %}
                 Mark as Finished
+                {% elif order.status == "FINISHED" %}
+                Mark as Dispatched
                 {% endif %}
             </button>
 
@@ -67,8 +79,6 @@
                 Mark as Failed
             </button>
             {% endif %}
-
-
 
             <a href="{% url 'gas_filling:order_list' %}">
                 <button type="button" class="btn btn-secondary">Cancel</button>

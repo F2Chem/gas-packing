@@ -61,6 +61,8 @@
             style="background-color: #8fffa9;"
             {% elif order.status == "CLOSED" %}
             style="background-color: #eca8fd;"
+            {% elif order.status == "DISPATCHED" %}
+            style="background-color: #66c2ff;"
             {% endif %}>
 
             <td>{{ order.customer }}</td>
@@ -91,7 +93,9 @@
                 {% elif order.status == "REWORKED" %}
                 <a href="{% url 'gas_filling:order_status' order.id %}" class="text-success fw-bold">Reworked</a>
                 {% elif order.status == "FINISHED" %}
-                Finished
+                <a href="{% url 'gas_filling:order_status' order.id %}" class="text-success fw-bold">Finished</a>
+                {% elif order.status == "DISPATCHED" %}
+                Dispatched
                 {% endif %}
             </td>
 

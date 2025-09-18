@@ -10,6 +10,7 @@
             <th>Barcode</th>
             <th>Tare</th>
             <th>Test Date</th>
+            <th>Expiry Date</th>
             <th>Status</th>
             <th>Actions</th>
         </tr>
@@ -23,6 +24,7 @@
             <td>{{ cylinder.barcodeid }}</td>
             <td>{{ cylinder.tare }}</td>
             <td>{{ cylinder.test_date|date:"d/M/y" }}</td>
+            <td>{{ cylinder.expiry_date|date:"d/M/y" }}</td>
             <td>{{ cylinder.status_text }}</td>
 
             <td>

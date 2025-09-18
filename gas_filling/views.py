@@ -519,6 +519,7 @@ def order_list(request):
             When(status='FAILED', then=Value(6)),
             When(status='REWORKED', then=Value(7)),
             When(status='FINISHED', then=Value(8)),
+            When(status='DISPATCHED', then=Value(9)),
             default=Value(100),
             output_field=IntegerField()
         )
@@ -656,9 +657,12 @@ def order_status(request, pk):
         analyst_comments = request.POST.get("analyst_comments")
         import_certificate = request.POST.get("import_certificate")
         export_certificate = request.POST.get("export_certificate") == "on"
+        transport_company = request.POST.get("transport_company")
+
 
         if action == "failed" and order.status == "PACKED":
             order.status = "FAILED"
+            order.analyst_comments = analyst_comments
 
             send_mail(
                 f'Order Failed',
@@ -681,8 +685,7 @@ def order_status(request, pk):
             elif order.status == 'IN_PROGRESS':
                 order.status = 'PACKED'
                 order.packer_comments = packer_comments
-                order.import_certificate = import_certificate
-                order.export_certificate = export_certificate 
+
                 send_mail(
                     f'Order Packed',
                     f'Order #{order.order_number} has been packed.\n'
@@ -693,6 +696,8 @@ def order_status(request, pk):
                 
             elif order.status == 'PACKED':
                 order.status = 'PASSED'
+                order.analyst_comments = analyst_comments
+
                 send_mail(
                     f'Order Passed',
                     f'Order #{order.order_number} has passed QA testing.\n'
@@ -702,7 +707,9 @@ def order_status(request, pk):
                 )
             elif order.status == 'PASSED' or order.status == 'REWORKED':
                 order.status = 'FINISHED'
-                order.analyst_comments = analyst_comments
+                order.import_certificate = import_certificate
+                order.export_certificate = export_certificate
+
                 send_mail(
                     f'Order Finished',
                     f'Order #{order.order_number} has been completed.\n'
@@ -712,9 +719,21 @@ def order_status(request, pk):
                 )                
             elif order.status == 'FAILED':
                 order.status = 'REWORKED'
+
                 send_mail(
                     f'Order Reworked',
                     f'Order #{order.order_number} has been reworked.\n'
+                    f'localhost:8000/gas_filling/order/{order.id}/',
+                    secret.FROM_EMAIL,
+                    [secret.TO_EMAIL],
+                )
+            elif order.status == 'FINISHED':
+                order.status = 'DISPATCHED'
+                order.transport_company = transport_company
+
+                send_mail(
+                    f'Order Dispatched',
+                    f'Order #{order.order_number} has been dispatched using {transport_company}.\n'
                     f'localhost:8000/gas_filling/order/{order.id}/',
                     secret.FROM_EMAIL,
                     [secret.TO_EMAIL],
