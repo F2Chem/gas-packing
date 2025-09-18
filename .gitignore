@@ -2,6 +2,7 @@
 **/secret.py
 static/admin/**/*.*
 manage.py
+*.pdf
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
