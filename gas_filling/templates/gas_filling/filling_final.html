@@ -23,10 +23,11 @@
 <form method="post">
     {% csrf_token %}
     <label for="end_weight">Weight After Pulling Out (kg):</label>
-    <input type="number" step="0.01" name="final_weight" required autofocus>
+    <input id="weight" type="number" step="0.01" name="final_weight" required autofocus>
     <button type="submit" class="btn-primary">Submit</button>
 </form>
 
+{% include "gas_filling/weight.html" %}
 {% include "gas_filling/abandon.html" %}
 
 {% endblock %}

@@ -24,10 +24,12 @@
 <form method="post">
     {% csrf_token %}
     <label for="tare_weight">Weight with Heel(kg):</label>
-    <input type="number" step="0.01" name="start_weight" required autofocus>
+    <input id="weight" type="number" step="0.01" name="start_weight" required autofocus>
     <button type="submit" class="btn-primary">Next</button>
 </form>
 
+{% include "gas_filling/weight.html" %}
 {% include "gas_filling/abandon.html" %}
+
 
 {% endblock %}

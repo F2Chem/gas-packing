@@ -16,11 +16,12 @@
 <form method="post">
     {% csrf_token %}
     <label for="recycle_number">Recycle Number:</label>
-    <input type="number" name="recycle_num" required autofocus
+    <input id="weight" type="number" name="recycle_num" required autofocus
            value="{% if filling.recycle_num %}{{ filling.recycle_num }}{% else %}{{ last_recycle_num|default:'' }}{% endif %}">
     <button type="submit" class="btn-primary">Next</button>
 </form>
 
+{% include "gas_filling/weight.html" %}
 {% include "gas_filling/abandon.html" %}
 
 {% endblock %}
