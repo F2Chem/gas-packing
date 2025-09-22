@@ -11,12 +11,21 @@ from .models import *
 from datetime import date, timedelta
 
 
-from reportlab.lib import colors
-from reportlab.lib.enums import TA_JUSTIFY, TA_CENTER
+# from reportlab.lib import colors
+# from reportlab.lib.enums import TA_JUSTIFY, TA_CENTER
+# from reportlab.lib.pagesizes import A4
+# from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Image, Table, TableStyle
+# from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+# from reportlab.lib.units import inch
+
+from django.http import HttpResponse
+from django.shortcuts import render
 from reportlab.lib.pagesizes import A4
-from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Image, Table, TableStyle
-from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
-from reportlab.lib.units import inch
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer
+from reportlab.lib.styles import ParagraphStyle, getSampleStyleSheet
+from reportlab.lib.enums import TA_CENTER, TA_LEFT
+from reportlab.lib import colors
+from io import BytesIO
 
 
 def home(request):
@@ -887,140 +896,105 @@ def get_weight(request):
     return HttpResponse(weight_value)
 
 def pdf_create(request):
+    buffer = BytesIO()
     document = []
 
+    styles = getSampleStyleSheet()
+    heading_style = ParagraphStyle(
+        name="Heading",
+        parent=styles["Heading2"],
+        fontName="Helvetica-Bold",
+        fontSize=14,
+        alignment=TA_CENTER,
+        textColor=colors.darkblue,
+        spaceAfter=12,
+    )
+    subheading_style = ParagraphStyle(
+        name="SubHeading",
+        parent=styles["Heading3"],
+        fontName="Helvetica-Bold",
+        fontSize=12,
+        alignment=TA_LEFT,
+        textColor=colors.black,
+        spaceBefore=10,
+        spaceAfter=6,
+    )
+    body_style = ParagraphStyle(
+        name="Body",
+        parent=styles["Normal"],
+        fontSize=10,
+        leading=14,
+        alignment=TA_LEFT,
+        spaceAfter=6,
+    )
+
     document.append(Spacer(1, 20))
-    document.append(Paragraph('Summary of Orders and Batches', ParagraphStyle(name='Aloy', fontfamily="Helvetica", fontSize=16, alignment=TA_CENTER)))
-    document.append(Spacer(1, 30))
+    document.append(Paragraph("Summary of Orders, Fillings and Batches", heading_style))
+    document.append(Spacer(1, 20))
 
-    def organiseOrder(order):
-        row = [None] * 8
-        row[0] = order.order_number
-        row[1] = order.customer
-        if order.packer_comments:
-            row[2] = order.packer_comments
-        else:
-            row[2] = None
-        if order.analyst_comments:
-            row[3] = order.analyst_comments
-        else:
-            row[3] = None
-        if order.qc_instruction:
-            row[4] = order.qc_instruction
-        else:
-            row[4] = None
-        row[5] = order.fill_type
-        row[6] = str(order.created_time)
-        row[7] = order.status
-        return row
-    
-    def organiseFilling(filling):
-        row = [None] * 12
-        row[0] = id
-        row[1] = filling.order.order_number
-        row[2] = filling.cylinder.barcodeid
-        row[3] = filling.cylinder_time
-        row[4] = filling.batch_num
-        row[5] = filling.start_weight
-        row[6] = filling.start_time
-        row[7] = filling.cylinder.tare
-        row[8] = filling.connection_weight
-        row[9] = filling.end_weight
-        row[10] = filling.pulled_weight
-        row[11] = filling.fill_weight
-        return row
-
-
-    def organiseBatch(batch):
-        row = [None] * 4
-        row[0] = batch.batch_num
-        row[1] = batch.parent_order.order_number
-        row[2] = batch.start_weight
-        row[3] = batch.end_weight
-        return row
-
-
-    ### order table ###
-    table_columns = [None] * (len(Order.objects.all())+1)
-    table_columns[0] = ["Num", "Customer", "Packer Comments", "Analyst Comments", "Packaging Instruction" "Fill Type", "Time Created", "Status"]
-    count = 1
-
+    # Orders
+    document.append(Paragraph("Orders", subheading_style))
     for order in Order.objects.all():
-        table_columns[count] = organiseOrder(order)
-        count += 1
+        text = f"""
+        <b>Order #{order.order_number}</b><br/>
+        Customer: {order.customer}<br/>
+        Packer Comments: {order.packer_comments or "—"}<br/>
+        Analyst Comments: {order.analyst_comments or "—"}<br/>
+        Packaging Instruction: {order.qc_instruction or "—"}<br/>
+        Fill Type: {order.fill_type}<br/>
+        Created: {order.created_time}<br/>
+        Status: {order.status}
+        """
+        document.append(Paragraph(text, body_style))
+        document.append(Spacer(1, 8))
 
-    t = Table(table_columns, colWidths=[40, 100, 120, 60, 60, 70])
-
-    t.setStyle(TableStyle([
-        ("BOX", (0, 0), (-1, -1), 0.25, colors.black),
-        ("INNERGRID", (0, 0), (-1, -1), 0.25, colors.black),
-        ("BACKGROUND", (0, 0), (-1, 0), colors.darkblue),
-        ("TEXTCOLOR", (0, 0), (-1, 0), colors.whitesmoke),
-        ("FONTNAME", (0, 0), (-1, 0), "Helvetica-Bold"),
-        ("FONTSIZE", (0, 0), (-1, 0), 10),
-        ("ROWBACKGROUNDS", (0, 1), (-1, -1), [colors.whitesmoke, colors.lightgrey]),
-    ]))
-
-    document.append(t)
-    document.append(Spacer(1,40))
-    ### ### ###
-
-
-    ### filling table ###
-    table_columns = [None] * (len(Filling.objects.all())+1)
-    table_columns[0] = ["id", "Order", "Cylinder", "Time", "Batch Number", "Start Weight", "Start Time", "Tare Weight", "Connection Weight", "End Weight","Pulled Weight", "Fill Weight"]
-    count = 1
-
+    # Fillings
+    document.append(Paragraph("Fillings", subheading_style))
     for filling in Filling.objects.all():
-        table_columns[count] = organiseFilling(filling)
-        count += 1
+        text = f"""
+        <b>Filling #{filling.id}</b><br/>
+        Order: {filling.order.order_number}<br/>
+        Cylinder: {filling.cylinder.barcodeid}<br/>
+        Time: {filling.cylinder_time}<br/>
+        Batch: {filling.batch_num}<br/>
+        Start Weight: {filling.start_weight or "—"}<br/>
+        Start Time: {filling.start_time or "—"}<br/>
+        Tare Weight: {filling.cylinder.tare or "—"}<br/>
+        Connection Weight: {filling.connection_weight or "—"}<br/>
+        End Weight: {filling.end_weight or "—"}<br/>
+        Pulled Weight: {filling.pulled_weight or "—"}<br/>
+        Fill Weight: {filling.fill_weight or "—"}
+        """
+        document.append(Paragraph(text, body_style))
+        document.append(Spacer(1, 8))
 
-    t = Table(table_columns, colWidths=[90, 100, 60, 70, 70, 70, 70, 70, 70, 70, 70, 70])
-
-    t.setStyle(TableStyle([
-        ("BOX", (0, 0), (-1, -1), 0.25, colors.black),
-        ("INNERGRID", (0, 0), (-1, -1), 0.25, colors.black),
-        ("BACKGROUND", (0, 0), (-1, 0), colors.darkblue),
-        ("TEXTCOLOR", (0, 0), (-1, 0), colors.whitesmoke),
-        ("FONTNAME", (0, 0), (-1, 0), "Helvetica-Bold"),
-        ("FONTSIZE", (0, 0), (-1, 0), 10),
-        ("ROWBACKGROUNDS", (0, 1), (-1, -1), [colors.whitesmoke, colors.lightgrey]),
-    ]))
-
-    document.append(t)
-    document.append(Spacer(1,40))
-    ### ### ###
-
-
-    ### batch table ###
-    table_columns = [None] * (len(Batch.objects.all())+1)
-    table_columns[0] = ["Num", "Parent Order", "Start Weight", "End Weight"]
-    count = 1
-
+    # Batches
+    document.append(Paragraph("Batches", subheading_style))
     for batch in Batch.objects.all():
-        table_columns[count] = organiseBatch(batch)
-        count += 1
+        text = f"""
+        <b>Batch #{batch.batch_num}</b><br/>
+        Parent Order: {batch.parent_order.order_number}<br/>
+        Start Weight: {batch.start_weight or "—"}<br/>
+        End Weight: {batch.end_weight or "—"}
+        """
+        document.append(Paragraph(text, body_style))
+        document.append(Spacer(1, 8))
 
-    t = Table(table_columns, colWidths=[40, 100, 120, 60, 60, 70])
+    pdf = SimpleDocTemplate(
+        buffer,
+        pagesize=A4,
+        rightMargin=24,
+        leftMargin=24,
+        topMargin=24,
+        bottomMargin=12,
+    )
+    pdf.build(document)
 
-    t.setStyle(TableStyle([
-        ("BOX", (0, 0), (-1, -1), 0.25, colors.black),
-        ("INNERGRID", (0, 0), (-1, -1), 0.25, colors.black),
-        ("BACKGROUND", (0, 0), (-1, 0), colors.darkblue),
-        ("TEXTCOLOR", (0, 0), (-1, 0), colors.whitesmoke),
-        ("FONTNAME", (0, 0), (-1, 0), "Helvetica-Bold"),
-        ("FONTSIZE", (0, 0), (-1, 0), 10),
-        ("ROWBACKGROUNDS", (0, 1), (-1, -1), [colors.whitesmoke, colors.lightgrey]),
-    ]))
+    buffer.seek(0)
 
-    document.append(t)
-    document.append(Spacer(1,40))
-    ### ### ###
+    response = HttpResponse(buffer, content_type="application/pdf")
+    response["Content-Disposition"] = 'inline; filename="OrdersBatches.pdf"'
 
-    SimpleDocTemplate('OrdersBatches.pdf', pagesize=A4, rightMargin=12, leftMargin=12, topMargin=12, bottomMargin=6).build(document)
 
-    context = {
-        'subsections':'gas_filling/subsections.html',
-
-    }
-    return render(request, 'gas_filling/pdf_create.html', context)
+    context = {"subsections": "gas_filling/subsections.html"}
+    return response

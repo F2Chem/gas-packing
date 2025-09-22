@@ -8,9 +8,7 @@
         <button type="submit" class="btn-primary">Create New Order</button>
     </form>
 
-    <form action="{% url 'gas_filling:pdf_create' %}" method="get" >
-        <button type="submit" class="btn-primary">Create PDF</button>
-    </form>
+    <button type='button' class='btn-primary'onclick='window.open("{% url "gas_filling:pdf_create" %}", "_blank")'>Create PDF</button>
 </div>
 
 <form method="get" class="mb-3" style="margin-top:20px;">
