@@ -127,7 +127,7 @@ class FillingTests(TestCase):
         self.order = Order.objects.create(id=91, customer='Bo')
         self.order_line = OrderLine.objects.create(id=72, order=self.order, line_number=1, product="OCTAFLUOROPROPANE", cylinder_size=10, num_cylinders=3, cylinder_type="STANDARD", fill_weight=500)
         self.cylinder = Cylinder.objects.create(id='1234567', barcodeid = '71l4r487', tare = 82, test_date = date(2183, 1, 24))
-        self.filling = Filling.objects.create(cylinder=self.cylinder, order_line=self.order_line, start_weight=100, empty_weight=103, connection_weight=102, end_weight=284, pulled_weight=262, final_weight=262)
+        self.filling = Filling.objects.create(cylinder=self.cylinder, order_line=self.order_line, start_weight=105, empty_weight=100, connection_weight=102, end_weight=284, pulled_weight=262, final_weight=262)
         self.filling2 = Filling.objects.create(cylinder=self.cylinder, order_line=self.order_line, start_weight=None, empty_weight=None, connection_weight=None, end_weight=None, pulled_weight=None)
         self.stillage1 = Stillage.objects.create(stillage_num=360, filling=self.filling, end_weight=1052, pulled_weight=1000)
         self.stillage2 = Stillage.objects.create(stillage_num=124, filling=self.filling, end_weight=1054, pulled_weight=1000)
@@ -135,7 +135,7 @@ class FillingTests(TestCase):
         self.stillage4 = Stillage.objects.create(stillage_num=25, filling=self.filling2, end_weight=3001, pulled_weight=2051)
 
     def testHeelWeight(self):
-        self.assertEqual(self.filling.net_heel_weight, 18)
+        self.assertEqual(self.filling.net_heel_weight, 23)
         self.assertEqual(self.filling2.net_heel_weight, 0.0)
 
     def testFillWeight(self):
@@ -147,7 +147,7 @@ class FillingTests(TestCase):
         self.assertEqual(self.filling2.taken_weight, 0.0)
 
     def testRecycleWeight(self):
-        self.assertEqual(self.filling.recycle_weight, 184)
+        self.assertEqual(self.filling.recycle_weight, 27)
         self.assertEqual(self.filling2.recycle_weight, 0.0)
 
     def testPulledDiffWeight(self):
