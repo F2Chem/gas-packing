@@ -115,23 +115,43 @@ DATABASES = {
         "HOST": "localhost",
         "PORT": 5432,
     },
-    # 'idhammar': {
-        # 'ENGINE': 'sql_server.pyodbc',
-        # 'NAME': 'Idhammar_v12_live',
-        # 'PORT':'',
-        # 'OPTIONS':{
-            # 'driver':'ODBC Driver 17 for SQL Server',
-            # 'dsn':'Idhammar_17',
-        # },
-    # },
 }
 
+# If the weightings database is available set to True, otherwise False
+# The database needs to be set up using ODBC. I think you can use either 32-bit or 64-bit; I used 64-bit
+# Fire it up as admin
+# Go to the system tab, and click New
+# Use the ODBC Driver 17 for SQL Server or nearest match!
+# Give a name, and connect to F2-SQL01
+# Authenticate with SQL Server Auth (I used "sa")
+# Tick to change the default db, and select AWTXDataManager
+# Keep other setting
+# Test the data source
+
+
+
+if False:
+    DATABASES['weights'] = {
+        'ENGINE': 'sql_server.pyodbc',
+        'NAME': 'AWTXDataManager',
+        'PORT':'',
+        'OPTIONS':{
+            'driver':'ODBC Driver 17 for SQL Server',
+            'dsn':'AWTXDataManager',
+        },
+    }
 
 
 
 
+# the router with decide which database to used based on the model name.
+# This means the fact that we are using two databases is hidden in the models and views
 
 DATABASE_ROUTERS = ['f2db.db_router.DbRouter']
+
+
+
+
 
 
 

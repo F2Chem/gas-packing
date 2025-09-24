@@ -7,16 +7,16 @@ class DbRouter:
         """
         Attempts to read user models go to users_db.
         """
-        if model._meta.app_label == 'idhammar':
-            return 'idhammar'
+        if model._meta.app_label == 'weighings':
+            return 'weights'
         return None
 
     def db_for_write(self, model, **hints):
         """
         Attempts to write user models go to users_db.
         """
-        if model._meta.app_label == 'idhammar':
-            return 'idhammar'
+        if model._meta.app_label == 'weighings':
+            return 'weights'
         return None
 
     def allow_migrate(self, db, app_label, model_name=None, **hints):
@@ -24,6 +24,6 @@ class DbRouter:
         Make sure the auth app only appears in the 'users_db'
         database.
         """
-        if app_label == 'idhammar':
-            return db == 'idhammar'
+        if app_label == 'weighings':
+            return False
         return None
