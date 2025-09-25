@@ -5,6 +5,8 @@ from django.db.models import Max, Case, When, Value, IntegerField
 from django.contrib.auth.decorators import permission_required
 from django.utils.timezone import now
 from django.core.mail import send_mail
+from django.core.mail import EmailMultiAlternatives
+
 import secret
 from .forms import FillingForm, CylinderForm, OrderForm, OrderLineForm
 from .models import *
@@ -673,81 +675,170 @@ def order_status(request, pk):
             order.status = "FAILED"
             order.analyst_comments = analyst_comments
 
-            send_mail(
-                f'Order Failed',
-                f'Order #{order.order_number} has failed and needs reworking.\n'
-                f'localhost:8000/gas_filling/order/{order.id}/',
+            subject = "Order Failed"
+
+            text_content = f"""
+            Order #{order.order_number} has failed and needs reworking.
+            View order here: http://localhost:8000/gas_filling/order/{order.id}/
+            """
+
+            html_content = f"""
+            <p>Order #{order.order_number} has failed and needs reworking.</p>
+            <p><a href="http://localhost:8000/gas_filling/order/{order.id}/">Click here to view the order</a></p>
+            """
+
+            msg = EmailMultiAlternatives(
+                subject,
+                text_content,
                 secret.FROM_EMAIL,
                 [secret.TO_EMAIL],
             )
+            msg.attach_alternative(html_content, "text/html")
+            msg.send()
         else: 
             if order.status == 'OPEN':
                 order.status = 'CLOSED'
 
-                send_mail(
-                    f'Order Closed',
-                    f'Order #{order.order_number} has been closed.\n'
-                    f'localhost:8000/gas_filling/order/{order.id}/',
+                subject = "Order Closed"
+
+                text_content = f"""
+                Order #{order.order_number} has been closed.
+                View order here: http://localhost:8000/gas_filling/order/{order.id}/
+                """
+
+                html_content = f"""
+                <p>Order #{order.order_number} has been closed.</p>
+                <p><a href="http://localhost:8000/gas_filling/order/{order.id}/">Click here to view the order</a></p>
+                """
+
+                msg = EmailMultiAlternatives(
+                    subject,
+                    text_content,
                     secret.FROM_EMAIL,
                     [secret.TO_EMAIL],
                 )
+                msg.attach_alternative(html_content, "text/html")
+                msg.send()
             elif order.status == 'IN_PROGRESS':
                 order.status = 'PACKED'
                 order.packer_comments = packer_comments
 
-                send_mail(
-                    f'Order Packed',
-                    f'Order #{order.order_number} has been packed.\n'
-                    f'localhost:8000/gas_filling/order/{order.id}/',
+                subject = "Order Packed"
+
+                text_content = f"""
+                Order #{order.order_number} has been packed.
+                View order here: http://localhost:8000/gas_filling/order/{order.id}/
+                """
+
+                html_content = f"""
+                <p>Order #{order.order_number} has been packed.</p>
+                <p><a href="http://localhost:8000/gas_filling/order/{order.id}/">Click here to view the order</a></p>
+                """
+
+                msg = EmailMultiAlternatives(
+                    subject,
+                    text_content,
                     secret.FROM_EMAIL,
                     [secret.TO_EMAIL],
                 )
-                
+                msg.attach_alternative(html_content, "text/html")
+                msg.send()
             elif order.status == 'PACKED':
                 order.status = 'PASSED'
                 order.analyst_comments = analyst_comments
 
-                send_mail(
-                    f'Order Passed',
-                    f'Order #{order.order_number} has passed QA testing.\n'
-                    f'localhost:8000/gas_filling/order/{order.id}/',
+                subject = "Order Passed"
+
+                text_content = f"""
+                Order #{order.order_number} has passed QA testing.
+                View order here: http://localhost:8000/gas_filling/order/{order.id}/
+                """
+
+                html_content = f"""
+                <p>Order #{order.order_number} has passed QA testing.</p>
+                <p><a href="http://localhost:8000/gas_filling/order/{order.id}/">Click here to view the order</a></p>
+                """
+
+                msg = EmailMultiAlternatives(
+                    subject,
+                    text_content,
                     secret.FROM_EMAIL,
                     [secret.TO_EMAIL],
                 )
+                msg.attach_alternative(html_content, "text/html")
+                msg.send()
             elif order.status == 'PASSED' or order.status == 'REWORKED':
                 order.status = 'FINISHED'
                 order.import_certificate = import_certificate
                 order.export_certificate = export_certificate
 
-                send_mail(
-                    f'Order Finished',
-                    f'Order #{order.order_number} has been completed.\n'
-                    f'localhost:8000/gas_filling/order/{order.id}/',
-                    secret.FROM_EMAIL,
-                    [secret.TO_EMAIL],
-                )                
-            elif order.status == 'FAILED':
-                order.status = 'REWORKED'
+                subject = "Order Complete"
 
-                send_mail(
-                    f'Order Reworked',
-                    f'Order #{order.order_number} has been reworked.\n'
-                    f'localhost:8000/gas_filling/order/{order.id}/',
+                text_content = f"""
+                Order #{order.order_number} has been completed.
+                View order here: http://localhost:8000/gas_filling/order/{order.id}/
+                """
+
+                html_content = f"""
+                <p>Order #{order.order_number} has been completed.</p>
+                <p><a href="http://localhost:8000/gas_filling/order/{order.id}/">Click here to view the order</a></p>
+                """
+
+                msg = EmailMultiAlternatives(
+                    subject,
+                    text_content,
                     secret.FROM_EMAIL,
                     [secret.TO_EMAIL],
                 )
+                msg.attach_alternative(html_content, "text/html")
+                msg.send()  
+            elif order.status == 'FAILED':
+                order.status = 'REWORKED'
+
+                subject = "Order Reworked"
+
+                text_content = f"""
+                Order #{order.order_number} has been reworked.
+                View order here: http://localhost:8000/gas_filling/order/{order.id}/
+                """
+
+                html_content = f"""
+                <p>Order #{order.order_number} has been reworked.</p>
+                <p><a href="http://localhost:8000/gas_filling/order/{order.id}/">Click here to view the order</a></p>
+                """
+
+                msg = EmailMultiAlternatives(
+                    subject,
+                    text_content,
+                    secret.FROM_EMAIL,
+                    [secret.TO_EMAIL],
+                )
+                msg.attach_alternative(html_content, "text/html")
+                msg.send()
             elif order.status == 'FINISHED':
                 order.status = 'DISPATCHED'
                 order.transport_company = transport_company
 
-                send_mail(
-                    f'Order Dispatched',
-                    f'Order #{order.order_number} has been dispatched using {transport_company}.\n'
-                    f'localhost:8000/gas_filling/order/{order.id}/',
+                subject = "Order Dispatched"
+
+                text_content = f"""
+                Order #{order.order_number} has been dispatched using {transport_company}.
+                View order here: http://localhost:8000/gas_filling/order/{order.id}/
+                """
+
+                html_content = f"""
+                <p>Order #{order.order_number} has been dispatched using {transport_company}.</p>
+                <p><a href="http://localhost:8000/gas_filling/order/{order.id}/">Click here to view the order</a></p>
+                """
+
+                msg = EmailMultiAlternatives(
+                    subject,
+                    text_content,
                     secret.FROM_EMAIL,
                     [secret.TO_EMAIL],
                 )
-
+                msg.attach_alternative(html_content, "text/html")
+                msg.send()
         order.save()        
         return redirect('gas_filling:order_list')
 
@@ -892,7 +983,7 @@ def recycle_list(request):
     return render(request, 'gas_filling/recycle_list.html', context)
 
 def get_weight(request):
-    weight_value = 12.34  
+    weight_value = 80.80
     return HttpResponse(weight_value)
 
 def pdf_create(request):
