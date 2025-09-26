@@ -8,6 +8,29 @@ from dateutil.relativedelta import relativedelta
 
 
 
+
+
+class Weighing(models.Model):
+    #id = models.IntegerField(primary_key=True, db_column='TransactionID')
+    #timestamp = models.DateTimeField(db_column='TransactionDateTime')
+    #weight = models.DecimalField(max_digits=10, decimal_places=4, db_column='NetWeight')
+    id = models.FloatField(primary_key=True, db_column='transactionid')
+    timestamp = models.DateTimeField(db_column='TransactionDateTime')
+    weight = models.DecimalField(max_digits=10, decimal_places=4, db_column='NetWeight')
+    
+    
+    
+    def count():
+        return Weighing.objects.count()
+    
+    
+    class Meta:
+        db_table = 'tbTransactions'
+        managed = False
+
+
+
+
 class Cylinder(models.Model):
     id = models.AutoField(primary_key=True)
     barcodeid = models.CharField(max_length=50, default=0, blank=True, null=True, unique=True)

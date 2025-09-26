@@ -129,12 +129,19 @@ DATABASES = {
 # Test the data source
 
 
+# https://pypi.org/project/mssql-django/
+# pip install pyodbc
+# pip install mssql-django
+
 
 if False:
     DATABASES['weights'] = {
-        'ENGINE': 'sql_server.pyodbc',
+        'ENGINE': 'mssql',
         'NAME': 'AWTXDataManager',
+        'HOST':r'f2-sql01',
         'PORT':'',
+        "USER": "sa",
+        "PASSWORD": secret.other_password,
         'OPTIONS':{
             'driver':'ODBC Driver 17 for SQL Server',
             'dsn':'AWTXDataManager',
@@ -144,7 +151,9 @@ if False:
 
 
 
-# the router with decide which database to used based on the model name.
+
+
+# The router will decide which database to used based on the model name.
 # This means the fact that we are using two databases is hidden in the models and views
 
 DATABASE_ROUTERS = ['f2db.db_router.DbRouter']

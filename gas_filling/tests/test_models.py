@@ -14,6 +14,13 @@ from datetime import datetime
 
 
 
+
+class WeighingTests(TestCase):
+    def testDBAccess(self):
+        self.assertIsNotNone(Weighing.count())
+
+
+
 class CylinderTests(TestCase):
     def setUp(self):
         self.cylinder1 = Cylinder.objects.create(id='1234567', barcodeid = '71l4r487', tare = 82, heel = 82, test_date = date(2183, 1, 24))

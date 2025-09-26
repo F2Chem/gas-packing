@@ -7,7 +7,8 @@ class DbRouter:
         """
         Attempts to read user models go to users_db.
         """
-        if model._meta.app_label == 'weighings':
+        if model._meta.model_name == 'weighing':
+            print('#')
             return 'weights'
         return None
 
@@ -15,7 +16,7 @@ class DbRouter:
         """
         Attempts to write user models go to users_db.
         """
-        if model._meta.app_label == 'weighings':
+        if model._meta.model_name == 'weighing':
             return 'weights'
         return None
 
@@ -24,6 +25,6 @@ class DbRouter:
         Make sure the auth app only appears in the 'users_db'
         database.
         """
-        if app_label == 'weighings':
+        if model_name == 'weighing':
             return False
         return None
