@@ -121,12 +121,14 @@ DATABASES = {
 # The database needs to be set up using ODBC. I think you can use either 32-bit or 64-bit; I used 64-bit
 # Fire it up as admin
 # Go to the system tab, and click New
-# Use the ODBC Driver 17 for SQL Server or nearest match!
-# Give a name, and connect to F2-SQL01
+# Use the ODBC Driver 17 for SQL Server (if missing download from Microsoft)
+# Give a name, AWTXDataManager, and connect to F2-SQL01
 # Authenticate with SQL Server Auth (I used "sa")
 # Tick to change the default db, and select AWTXDataManager
 # Keep other setting
 # Test the data source
+# If it fails because "The certificate chain was issued by an authority that is not trusted." try setting encryption to optional
+# and change the setting for trusting the certificate.
 
 
 # https://pypi.org/project/mssql-django/
@@ -134,7 +136,7 @@ DATABASES = {
 # pip install mssql-django
 
 
-if False:
+if True:
     DATABASES['weights'] = {
         'ENGINE': 'mssql',
         'NAME': 'AWTXDataManager',

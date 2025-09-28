@@ -3,6 +3,7 @@
 static/admin/**/*.*
 manage.py
 *.pdf
+.vs/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

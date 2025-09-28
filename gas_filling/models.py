@@ -17,7 +17,11 @@ class Weighing(models.Model):
     id = models.FloatField(primary_key=True, db_column='transactionid')
     timestamp = models.DateTimeField(db_column='TransactionDateTime')
     weight = models.DecimalField(max_digits=10, decimal_places=4, db_column='NetWeight')
-    
+
+
+    @staticmethod
+    def get_last():
+        return Weighing.objects.all()[0].weight    
     
     
     def count():

@@ -983,7 +983,8 @@ def recycle_list(request):
     return render(request, 'gas_filling/recycle_list.html', context)
 
 def get_weight(request):
-    weight_value = 80.80
+    #weight_value = 80.80
+    weight_value = Weighing.get_last()
     return HttpResponse(weight_value)
 
 def pdf_create(request):
