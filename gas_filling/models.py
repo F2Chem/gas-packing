@@ -21,7 +21,8 @@ class Weighing(models.Model):
 
     @staticmethod
     def get_last():
-        return Weighing.objects.all()[0].weight    
+        return Weighing.objects.all()[0].weight
+        
     
     
     def count():
@@ -287,6 +288,9 @@ class Stillage(models.Model):
     pulled_weight = models.FloatField(default=0, blank=True, null=True)
     pulled_time = models.DateTimeField(null=True, blank=True)
 
+    final_weight = models.FloatField(default=0, blank=True, null=True)
+    final_time = models.DateTimeField(null=True, blank=True)
+
     class Meta:
         db_table = 'gas_filling_stillages'
 
@@ -304,6 +308,14 @@ class Stillage(models.Model):
         weight = 0
         for stillage in stillages:
             weight += stillage.pulled_weight
+        return weight
+
+    @staticmethod
+    def finished_final_weight(filling):
+        stillages = Stillage.objects.filter(filling=filling)
+        weight = 0
+        for stillage in stillages:
+            weight += stillage.final_weight
         return weight
 
 

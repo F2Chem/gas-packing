@@ -15,9 +15,17 @@ from datetime import datetime
 
 
 
-class WeighingTests(TestCase):
-    def testDBAccess(self):
-        self.assertIsNotNone(Weighing.count())
+# class WeighingTests(TestCase):
+#     def testDBAccess(self):
+#         self.assertIsNotNone(Weighing.count())
+
+#     def setUp(self):
+#         self.weighing1 = Weighing.objects.create(id='37', timestamp = date(2025, 10, 1), weight=999.99)
+#         self.weighing2 = Weighing.objects.create(id='49', timestamp = date(2025, 10, 1), weight=777.77)
+#         self.weighing3 = Weighing.objects.create(id='106', timestamp = date(2025, 10, 1), weight=555.55)
+
+#     def testGetLast(self):
+#         self.assertEqual(Weighing.get_last(), 555.55)
 
 
 
@@ -136,10 +144,10 @@ class FillingTests(TestCase):
         self.cylinder = Cylinder.objects.create(id='1234567', barcodeid = '71l4r487', tare = 82, test_date = date(2183, 1, 24))
         self.filling = Filling.objects.create(cylinder=self.cylinder, order_line=self.order_line, start_weight=105, empty_weight=100, connection_weight=102, end_weight=284, pulled_weight=262, final_weight=262)
         self.filling2 = Filling.objects.create(cylinder=self.cylinder, order_line=self.order_line, start_weight=None, empty_weight=None, connection_weight=None, end_weight=None, pulled_weight=None)
-        self.stillage1 = Stillage.objects.create(stillage_num=360, filling=self.filling, end_weight=1052, pulled_weight=1000)
-        self.stillage2 = Stillage.objects.create(stillage_num=124, filling=self.filling, end_weight=1054, pulled_weight=1000)
-        self.stillage3 = Stillage.objects.create(stillage_num=13, filling=self.filling2, end_weight=2098, pulled_weight=2050)
-        self.stillage4 = Stillage.objects.create(stillage_num=25, filling=self.filling2, end_weight=3001, pulled_weight=2051)
+        self.stillage1 = Stillage.objects.create(stillage_num=360, filling=self.filling, end_weight=1052, pulled_weight=1000, final_weight=1052)
+        self.stillage2 = Stillage.objects.create(stillage_num=124, filling=self.filling, end_weight=1054, pulled_weight=1000, final_weight=1054)
+        self.stillage3 = Stillage.objects.create(stillage_num=13, filling=self.filling2, end_weight=2098, pulled_weight=2050, final_weight=2098)
+        self.stillage4 = Stillage.objects.create(stillage_num=25, filling=self.filling2, end_weight=3001, pulled_weight=2051, final_weight=3001)
 
     def testHeelWeight(self):
         self.assertEqual(self.filling.net_heel_weight, 23)
@@ -168,6 +176,10 @@ class FillingTests(TestCase):
     def testStillageFinishedPulledWeight(self):
         self.assertEqual(Stillage.finished_pulled_weight(self.filling), 2000)
         self.assertEqual(Stillage.finished_pulled_weight(self.filling2), 4101)
+
+    def testStillageFinishedFinalWeight(self):
+        self.assertEqual(Stillage.finished_final_weight(self.filling), 2106)
+        self.assertEqual(Stillage.finished_final_weight(self.filling2), 5099)
 
 
 

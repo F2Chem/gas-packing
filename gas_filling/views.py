@@ -12,14 +12,6 @@ from .forms import FillingForm, CylinderForm, OrderForm, OrderLineForm
 from .models import *
 from datetime import date, timedelta
 
-
-# from reportlab.lib import colors
-# from reportlab.lib.enums import TA_JUSTIFY, TA_CENTER
-# from reportlab.lib.pagesizes import A4
-# from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Image, Table, TableStyle
-# from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
-# from reportlab.lib.units import inch
-
 from django.http import HttpResponse
 from django.shortcuts import render
 from reportlab.lib.pagesizes import A4
@@ -28,10 +20,6 @@ from reportlab.lib.styles import ParagraphStyle, getSampleStyleSheet
 from reportlab.lib.enums import TA_CENTER, TA_LEFT
 from reportlab.lib import colors
 from io import BytesIO
-
-
-def home(request):
-    return render(request, 'gas_filling/index.html')
 
 
 def gas_filling(request, pk):

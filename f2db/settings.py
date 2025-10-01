@@ -136,7 +136,7 @@ DATABASES = {
 # pip install mssql-django
 
 
-if True:
+if False:
     DATABASES['weights'] = {
         'ENGINE': 'mssql',
         'NAME': 'AWTXDataManager',
