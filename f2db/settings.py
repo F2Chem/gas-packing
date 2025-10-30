@@ -35,6 +35,7 @@ if secret.FROM_EMAIL:
     }
 
 
+
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
@@ -137,7 +138,7 @@ DATABASES = {
 # pip install mssql-django
 
 
-if False:
+if True:
     DATABASES['weights'] = {
         'ENGINE': 'mssql',
         'NAME': 'AWTXDataManager',

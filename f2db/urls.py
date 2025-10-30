@@ -16,6 +16,7 @@ urlpatterns = [
 
 
 
+
 """
 Note: accounts is built in and givs these URLs
 accounts/ login/ [name='login']

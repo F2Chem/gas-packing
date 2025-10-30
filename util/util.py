@@ -318,7 +318,7 @@ def draw_graph(data, size, y_max):
     return response # and we're done!  
     
     
-    
+   
     
 from f2db.settings import *
 from django.core.mail import EmailMultiAlternatives
