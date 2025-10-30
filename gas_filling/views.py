@@ -6,23 +6,14 @@ from django.db.models import Max, Case, When, Value, IntegerField
 from django.contrib.auth.decorators import permission_required
 from django.utils.timezone import now
 
-
 from datetime import date, timedelta
 from io import BytesIO
 
-
-<<<<<<< Updated upstream
-=======
-
->>>>>>> Stashed changes
 from reportlab.lib.pagesizes import A4
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer
 from reportlab.lib.styles import ParagraphStyle, getSampleStyleSheet
 from reportlab.lib.enums import TA_CENTER, TA_LEFT
 from reportlab.lib import colors
-<<<<<<< Updated upstream
-=======
-
 
 from .forms import FillingForm, CylinderForm, OrderForm, OrderLineForm
 from .models import *
@@ -34,12 +25,6 @@ from util.util import *
 #EMAIL_QC = ['andy.joel@f2chemicals.com', 'helen.mcnamee@f2chemicals.com', 'Stephen.Cooke@f2chemicals.com', 'Susan.Dodd@f2chemicals.com', 'Deborah.Clack@f2chemicals.com', 'David.Moss@f2chemicals.com']
 EMAIL_PACKAGING = ['andy.joel@f2chemicals.com']
 EMAIL_QC = ['andy.joel@f2chemicals.com']
->>>>>>> Stashed changes
-
-
-from .forms import FillingForm, CylinderForm, OrderForm, OrderLineForm
-from .models import *
-from util.util import *
 
 
 
