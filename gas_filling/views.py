@@ -1,25 +1,33 @@
 
 from django.http import HttpResponse
+from django.shortcuts import render
 from django.shortcuts import get_object_or_404, render, redirect
 from django.db.models import Max, Case, When, Value, IntegerField
 from django.contrib.auth.decorators import permission_required
 from django.utils.timezone import now
-from django.core.mail import send_mail
-from django.core.mail import EmailMultiAlternatives
 
-import secret
-from .forms import FillingForm, CylinderForm, OrderForm, OrderLineForm
-from .models import *
+
 from datetime import date, timedelta
+from io import BytesIO
 
-from django.http import HttpResponse
-from django.shortcuts import render
+
 from reportlab.lib.pagesizes import A4
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer
 from reportlab.lib.styles import ParagraphStyle, getSampleStyleSheet
 from reportlab.lib.enums import TA_CENTER, TA_LEFT
 from reportlab.lib import colors
-from io import BytesIO
+
+
+from .forms import FillingForm, CylinderForm, OrderForm, OrderLineForm
+from .models import *
+from util.util import *
+
+
+
+#EMAIL_PACKAGING = ['andy.joel@f2chemicals.com', 'helen.mcnamee@f2chemicals.com', 'Stephen.Cooke@f2chemicals.com']
+#EMAIL_QC = ['andy.joel@f2chemicals.com', 'helen.mcnamee@f2chemicals.com', 'Stephen.Cooke@f2chemicals.com', 'Susan.Dodd@f2chemicals.com', 'Deborah.Clack@f2chemicals.com', 'David.Moss@f2chemicals.com']
+EMAIL_PACKAGING = ['andy.joel@f2chemicals.com']
+EMAIL_QC = ['andy.joel@f2chemicals.com']
 
 
 def gas_filling(request, pk):
@@ -675,14 +683,9 @@ def order_status(request, pk):
             <p><a href="http://localhost:8000/gas_filling/order/{order.id}/">Click here to view the order</a></p>
             """
 
-            msg = EmailMultiAlternatives(
-                subject,
-                text_content,
-                secret.FROM_EMAIL,
-                [secret.TO_EMAIL],
-            )
-            msg.attach_alternative(html_content, "text/html")
-            msg.send()
+            email(request, subject, EMAIL_PACKAGING, text_content, html_content)
+            
+            
         else: 
             if order.status == 'OPEN':
                 order.status = 'CLOSED'
@@ -699,14 +702,9 @@ def order_status(request, pk):
                 <p><a href="http://localhost:8000/gas_filling/order/{order.id}/">Click here to view the order</a></p>
                 """
 
-                msg = EmailMultiAlternatives(
-                    subject,
-                    text_content,
-                    secret.FROM_EMAIL,
-                    [secret.TO_EMAIL],
-                )
-                msg.attach_alternative(html_content, "text/html")
-                msg.send()
+                email(request, subject, EMAIL_PACKAGING, text_content, html_content)
+
+    
             elif order.status == 'IN_PROGRESS':
                 order.status = 'PACKED'
                 order.packer_comments = packer_comments
@@ -723,14 +721,9 @@ def order_status(request, pk):
                 <p><a href="http://localhost:8000/gas_filling/order/{order.id}/">Click here to view the order</a></p>
                 """
 
-                msg = EmailMultiAlternatives(
-                    subject,
-                    text_content,
-                    secret.FROM_EMAIL,
-                    [secret.TO_EMAIL],
-                )
-                msg.attach_alternative(html_content, "text/html")
-                msg.send()
+                email(request, subject, EMAIL_PACKAGING, text_content, html_content)
+                
+                
             elif order.status == 'PACKED':
                 order.status = 'PASSED'
                 order.analyst_comments = analyst_comments
@@ -747,14 +740,9 @@ def order_status(request, pk):
                 <p><a href="http://localhost:8000/gas_filling/order/{order.id}/">Click here to view the order</a></p>
                 """
 
-                msg = EmailMultiAlternatives(
-                    subject,
-                    text_content,
-                    secret.FROM_EMAIL,
-                    [secret.TO_EMAIL],
-                )
-                msg.attach_alternative(html_content, "text/html")
-                msg.send()
+                email(request, subject, EMAIL_QC, text_content, html_content)
+                
+                
             elif order.status == 'PASSED' or order.status == 'REWORKED':
                 order.status = 'FINISHED'
                 order.import_certificate = import_certificate
@@ -772,14 +760,9 @@ def order_status(request, pk):
                 <p><a href="http://localhost:8000/gas_filling/order/{order.id}/">Click here to view the order</a></p>
                 """
 
-                msg = EmailMultiAlternatives(
-                    subject,
-                    text_content,
-                    secret.FROM_EMAIL,
-                    [secret.TO_EMAIL],
-                )
-                msg.attach_alternative(html_content, "text/html")
-                msg.send()  
+                email(request, subject, EMAIL_PACKAGING, text_content, html_content)
+                
+                
             elif order.status == 'FAILED':
                 order.status = 'REWORKED'
 
@@ -794,15 +777,10 @@ def order_status(request, pk):
                 <p>Order #{order.order_number} has been reworked.</p>
                 <p><a href="http://localhost:8000/gas_filling/order/{order.id}/">Click here to view the order</a></p>
                 """
-
-                msg = EmailMultiAlternatives(
-                    subject,
-                    text_content,
-                    secret.FROM_EMAIL,
-                    [secret.TO_EMAIL],
-                )
-                msg.attach_alternative(html_content, "text/html")
-                msg.send()
+                
+                email(request, subject, EMAIL_PACKAGING, text_content, html_content)
+                
+                
             elif order.status == 'FINISHED':
                 order.status = 'DISPATCHED'
                 order.transport_company = transport_company
@@ -819,14 +797,9 @@ def order_status(request, pk):
                 <p><a href="http://localhost:8000/gas_filling/order/{order.id}/">Click here to view the order</a></p>
                 """
 
-                msg = EmailMultiAlternatives(
-                    subject,
-                    text_content,
-                    secret.FROM_EMAIL,
-                    [secret.TO_EMAIL],
-                )
-                msg.attach_alternative(html_content, "text/html")
-                msg.send()
+                email(request, subject, EMAIL_PACKAGING, text_content, html_content)
+                
+                
         order.save()        
         return redirect('gas_filling:order_list')
 

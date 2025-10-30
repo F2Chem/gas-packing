@@ -26,12 +26,13 @@ SECRET_KEY = secret.SECRET_KEY
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # Method for sending auto email when an order is created
-
-EMAIL_BACKEND = "anymail.backends.sendinblue.EmailBackend"
-
-ANYMAIL = {
-    "SENDINBLUE_API_KEY": secret.API_KEY, 
-}
+# When testing off-site
+# Values set in secret.py
+if secret.FROM_EMAIL:
+    EMAIL_BACKEND = "anymail.backends.sendinblue.EmailBackend"
+    ANYMAIL = {
+        "SENDINBLUE_API_KEY": secret.API_KEY, 
+    }
 
 
 # SECURITY WARNING: don't run with debug turned on in production!
@@ -215,6 +216,8 @@ LOGIN_REDIRECT_URL = '/'
 DB_MANAGED = False
 
 TEST_RUNNER = 'f2db.test_runner.ManagedModelTestRunner'
+
+
 
 EMAIL_HOST = 'f2chemicals-com.mail.protection.outlook.com'
 EMAIL_USE_TLS = True

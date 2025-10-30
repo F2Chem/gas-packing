@@ -30,6 +30,7 @@
           {% csrf_token %}
           <span style="cursor: pointer;text-decoration: underline" onclick="document.getElementById('logout-form').submit()">logout</span>
         </form>)
+        | <a href="/test_email">Test email</a>
       {% else %}
         <a href="/accounts/login/">Log-in</a>
       {% endif %}

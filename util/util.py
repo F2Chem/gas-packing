@@ -316,3 +316,32 @@ def draw_graph(data, size, y_max):
     response['Content-Type'] = 'image/png'
     image.save(response, 'PNG')  
     return response # and we're done!  
+    
+    
+    
+    
+from f2db.settings import *
+from django.core.mail import EmailMultiAlternatives
+from smtplib import SMTPException
+from django.contrib import messages
+
+# Sends an email, returning a number - how many were sent
+# Values in f2db.settings.py and secret.py set up the email method
+def email(request, subject, recipients, text_content, html_content):
+    msg = EmailMultiAlternatives(
+        subject,
+        text_content,
+        EMAIL_HOST_USER,
+        recipients,
+    )
+    msg.attach_alternative(html_content, "text/html")
+    try:
+        res = msg.send(fail_silently=False) # Returns the number of emails sent
+        messages.add_message(request, messages.SUCCESS, f"Email sent to {res} receipient{'s' if res > 1 else ''}")
+        return res
+        
+    except SMTPException as e:
+        messages.add_message(request, messages.ERROR, "Failed to send emails")
+        print("Email failed")
+        print(e)    
+        return 0

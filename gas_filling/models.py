@@ -1,15 +1,24 @@
 from django.db import models
 from django.conf import settings
 from django.utils.html import strip_tags
+
 from util.util import *
 from datetime import datetime, date, timedelta
 from django.utils import timezone
 from dateutil.relativedelta import relativedelta
 
+import secret
+import f2db.settings
 
 
-
-
+'''
+Weighing is done on an Avery Weigh-Tronix Balance (or entered manually).
+Avery provide software to handle that. The software is installed on F2-App01.
+When it fires up, it send a message to each configured balance (i.e., one on 10.0.0.7),
+saying where to send data, it then listens passively.
+The balance will then send its current value to the software when the "Print" button is pressed.
+The software will then write the data to a database on F2-SQL01
+'''
 class Weighing(models.Model):
     #id = models.IntegerField(primary_key=True, db_column='TransactionID')
     #timestamp = models.DateTimeField(db_column='TransactionDateTime')
@@ -352,3 +361,36 @@ class Recycle(models.Model):
     class Meta:
         db_table = 'gas_filling_recycles'
 
+
+
+# This does not work
+
+EMAIL_HOST = 'f2chemicals-com.mail.protection.outlook.com'
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'f2db@f2chemicals.com'
+EMAIL_PORT = 25
+ACCOUNT_EMAIL_VERIFICATION = 'none'
+EMAIL_USE_SSL = False
+
+#from f2db.settings import *
+from django.core.mail import EmailMultiAlternatives
+from smtplib import SMTPException
+
+
+def email(subject, text_content, html_content):
+    msg = EmailMultiAlternatives(
+        subject,
+        text_content,
+        EMAIL_HOST_USER,
+        ["andy.joel@f2chemicals.com"],
+    )
+    msg.attach_alternative(html_content, "text/html")
+    try:
+        print(msg.send(fail_silently=False))
+        print("Email sent to")
+        
+    except SMTPException as e:
+        print("Email failed")
+        print(e)
+        
+  
