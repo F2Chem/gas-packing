@@ -872,12 +872,12 @@ def new_batch(request, pk, prev_batch):
 
         if prev_batch:
             prev_batch_obj, created = Batch.objects.get_or_create(
-            batch_num=prev_batch,
-            parent_order=order,
-            defaults={"start_weight": 0}
-        )
-        prev_batch_obj.end_weight = end_weight
-        prev_batch_obj.save()
+                batch_num=prev_batch,
+                parent_order=order,
+                defaults={"start_weight": 0}
+            )
+            prev_batch_obj.end_weight = end_weight
+            prev_batch_obj.save()
 
         Batch.objects.get_or_create(
             batch_num=current_batch_num,
@@ -915,12 +915,12 @@ def new_recycle(request, pk, prev_recycle):
         
         if prev_recycle:
             prev_recycle_obj, created = Recycle.objects.get_or_create(
-            recycle_num=prev_recycle,
-            parent_order=order,
-            defaults={"start_weight": 0, "end_weight": 0}
-        )
-        prev_recycle_obj.end_weight = end_weight
-        prev_recycle_obj.save()
+                recycle_num=prev_recycle,
+                parent_order=order,
+                defaults={"start_weight": 0, "end_weight": 0}
+            )
+            prev_recycle_obj.end_weight = end_weight
+            prev_recycle_obj.save()
 
         Recycle.objects.get_or_create(
             recycle_num=current_recycle_num,

@@ -31,7 +31,7 @@ class Weighing(models.Model):
 
     @staticmethod
     def get_last():
-        return Weighing.objects.all()[0].weight    
+        return Weighing.objects.last().weight    
     
     
     def count():
@@ -159,11 +159,14 @@ class Order(models.Model):
        
     # Used for debugging only; excluded from testing
     def reset():   # pragma: no cover
+        Cylinder.objects.all().delete()
+        CylinderSet.objects.all().delete()
         Filling.objects.all().delete()
         Batch.objects.all().delete()
         OrderLine.objects.all().delete()
         Recycle.objects.all().delete()
         Order.objects.all().delete()
+        Stillage.objects.all().delete()
 
 
 class OrderLine(models.Model):
@@ -297,15 +300,28 @@ class Stillage(models.Model):
     pulled_weight = models.FloatField(default=0, blank=True, null=True)
     pulled_time = models.DateTimeField(null=True, blank=True)
 
+    final_weight = models.FloatField(default=0, blank=True, null=True)
+    final_time = models.DateTimeField(null=True, blank=True)
+
     class Meta:
         db_table = 'gas_filling_stillages'
 
+
+    # Not sure these three are right!!!
     @staticmethod
     def finished_end_weight(filling):
         stillages = Stillage.objects.filter(filling=filling)
         weight = 0
         for stillage in stillages:
             weight += stillage.end_weight
+        return weight
+    
+    @staticmethod
+    def finished_final_weight(filling):
+        stillages = Stillage.objects.filter(filling=filling)
+        weight = 0
+        for stillage in stillages:
+            weight += stillage.final_weight
         return weight
     
     @staticmethod
@@ -318,12 +334,15 @@ class Stillage(models.Model):
 
 
 
+
+# A batch is uniquely identied by the combination of number and product
 class Batch(models.Model):
     id = models.AutoField(primary_key=True)
     batch_num = models.IntegerField(blank=True, null=True, unique=False)
     parent_order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='batches')
     start_weight = models.FloatField(default=0, null=True, blank=True)
     end_weight = models.FloatField(default=0, null=True, blank=True)
+    product = models.CharField(choices=OrderLine.PRODUCTS, max_length=50)
 
     @property
     def used_weight(self):
@@ -335,12 +354,14 @@ class Batch(models.Model):
 
 
 
+# A recycle is uniquely identied by the combination of number and product
 class Recycle(models.Model):
     id = models.AutoField(primary_key=True)
     recycle_num = models.IntegerField(blank=True, null=True, unique=False)
     parent_order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='recycles')
     start_weight = models.FloatField(default=0, null=True, blank=True)
     end_weight = models.FloatField(default=0, null=True, blank=True)
+    product = models.CharField(choices=OrderLine.PRODUCTS, max_length=50)
 
     @property
     def recycled_weight(self):

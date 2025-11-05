@@ -27,7 +27,7 @@
 
 <form method="post">
     {% csrf_token %}
-    <label for="tare_weight">Weight with Heel(kg):</label>
+    <label for="tare_weight">Weight after heel removed (kg):</label>
     <input id="weight" type="number" step="0.01" name="empty_weight" required autofocus>
     <button type="submit" class="btn-primary">Next</button>
 </form>
