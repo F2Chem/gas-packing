@@ -5,7 +5,7 @@ from .models import Filling, Cylinder, Order, OrderLine
 class FillingForm(forms.ModelForm):
     class Meta:
         model = Filling
-        fields = ['cylinder', 'batch_num', 'end_weight']
+        fields = ['cylinder', 'batch_id', 'end_weight']
 
 
 class CylinderForm(forms.ModelForm):

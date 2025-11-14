@@ -18,7 +18,7 @@ You can click <i>Cancel</i> to temporarily stop filling, and resume later. Click
   <br>
   Please record what went wrong, then click <i>Okay</i> to confirm.
   You will not be able to resume, and will need to start the filling again to continue the order.
-  <form action="{% url 'gas_filling:abandon' filling.order_line.order.id %}" method="post" style="display:inline">
+  <form action="{% url 'gas_filling:abandon' filling.id %}" method="post" style="display:inline">
   {% csrf_token %}
   {{ form.as_p }}
   <br>

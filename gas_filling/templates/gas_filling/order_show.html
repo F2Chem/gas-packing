@@ -54,6 +54,15 @@
 <form action="{% url 'gas_filling:order_edit' order.id %}" method="get" style="margin-top:5px;">
     <button type="submit" class="btn-primary">Edit Order</button>
 </form>
+
+<form action="{% url 'gas_filling:order_status' order.id %}" method="post">
+    {% csrf_token %}
+    <button type="submit" name="action" value="success" class="btn btn-success">Mark as Closed</button>
+</form>
+
+
+
+
 {% endif %}
 
 <h3>Order Lines</h3>
@@ -138,7 +147,7 @@ No order lines exist for this order
             <td>{{ filling.filling_number }}/{{ filling.order_line.num_cylinders }}</td>
             <td>{{ filling.cylinder.barcodeid }}</td>
             <td>{{ filling.cylinder.tare }}</td>
-            <td>{{ filling.batch_num }}</td>
+            <td>{{ filling.batch_number }}</td>
             <td>{{ filling.start_weight }}</td>
             <td>{{ filling.connection_weight }}</td>
             <td>{{ filling.end_weight }}</td>

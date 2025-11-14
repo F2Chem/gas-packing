@@ -166,7 +166,7 @@ class Order(models.Model):
         OrderLine.objects.all().delete()
         Recycle.objects.all().delete()
         Order.objects.all().delete()
-        Stillage.objects.all().delete()
+        #Stillage.objects.all().delete()
 
 
 class OrderLine(models.Model):
@@ -199,6 +199,13 @@ class OrderLine(models.Model):
         return self.fillings.count()
 
     @property
+    def fill_type(self):
+        for el in OrderLine.CYLINDER_TYPES:
+            if el[0] == self.cylinder_type:
+                return el[1]
+        return '---'
+
+    @property
     def all_filled(self):
         if self.cylinder_type == "STILLAGE":
             return self.cylinders_filled > 0
@@ -226,12 +233,12 @@ class Filling(models.Model):
 
     order_line = models.ForeignKey(OrderLine, on_delete=models.CASCADE, related_name='fillings')
 
-    batch_num = models.IntegerField(blank=True, null=True)
-    batch_time = models.DateTimeField(null=True, blank=True)
+    #stillage = models.ForeignKey(OrderLine, on_delete=models.CASCADE, blank=True, null=True)
 
-    recycle_num = models.IntegerField(blank=True, null=True)
-    recycle_time = models.DateTimeField(null=True, blank=True)
+    batch_id = models.IntegerField(blank=True, null=True)
 
+    recycle_id = models.IntegerField(blank=True, null=True)
+    
     start_weight = models.FloatField(default=0, blank=True, null=True)
     start_time = models.DateTimeField(null=True, blank=True)
     empty_weight = models.FloatField(blank=True, null=True)
@@ -249,10 +256,23 @@ class Filling(models.Model):
     final_time = models.DateTimeField(null=True, blank=True)
 
     filling_number = models.IntegerField(default=1)
+    abandoned = models.TextField(blank=True, null=True)
 
     class Meta:
         db_table = 'gas_filling_fillings'
 
+    @property
+    def batch_number(self):
+        if self.batch_id:
+            return Batch.objects.get(id=self.batch_id).batch_num
+        return '-'
+    
+    @property
+    def recycle_number(self):
+        if self.recycle_id:
+            return Recycle.objects.get(id=self.recycle_id).recycle_num
+        return '-'
+    
     @property
     def fill_weight(self):
         if self.final_weight and self.cylinder and self.cylinder.tare:
@@ -284,11 +304,18 @@ class Filling(models.Model):
         return 0.0
 
     @property
+    def target_tare_plus_conn(self):
+        if self.connection_weight and self.start_weight:
+            return round(self.connection_weight - self.start_weight + self.cylinder.tare, 1)
+        return 0.0
+
+    @property
     def order(self):
         return self.order_line.order
 
 
 
+'''
 class Stillage(models.Model):
     id = models.AutoField(primary_key=True)
     stillage_num = models.IntegerField(blank=True, null=True)
@@ -331,7 +358,7 @@ class Stillage(models.Model):
         for stillage in stillages:
             weight += stillage.pulled_weight
         return weight
-
+'''
 
 
 
@@ -373,6 +400,19 @@ class Recycle(models.Model):
 
 
 
+'''
+
+class TubeTrailerChassis(models.Model):
+    id = models.AutoField(primary_key=True)
+    cylinder_count = models.IntegerField(blank=True, null=True, unique=False)
+    test_date = models.DateField()
+    comments = models.TextField(blank=True, null=True)
+    timestampin = TimeStampMixin
+
+'''
+
+
+'''
 # This does not work
 
 EMAIL_HOST = 'f2chemicals-com.mail.protection.outlook.com'
@@ -403,4 +443,4 @@ def email(subject, text_content, html_content):
         print("Email failed")
         print(e)
         
-  
+'''
